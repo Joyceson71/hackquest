@@ -106,41 +106,41 @@ export default function Dashboard() {
       animate="visible"
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex flex-col h-[calc(100vh-80px)] justify-center"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-4 border-border pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
         <motion.div variants={itemVariants}>
-          <h1 className="text-4xl md:text-5xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
             YOUR MEETINGS
           </h1>
-          <p className="text-sm font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block">
-            REVIEW EXTRACTED ACTIONS & BURN THE EVIDENCE
+          <p className="text-sm font-medium mt-2 text-muted-foreground">
+            Review extracted actions & verify the audit trail
           </p>
         </motion.div>
         <motion.div variants={itemVariants}>
           <Button 
             size="lg" 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-primary hover:bg-primary text-background text-base py-6 px-6 font-black uppercase shadow-brutal border-4 border-border transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground text-base py-6 px-6 font-semibold shadow-glow transition-all rounded-xl border border-white/20"
           >
-            <Plus className="mr-2 h-5 w-5 stroke-[3]" />
-            UPLOAD NEW TRANSCRIPT
+            <Plus className="mr-2 h-5 w-5" />
+            Upload Transcript
           </Button>
         </motion.div>
       </div>
 
       {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-8 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1 mt-4">
-          <div className="bg-primary p-4 rounded-full inline-block border-4 border-border shadow-brutal mb-6">
-            <Loader2 className="h-10 w-10 text-background" />
+        <motion.div variants={itemVariants} className="glass-card p-12 text-center max-w-2xl mx-auto mt-12">
+          <div className="bg-primary/10 p-4 rounded-full inline-block border border-primary/20 shadow-glow-sm mb-6">
+            <Loader2 className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-3xl font-black uppercase mb-3">NOTHING HERE YET!</h2>
-          <p className="text-base font-bold mb-6">
-            FEED THE MACHINE. UPLOAD A TRANSCRIPT TO EXTRACT ACTION ITEMS.
+          <h2 className="text-3xl font-bold mb-3 tracking-tight">Nothing here yet</h2>
+          <p className="text-base text-muted-foreground mb-8">
+            Upload a transcript to extract action items.
           </p>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-secondary text-foreground hover:bg-secondary text-lg py-6 px-10 font-black uppercase shadow-brutal border-4 border-border"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground text-lg py-6 px-10 font-semibold rounded-xl shadow-glow-sm"
           >
-            GET STARTED
+            Get Started
           </Button>
         </motion.div>
       ) : (
@@ -150,42 +150,40 @@ export default function Dashboard() {
             const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'
             });
-            // Rotate cards slightly for a chaotic maximalist feel
-            const rotation = idx % 2 === 0 ? 1 : -1;
-
             return (
               <motion.div 
                 key={m.PK}
                 variants={itemVariants}
-                whileHover={{ scale: 1.05, rotate: 0 }}
-                className="card-hover bg-card border-4 border-border p-6 shadow-brutal cursor-pointer flex flex-col justify-between h-[250px]"
-                style={{ rotate: `${rotation}deg` }}
+                className="card-hover glass-card p-6 cursor-pointer flex flex-col justify-between h-[250px] relative overflow-hidden group"
                 onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-4 border-b-4 border-border pb-4">
-                    <span className="text-sm font-black uppercase bg-accent text-background px-3 py-1 border-2 border-border">
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                       {date}
                     </span>
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 text-foreground border-2 border-border hover:bg-destructive hover:text-background"
+                      className="h-10 w-10 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
                       onClick={(e) => confirmDelete(e, m.PK)}
                     >
-                      <Trash2 className="h-5 w-5 stroke-[3]" />
+                      <Trash2 className="h-5 w-5" />
                     </Button>
                   </div>
-                  <h3 className="text-2xl font-black uppercase line-clamp-2 leading-tight">
-                    {m.title || 'UNTITLED MEETING'}
+                  <h3 className="text-xl font-bold tracking-tight line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                    {m.title || 'Untitled Meeting'}
                   </h3>
                 </div>
                 
-                <div className="mt-4 pt-4 flex items-center justify-between">
-                  <div className="text-sm font-black px-3 py-1 bg-secondary text-foreground border-2 border-border uppercase">
-                    {m.status || 'PROCESSED'}
+                <div className="relative z-10 mt-4 pt-4 flex items-center justify-between">
+                  <div className="text-xs font-medium px-3 py-1 bg-white/5 text-muted-foreground rounded-full border border-white/10 uppercase">
+                    {m.status || 'Processed'}
                   </div>
-                  <div className="text-primary font-black uppercase flex items-center group">
-                    OPEN <ArrowRight className="ml-2 h-5 w-5 stroke-[3] group-hover:translate-x-1 transition-transform" />
+                  <div className="text-accent font-semibold text-sm flex items-center group-hover:text-primary transition-colors">
+                    View <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </motion.div>
@@ -195,30 +193,32 @@ export default function Dashboard() {
       )}
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="border-4 border-border shadow-brutal bg-card">
+        <DialogContent className="glass-card bg-[#18181b]/95 p-6 border-white/10">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-black uppercase text-foreground flex items-center gap-3">
-              <AlertTriangle className="h-8 w-8 text-destructive stroke-[3]" />
-              Nuke this meeting?
+            <DialogTitle className="text-2xl font-bold text-foreground flex items-center gap-3">
+              <div className="bg-destructive/10 p-2 rounded-full">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
+              </div>
+              Delete meeting?
             </DialogTitle>
-            <DialogDescription className="text-lg font-bold text-muted-foreground uppercase pt-2">
+            <DialogDescription className="text-base text-muted-foreground pt-4">
               This action cannot be undone. This will permanently delete the meeting transcript and all extracted actions.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-4 gap-4 sm:justify-start">
+          <DialogFooter className="mt-6 gap-3 sm:justify-start">
             <Button 
               variant="destructive" 
               onClick={executeDelete}
-              className="text-lg font-black uppercase shadow-brutal border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              className="font-semibold rounded-xl"
             >
-              NUKE IT
+              Delete Permanently
             </Button>
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="text-lg font-black uppercase shadow-brutal border-2 border-border bg-card text-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-muted"
+              className="font-semibold rounded-xl bg-transparent border-white/20 text-foreground hover:bg-white/10"
             >
-              CANCEL
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>

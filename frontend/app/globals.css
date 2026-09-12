@@ -1,62 +1,62 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * MeetingCompiler Neo-Brutalist / Maximalist Theme
+ * MeetingCompiler Premium Glassmorphic Theme
  */
 
 :root {
-  /* High-Contrast Dark Maximalist Colors */
-  --background: #000000; /* Pure Black */
-  --foreground: #FFFFFF; /* Pure White text */
+  /* Sleek Dark Mode Colors */
+  --background: #09090b; /* Zinc 950 */
+  --foreground: #fafafa; /* Zinc 50 */
   
-  --card: #121212; /* Dark Gray */
-  --card-foreground: #FFFFFF; 
+  --card: rgba(24, 24, 27, 0.4); /* Zinc 900 with opacity for glass */
+  --card-foreground: #fafafa; 
   
-  --popover: #121212;
-  --popover-foreground: #FFFFFF;
+  --popover: rgba(9, 9, 11, 0.8);
+  --popover-foreground: #fafafa;
   
-  --primary: #B026FF; /* Electric Purple */
-  --primary-foreground: #FFFFFF;
+  --primary: #8b5cf6; /* Violet 500 */
+  --primary-foreground: #fafafa;
   
-  --secondary: #00E5FF; /* Cyan */
-  --secondary-foreground: #000000;
+  --secondary: #3b82f6; /* Blue 500 */
+  --secondary-foreground: #fafafa;
   
-  --muted: #2A2A2A; 
-  --muted-foreground: #A0A0A0;
+  --muted: #27272a; /* Zinc 800 */
+  --muted-foreground: #a1a1aa; /* Zinc 400 */
   
-  --accent: #39FF14; /* Neon Green */
-  --accent-foreground: #000000;
+  --accent: #6366f1; /* Indigo 500 */
+  --accent-foreground: #fafafa;
   
-  --destructive: #FF0000; /* Pure Red */
-  --destructive-foreground: #FFFFFF;
+  --destructive: #ef4444; /* Red 500 */
+  --destructive-foreground: #fafafa;
   
-  --border: #FFFFFF; /* Heavy White Borders */
-  --input: #1A1A1A;
-  --ring: #00E5FF;
+  --border: rgba(255, 255, 255, 0.1); /* Subtle white borders */
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #8b5cf6;
 
   /* Status / Confidence colors */
-  --color-success: #00E676; /* Bright Green */
-  --color-warning: #FFEA00; /* Yellow */
-  --color-decision: #00E5FF; /* Cyan */
-  --color-task: #B026FF; /* Electric Purple */
+  --color-success: #10b981; /* Emerald 500 */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-decision: #3b82f6; /* Blue 500 */
+  --color-task: #8b5cf6; /* Violet 500 */
 
-  /* Brutalist Geometry */
-  --radius: 0px;
+  /* Modern Geometry */
+  --radius: 0.75rem;
   
-  /* Hard Shadows - Using bright neon colors for Dark Maximalism */
-  --shadow-brutal: 4px 4px 0px 0px #B026FF;
-  --shadow-brutal-sm: 2px 2px 0px 0px #00E5FF;
-  --shadow-brutal-lg: 8px 8px 0px 0px #39FF14;
-  --shadow-brutal-inset: inset 4px 4px 0px 0px #B026FF;
+  /* Soft Glowing Shadows */
+  --shadow-glow: 0 0 20px -5px rgba(139, 92, 246, 0.4);
+  --shadow-glow-sm: 0 0 10px -3px rgba(139, 92, 246, 0.3);
+  --shadow-glow-lg: 0 0 30px -5px rgba(139, 92, 246, 0.5);
+  --shadow-glass: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -82,17 +82,17 @@
   --color-decision: var(--color-decision);
   --color-task: var(--color-task);
 
-  --radius-sm: var(--radius);
-  --radius-md: var(--radius);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
   
-  --shadow-clay: var(--shadow-brutal); /* override old tokens for compat */
-  --shadow-clay-sm: var(--shadow-brutal-sm);
-  --shadow-brutal: var(--shadow-brutal);
-  --shadow-brutal-lg: var(--shadow-brutal-lg);
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-sm: var(--shadow-glow-sm);
+  --shadow-glow-lg: var(--shadow-glow-lg);
+  --shadow-glass: var(--shadow-glass);
 }
 
 @layer base {
@@ -102,10 +102,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    /* Dotted background pattern for maximalism */
-    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
-    background-size: 24px 24px;
-    background-position: 0 0;
+    background-color: var(--background);
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -114,20 +111,22 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 4px solid var(--ring);
-    outline-offset: 4px;
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-black tracking-tighter uppercase;
+    @apply font-heading tracking-tight;
   }
   
-  /* Brutalist button hover effects globally */
+  /* Smooth micro-animations globally */
   button, .btn, a, .card-hover {
-    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  button:not(:disabled):hover, .card-hover:hover {
+    transform: translateY(-2px);
   }
   button:not(:disabled):active, .btn:not(:disabled):active, .card-hover:active {
-    transform: translate(4px, 4px) !important;
-    box-shadow: 0px 0px 0px 0px transparent !important;
+    transform: translateY(0) scale(0.98);
   }
 }
 
@@ -141,12 +140,25 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: var(--secondary); color: var(--secondary-foreground); }
-  80% { background-color: var(--secondary); color: var(--secondary-foreground); }
+  0% { background-color: rgba(139, 92, 246, 0.3); color: var(--foreground); }
+  80% { background-color: rgba(139, 92, 246, 0.3); color: var(--foreground); }
   100% { background-color: transparent; }
 }
 
 .evidence-highlight {
   animation: evidence-fade 3s ease-out forwards;
-  border-left: 6px solid var(--primary);
+  border-left: 4px solid var(--primary);
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
+}
+
+.glass-card {
+  @apply bg-[#18181b]/60 backdrop-blur-lg border border-white/10 rounded-2xl shadow-lg;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary;
 }
