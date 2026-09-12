@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import AuthProvider from '@/components/AuthProvider';
+import UserMenu from '@/components/UserMenu';
 
 export const metadata: Metadata = {
   title: 'MeetingCompiler — Meeting-to-Action Compiler',
@@ -12,9 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className="antialiased font-sans min-h-screen flex flex-col">
-        <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
+        <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b-4 border-border shadow-clay">
           <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-14">
             <a href="/meetings/new" className="flex items-center gap-2 group">
               <svg className="h-6 w-6 text-primary transition-colors group-hover:text-primary/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -22,18 +24,14 @@ export default function RootLayout({
               </svg>
               <span className="text-lg font-bold text-foreground tracking-tight">MeetingCompiler</span>
             </a>
-            <nav>
-              <a
-                href="/meetings/new"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                New Meeting
-              </a>
-            </nav>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-foreground">v2.0 MVP</span>
+              <UserMenu />
+            </div>
           </div>
         </header>
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {children}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+          <AuthProvider>{children}</AuthProvider>
         </main>
       </body>
     </html>

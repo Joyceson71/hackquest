@@ -55,6 +55,7 @@ export class ApiStack extends cdk.Stack {
         TABLE_NAME: props.mainTable.tableName,
         BUCKET_NAME: props.transcriptsBucket.bucketName,
       },
+      projectRoot: path.join(__dirname, '../../'),
     });
 
     // Grant DynamoDB read/write to fn-api

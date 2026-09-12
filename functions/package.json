@@ -19,5 +19,8 @@
     "@types/uuid": "^10.0.0",
     "aws-jwt-verify": "^5.2.1",
     "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2"
   }
 }

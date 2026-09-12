@@ -4,6 +4,7 @@ import { useEffect, useState, use } from 'react';
 import ActionBoard from '@/components/actions/ActionBoard';
 import { ConfirmedAction } from '@/components/actions/ActionRow';
 import { Loader2 } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/api';
 
 export default function ActionsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -15,7 +16,7 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
   const fetchActions = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const res = await fetch(`${apiUrl}/meetings/${id}/confirmed-actions`);
+      const res = await authenticatedFetch(`${apiUrl}/meetings/${id}/confirmed-actions`);
       if (res.ok) {
         const data = await res.json();
         setActions(data);
@@ -34,7 +35,7 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
   const handleStatusChange = async (actionId: string, newStatus: string) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      await fetch(`${apiUrl}/meetings/${id}/confirmed-actions/${actionId}`, {
+      await authenticatedFetch(`${apiUrl}/meetings/${id}/confirmed-actions/${actionId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),

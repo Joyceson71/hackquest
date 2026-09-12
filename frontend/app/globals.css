@@ -1,65 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 /*
- * MeetingCompiler Full Project Prompt Design System
+ * MeetingCompiler Dark Claymorphism + Maximalism Theme
  */
 
 :root {
-  /* Dark mode is the default and only mode */
-  --background: #0F1117;
-  --foreground: #E8EAF0;
+  /* Dark Maximalist Colors */
+  --background: #0F1117; /* Deep Blue-Black */
+  --foreground: #F8FAFC; /* White text */
   
-  --card: #181C27;
-  --card-foreground: #E8EAF0;
+  --card: #181C27; /* Slightly lighter deep blue */
+  --card-foreground: #F8FAFC; 
   
   --popover: #181C27;
-  --popover-foreground: #E8EAF0;
+  --popover-foreground: #F8FAFC;
   
-  --primary: #4F8EF7;
+  --primary: #4F8EF7; /* Electric Blue */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #252B3B;
-  --secondary-foreground: #E8EAF0;
+  --secondary: #252B3B; /* Muted Slate */
+  --secondary-foreground: #F8FAFC;
   
-  --muted: #181C27;
-  --muted-foreground: #7A8099;
+  --muted: #1E2333; 
+  --muted-foreground: #94A3B8;
   
-  --accent: #4F8EF7;
+  --accent: #E879F9; /* Neon Fuchsia */
   --accent-foreground: #FFFFFF;
   
-  --destructive: #E05C5C;
-  --border: #252B3B;
-  --input: #252B3B;
+  --destructive: #F43F5E; /* Neon Rose */
+  --destructive-foreground: #FFFFFF;
+  
+  --border: rgba(255,255,255,0.05);
+  --input: rgba(0,0,0,0.2);
   --ring: #4F8EF7;
 
   /* Status / Confidence colors */
-  --color-success: #4CAF82;
-  --color-warning: #E8A838;
-  --color-decision: #7C5CBF;
-  --color-task: #2A9D8F;
+  --color-success: #10B981; /* Emerald */
+  --color-warning: #F59E0B; /* Amber */
+  --color-decision: #8B5CF6; /* Violet */
+  --color-task: #14B8A6; /* Teal */
 
-  --radius: 0.5rem;
-
-  /* Sidebar (if needed by shadcn) */
-  --sidebar: #181C27;
-  --sidebar-foreground: #E8EAF0;
-  --sidebar-primary: #4F8EF7;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #252B3B;
-  --sidebar-accent-foreground: #E8EAF0;
-  --sidebar-border: #252B3B;
-  --sidebar-ring: #4F8EF7;
+  /* Exaggerated Radii for Claymorphism */
+  --radius: 1.5rem;
+  
+  /* Dark Claymorphism Shadows */
+  --shadow-clay: 12px 12px 24px rgba(0,0,0,0.6), inset 2px 2px 4px rgba(255,255,255,0.05), inset -4px -4px 8px rgba(0,0,0,0.4);
+  --shadow-clay-sm: 6px 6px 12px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 4px rgba(0,0,0,0.4);
+  --shadow-clay-inset: inset 6px 6px 12px rgba(0,0,0,0.5), inset -2px -2px 4px rgba(255,255,255,0.05);
 }
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
+  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -85,14 +81,16 @@
   --color-decision: var(--color-decision);
   --color-task: var(--color-task);
 
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: var(--radius);
+  --radius-xl: 2rem;
+  --radius-2xl: 2.5rem;
+  --radius-3xl: 3rem;
+  
+  --shadow-clay: var(--shadow-clay);
+  --shadow-clay-sm: var(--shadow-clay-sm);
+  --shadow-clay-inset: var(--shadow-clay-inset);
 }
 
 @layer base {
@@ -102,6 +100,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    /* Soft noise background for texture (Maximalist touch) */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -110,8 +110,11 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    outline: 4px solid var(--ring);
+    outline-offset: 4px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tight;
   }
 }
 
@@ -125,20 +128,13 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: rgba(79, 142, 247, 0.2); }
-  80% { background-color: rgba(79, 142, 247, 0.2); }
+  0% { background-color: var(--secondary); color: var(--secondary-foreground); }
+  80% { background-color: var(--secondary); color: var(--secondary-foreground); }
   100% { background-color: transparent; }
 }
 
 .evidence-highlight {
   animation: evidence-fade 3s ease-out forwards;
-  border-left: 3px solid var(--accent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .evidence-highlight {
-    background-color: rgba(79, 142, 247, 0.2);
-    border-left: 3px solid var(--accent);
-    animation: none;
-  }
+  border-left: 6px solid var(--primary);
+  border-radius: 0 1rem 1rem 0;
 }

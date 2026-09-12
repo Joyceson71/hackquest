@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Upload, FileText } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/api';
 
 const SYNTHETIC_TRANSCRIPT = `[00:00] Sarah (Organizer): Okay, let's get started. We need to finalize the Q3 launch plan.
 [00:14] Marcus: I'll have the updated landing page copy ready by Friday. I just need final approval on the headline options.
@@ -39,7 +40,7 @@ export default function NewMeetingPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     
     // 1. Initialize meeting
-    const res = await fetch(`${apiUrl}/meetings`, {
+    const res = await authenticatedFetch(`${apiUrl}/meetings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: meetingTitle, participants: meetingParticipants }),

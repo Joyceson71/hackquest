@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import TranscriptViewer from '@/components/transcript/TranscriptViewer';
 import ExtractionStatus from '@/components/transcript/ExtractionStatus';
+import { authenticatedFetch } from '@/lib/api';
 
 export default function TranscriptPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -16,7 +17,7 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
     const checkStatus = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const res = await fetch(`${apiUrl}/meetings/${id}`);
+        const res = await authenticatedFetch(`${apiUrl}/meetings/${id}`);
         if (res.ok) {
           const data = await res.json();
           const s = data.extractionStatus || data.status || 'PENDING';

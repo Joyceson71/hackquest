@@ -5,7 +5,8 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as path from 'path';
 
 export interface ExtractionStackProps extends cdk.StackProps {
@@ -28,6 +29,7 @@ export class ExtractionStack extends cdk.Stack {
       environment: {
         TABLE_NAME: props.mainTable.tableName,
       },
+      projectRoot: path.join(__dirname, '../../'),
     });
 
     // Grant S3 read-only to extract-actions
@@ -45,10 +47,18 @@ export class ExtractionStack extends cdk.Stack {
       resources: ['*'], // In production, restrict to specific model ARN
     }));
 
-    // S3 trigger — ObjectCreated event
-    props.transcriptsBucket.addEventNotification(
-      s3.EventType.OBJECT_CREATED,
-      new s3n.LambdaDestination(extractActionsFn)
-    );
+    // EventBridge trigger — ObjectCreated event
+    new events.Rule(this, 'TranscriptUploadedRule', {
+      eventPattern: {
+        source: ['aws.s3'],
+        detailType: ['Object Created'],
+        detail: {
+          bucket: {
+            name: [props.transcriptsBucket.bucketName],
+          },
+        },
+      },
+      targets: [new targets.LambdaFunction(extractActionsFn)],
+    });
   }
 }

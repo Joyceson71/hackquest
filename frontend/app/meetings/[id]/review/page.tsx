@@ -4,6 +4,7 @@ import { useEffect, useState, use } from 'react';
 import ProposedItemCard, { ProposedItem } from '@/components/review/ProposedItemCard';
 import ReviewSummary from '@/components/review/ReviewSummary';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/api';
 
 export default function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -19,13 +20,13 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
       // Also fetch meeting status
-      const meetingRes = await fetch(`${apiUrl}/meetings/${id}`);
+      const meetingRes = await authenticatedFetch(`${apiUrl}/meetings/${id}`);
       if (meetingRes.ok) {
         const meeting = await meetingRes.json();
         setExtractionStatus(meeting.extractionStatus || meeting.status || '');
       }
 
-      const res = await fetch(`${apiUrl}/meetings/${id}/proposed-items`);
+      const res = await authenticatedFetch(`${apiUrl}/meetings/${id}/proposed-items`);
       if (res.ok) {
         const data = await res.json();
         const pending = data.filter((item: ProposedItem & { reviewStatus?: string }) =>

@@ -14,6 +14,7 @@ export class StorageStack extends cdk.Stack {
     // Block all public access. 90-day lifecycle for auto-delete.
     this.transcriptsBucket = new s3.Bucket(this, 'RawTranscriptsBucket', {
       bucketName: `raw-transcripts-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`,
+      eventBridgeEnabled: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       lifecycleRules: [

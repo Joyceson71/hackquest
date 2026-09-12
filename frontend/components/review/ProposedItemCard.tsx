@@ -15,6 +15,7 @@ import {
 import { ExternalLink, Check, Pencil, UserRound, X } from 'lucide-react';
 import ConfidenceBadge from './ConfidenceBadge';
 import EditConfirmForm from './EditConfirmForm';
+import { authenticatedFetch } from '@/lib/api';
 
 export interface ProposedItem {
   itemId: string;
@@ -45,7 +46,7 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
     setLoading(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      await fetch(`${apiUrl}/meetings/${meetingId}/proposed-items/${item.itemId}`, {
+      await authenticatedFetch(`${apiUrl}/meetings/${meetingId}/proposed-items/${item.itemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
