@@ -18,8 +18,8 @@
   --popover: #121212;
   --popover-foreground: #FFFFFF;
   
-  --primary: #FF2E93; /* Hot Pink */
-  --primary-foreground: #000000;
+  --primary: #B026FF; /* Electric Purple */
+  --primary-foreground: #FFFFFF;
   
   --secondary: #00E5FF; /* Cyan */
   --secondary-foreground: #000000;
@@ -27,7 +27,7 @@
   --muted: #2A2A2A; 
   --muted-foreground: #A0A0A0;
   
-  --accent: #FFEA00; /* Bright Yellow */
+  --accent: #39FF14; /* Neon Green */
   --accent-foreground: #000000;
   
   --destructive: #FF0000; /* Pure Red */
@@ -40,17 +40,17 @@
   /* Status / Confidence colors */
   --color-success: #00E676; /* Bright Green */
   --color-warning: #FFEA00; /* Yellow */
-  --color-decision: #7C3AED; /* Purple */
-  --color-task: #FF2E93; /* Hot Pink */
+  --color-decision: #00E5FF; /* Cyan */
+  --color-task: #B026FF; /* Electric Purple */
 
   /* Brutalist Geometry */
   --radius: 0px;
   
   /* Hard Shadows - Using bright neon colors for Dark Maximalism */
-  --shadow-brutal: 4px 4px 0px 0px #FF2E93;
+  --shadow-brutal: 4px 4px 0px 0px #B026FF;
   --shadow-brutal-sm: 2px 2px 0px 0px #00E5FF;
-  --shadow-brutal-lg: 8px 8px 0px 0px #FFEA00;
-  --shadow-brutal-inset: inset 4px 4px 0px 0px #FF2E93;
+  --shadow-brutal-lg: 8px 8px 0px 0px #39FF14;
+  --shadow-brutal-inset: inset 4px 4px 0px 0px #B026FF;
 }
 
 @theme inline {
