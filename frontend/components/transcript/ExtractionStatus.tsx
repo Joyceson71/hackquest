@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ interface ExtractionStatusProps {
 }
 
 export default function ExtractionStatus({ status, elapsedTime, meetingId, onRetry }: ExtractionStatusProps) {
+  const router = useRouter();
+
   if (status === 'UPLOADING' || status === 'EXTRACTING' || status === 'PENDING') {
     return (
       <div className="flex items-center gap-3 bg-muted/50 border border-border rounded-lg px-4 py-3">
@@ -38,7 +41,7 @@ export default function ExtractionStatus({ status, elapsedTime, meetingId, onRet
           </Badge>
           <span className="text-sm text-muted-foreground">Proposed items are ready for review.</span>
         </div>
-        <Button variant="default" size="sm" onClick={() => window.location.href = `/meetings/${meetingId}/review`}>
+        <Button variant="default" size="sm" onClick={() => router.push(`/meetings/${meetingId}/review`)}>
           Go to Review
         </Button>
       </div>

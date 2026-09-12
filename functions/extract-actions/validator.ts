@@ -68,16 +68,15 @@ export function validateExtraction(
     }
 
     // 3. Line bounds check
-    if (
-      typeof item.evidenceLineStart !== 'number' ||
-      typeof item.evidenceLineEnd !== 'number' ||
-      item.evidenceLineStart < 0 ||
-      item.evidenceLineEnd < 0 ||
-      item.evidenceLineStart >= transcriptLineCount ||
-      item.evidenceLineEnd >= transcriptLineCount
-    ) {
-      errors.push(`${itemLabel}: evidence line bounds out of range — skipped`);
-      continue;
+    let lineStart = typeof item.evidenceLineStart === 'number' ? item.evidenceLineStart : 0;
+    let lineEnd = typeof item.evidenceLineEnd === 'number' ? item.evidenceLineEnd : lineStart;
+
+    lineStart = Math.max(0, Math.min(transcriptLineCount - 1, lineStart));
+    lineEnd = Math.max(0, Math.min(transcriptLineCount - 1, lineEnd));
+    if (lineStart > lineEnd) {
+      const tmp = lineStart;
+      lineStart = lineEnd;
+      lineEnd = tmp;
     }
 
     // 4. Clamp confidence score
@@ -85,15 +84,21 @@ export function validateExtraction(
     confidence = Math.max(0, Math.min(100, Math.round(confidence)));
 
     // 6. Sanitize strings
+    const sanitizedOwner = item.suggestedOwner ? sanitizeString(item.suggestedOwner, 100) : null;
+    const cleanOwner = sanitizedOwner && sanitizedOwner.toLowerCase() !== 'null' && sanitizedOwner.toLowerCase() !== 'none' && sanitizedOwner.length > 0 ? sanitizedOwner : null;
+
+    const sanitizedDeadline = item.suggestedDeadline ? sanitizeString(item.suggestedDeadline, 30) : null;
+    const cleanDeadline = sanitizedDeadline && sanitizedDeadline.toLowerCase() !== 'null' && sanitizedDeadline.toLowerCase() !== 'none' && sanitizedDeadline.length > 0 ? sanitizedDeadline : null;
+
     validItems.push({
       type: item.type as 'TASK' | 'DECISION',
       rawText: sanitizeString(item.rawText || '', 1000),
-      suggestedOwner: item.suggestedOwner ? sanitizeString(item.suggestedOwner, 100) : null,
-      suggestedDeadline: item.suggestedDeadline ? sanitizeString(item.suggestedDeadline, 30) : null,
+      suggestedOwner: cleanOwner,
+      suggestedDeadline: cleanDeadline,
       confidenceScore: confidence,
       confidenceReason: sanitizeString(item.confidenceReason || '', 500),
-      evidenceLineStart: item.evidenceLineStart,
-      evidenceLineEnd: item.evidenceLineEnd,
+      evidenceLineStart: lineStart,
+      evidenceLineEnd: lineEnd,
     });
   }
 

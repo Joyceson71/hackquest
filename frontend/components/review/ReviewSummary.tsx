@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Pencil } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 interface ReviewSummaryProps {
   confirmed: number;

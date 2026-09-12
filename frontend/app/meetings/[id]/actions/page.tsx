@@ -15,11 +15,25 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [actionToDelete, setActionToDelete] = useState<string | null>(null);
 
-  const participants = ['Alice (Engineering Manager)', 'Bob (Backend Developer)', 'Charlie (Designer)'];
+  const [participants, setParticipants] = useState<string[]>([]);
 
   const fetchActions = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
+      
+      // Fetch meeting to get participants
+      const meetingRes = await authenticatedFetch(`${apiUrl}/meetings/${id}`);
+      if (meetingRes.ok) {
+        const meeting = await meetingRes.json();
+        if (meeting.participants) {
+          const parsed = meeting.participants.split(/[\r\n,]+/).map((p: string) => p.trim()).filter(Boolean);
+          if (parsed.length > 0) {
+            setParticipants(parsed);
+          }
+        }
+      }
+
+      // Fetch confirmed actions
       const res = await authenticatedFetch(`${apiUrl}/meetings/${id}/confirmed-actions`);
       if (res.ok) {
         const data = await res.json();
@@ -33,7 +47,9 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchActions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleStatusChange = async (actionId: string, newStatus: string) => {

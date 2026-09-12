@@ -108,7 +108,7 @@ export default function Dashboard() {
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b-8 border-border pb-8">
         <motion.div variants={itemVariants}>
-          <h1 className="text-5xl md:text-7xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_#FF2E93]">
+          <h1 className="text-5xl md:text-7xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
             YOUR MEETINGS
           </h1>
           <p className="text-xl font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block">

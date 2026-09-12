@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -28,10 +29,11 @@ interface ActionBoardProps {
 }
 
 export default function ActionBoard({ actions, meetingId, participants, onStatusChange, onDeleteAction }: ActionBoardProps) {
+  const router = useRouter();
   const [filterOwner, setFilterOwner] = useState('__all__');
   const [filterStatus, setFilterStatus] = useState('__all__');
 
-  const owners = Array.from(new Set(actions.map((a) => a.owner).filter(Boolean)));
+  const owners = Array.from(new Set([...actions.map((a) => a.owner), ...participants].filter(Boolean)));
 
   const filteredActions = actions.filter((a) => {
     if (filterOwner !== '__all__' && a.owner !== filterOwner) return false;
@@ -69,7 +71,7 @@ export default function ActionBoard({ actions, meetingId, participants, onStatus
         <p className="text-lg text-foreground/70 font-bold mt-2 mb-8 uppercase">
           Go to the Review screen to confirm proposed items.
         </p>
-        <Button size="lg" className="bg-secondary text-foreground border-2 border-border font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-secondary" onClick={() => window.location.href = `/meetings/${meetingId}/review`}>
+        <Button size="lg" className="bg-secondary text-foreground border-2 border-border font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-secondary" onClick={() => router.push(`/meetings/${meetingId}/review`)}>
           REVIEW PROPOSED ITEMS <ArrowRight className="h-5 w-5 ml-2 stroke-[3]" />
         </Button>
       </div>

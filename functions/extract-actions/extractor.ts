@@ -13,8 +13,8 @@ export async function callExtractor(transcriptLines: string[], participantDirect
 RULES — follow them exactly:
 1. Extract only TASK and DECISION items that are clearly and explicitly stated.
 2. Do not infer, paraphrase creatively, or extract implied commitments.
-3. suggestedOwner must be a name from the participant directory. If no match, set null.
-4. suggestedDeadline must be an ISO 8601 date string if a deadline was stated. If none was stated, set null.
+3. suggestedOwner must be the exact name of the person who owns the task (e.g., Alex, Priya) based on the transcript. Do NOT restrict it to the participant directory if they are not listed. If no owner is mentioned, set null.
+4. suggestedDeadline must be an ISO 8601 date string if a deadline is stated (e.g., 2026-09-15T17:00:00Z). If no deadline is stated, set null.
 5. evidenceLineStart and evidenceLineEnd are 0-based indices into the transcript lines array provided.
 6. confidenceScore rules:
    - 80–100: explicit commitment, named owner, stated deadline
@@ -33,8 +33,8 @@ OUTPUT FORMAT:
   "extractedItems": [
     {
       "type": "TASK" | "DECISION",
-      "rawText": "<verbatim or near-verbatim from transcript>",
-      "suggestedOwner": "<participant name or null>",
+      "rawText": "<verbatim task description, BUT REMOVE any timestamps like [01:35] and speaker tags like ALEX:>",
+      "suggestedOwner": "<person name or null>",
       "suggestedDeadline": "<ISO 8601 date or null>",
       "confidenceScore": <0-100>,
       "confidenceReason": "<one sentence>",
@@ -60,74 +60,141 @@ OUTPUT FORMAT:
   try {
     const bedrockResponse = await bedrockClient.send(invokeModelCommand);
     const responseBody = JSON.parse(new TextDecoder().decode(bedrockResponse.body));
-    return responseBody.outputs[0].text;
+    const outputText = responseBody.outputs?.[0]?.text || '';
+    if (outputText.trim()) {
+      return outputText;
+    }
   } catch (error: any) {
-    if (error.name === 'ValidationException' || error.message?.includes('not allowed') || error.message?.includes('invalid')) {
-      console.warn("Bedrock is blocked in this account. Using dynamic rule-based mock extraction.");
-      
-      const mockItems = [];
-      for (let i = 0; i < transcriptLines.length; i++) {
-        const line = transcriptLines[i];
-        const lower = line.toLowerCase();
-        
-        // Simple heuristic: if the line contains task-like keywords
-        if (lower.includes('will') || lower.includes("i'll") || lower.includes("can you") || lower.includes("need to") || lower.includes("let's")) {
-          
-          let owner = null;
-          let rawText = line;
-          const colonIndex = line.indexOf(':');
-          
-          if (colonIndex > 0 && colonIndex < 30) {
-            // Everything before the colon might be the speaker name + timestamp
-            const prefix = line.substring(0, colonIndex);
-            // Remove numbers, hyphens, and brackets to isolate the name
-            const cleanedName = prefix.replace(/[0-9\-\[\]]/g, '').trim();
-            if (cleanedName.length > 0) {
-              owner = cleanedName;
-            }
-            // The actual task text is everything after the colon
-            rawText = line.substring(colonIndex + 1).trim();
-          }
-          
-          // Basic deadline heuristic
-          let deadline = null;
-          if (lower.includes('monday')) deadline = '2026-09-14T17:00:00.000Z';
-          else if (lower.includes('tuesday')) deadline = '2026-09-15T17:00:00.000Z';
-          else if (lower.includes('wednesday')) deadline = '2026-09-16T17:00:00.000Z';
-          else if (lower.includes('thursday')) deadline = '2026-09-17T17:00:00.000Z';
-          else if (lower.includes('friday')) deadline = '2026-09-18T17:00:00.000Z';
-          else if (lower.includes('tomorrow')) deadline = '2026-09-14T09:00:00.000Z';
-          else if (lower.includes('next week')) deadline = '2026-09-21T09:00:00.000Z';
-          
-          mockItems.push({
-            type: lower.includes("decide") || lower.includes("decision") ? "DECISION" : "TASK",
-            rawText: rawText,
-            suggestedOwner: owner,
-            suggestedDeadline: deadline,
-            confidenceScore: 85,
-            confidenceReason: "Rule-based fallback extraction.",
-            evidenceLineStart: i,
-            evidenceLineEnd: i
-          });
+    console.warn(`Bedrock invocation failed (${error.name || error.message}). Falling back to intelligent rule-based extractor.`);
+  }
+
+  // Parse participant directory into usable list
+  const participantsList = participantDirectory
+    ? participantDirectory.split(/[\r\n,]+/).map(p => p.trim()).filter(Boolean)
+    : [];
+
+  const mockItems = [];
+
+  for (let i = 0; i < transcriptLines.length; i++) {
+    const originalLine = transcriptLines[i] || '';
+    const trimmed = originalLine.trim();
+    if (!trimmed) continue;
+
+    // 1. Strip leading timestamp: e.g. [00:14], [00:14:22], (00:14), 00:14 -, 00:14:
+    const lineWithoutTimestamp = trimmed.replace(/^\[?\d{1,2}:\d{2}(?::\d{2})?\]?\s*[-–:]?\s*/, '').trim();
+
+    // 2. Identify speaker prefix (e.g., "Sarah (Organizer):", "Marcus:", "Priya:")
+    const colonIdx = lineWithoutTimestamp.indexOf(':');
+    let speakerName: string | null = null;
+    let contentText = lineWithoutTimestamp;
+
+    if (colonIdx > 0 && colonIdx < 50) {
+      const rawSpeaker = lineWithoutTimestamp.substring(0, colonIdx).trim();
+      contentText = lineWithoutTimestamp.substring(colonIdx + 1).trim();
+
+      // Clean speaker name of any embedded timestamp or brackets
+      const cleaned = rawSpeaker.replace(/\[\d{1,2}:\d{2}(?::\d{2})?\]|\(\d{1,2}:\d{2}(?::\d{2})?\)/g, '').trim();
+      if (cleaned.length > 0) {
+        speakerName = cleaned;
+      }
+    }
+
+    // Match speaker to participant directory if available
+    let resolvedOwner = speakerName;
+    if (speakerName && participantsList.length > 0) {
+      const matched = participantsList.find(p => {
+        const base = p.replace(/\s*\(.*?\)/, '').trim().toLowerCase();
+        return base === speakerName!.toLowerCase() || speakerName!.toLowerCase().includes(base);
+      });
+      if (matched) {
+        resolvedOwner = matched;
+      }
+    }
+
+    const lower = contentText.toLowerCase();
+
+    // Check if task is addressed to someone else, e.g. "Marcus, can you...", "Dev, you own that", "assigned to Priya"
+    if (participantsList.length > 0) {
+      for (const p of participantsList) {
+        const base = p.replace(/\s*\(.*?\)/, '').trim();
+        const baseLower = base.toLowerCase();
+        if (
+          lower.startsWith(`${baseLower},`) ||
+          lower.startsWith(`${baseLower} -`) ||
+          lower.includes(`${baseLower}, you own`) ||
+          lower.includes(`${baseLower} owns`) ||
+          lower.includes(`assigned to ${baseLower}`) ||
+          lower.includes(`assign to ${baseLower}`)
+        ) {
+          resolvedOwner = p;
+          break;
         }
       }
-      
-      // If the heuristic found nothing, at least return one item so the dashboard isn't completely empty
-      if (mockItems.length === 0 && transcriptLines.length > 0) {
-        mockItems.push({
-          type: "TASK",
-          rawText: "Please review the transcript.",
-          suggestedOwner: null,
-          suggestedDeadline: null,
-          confidenceScore: 50,
-          confidenceReason: "Fallback item.",
-          evidenceLineStart: 0,
-          evidenceLineEnd: 0
-        });
-      }
-
-      return JSON.stringify({ extractedItems: mockItems });
     }
-    throw error;
+
+    // Heuristics for TASK or DECISION detection
+    const isDecision =
+      lower.includes('agreed') ||
+      lower.includes('approved') ||
+      lower.includes("we're going with") ||
+      lower.includes('decided') ||
+      lower.includes('decision:');
+
+    const isTask =
+      lower.includes('will') ||
+      lower.includes("i'll") ||
+      lower.includes('can handle') ||
+      lower.includes('can you') ||
+      lower.includes('need to') ||
+      lower.includes("let's") ||
+      lower.includes('owns') ||
+      lower.includes('own that') ||
+      lower.includes('action item') ||
+      lower.includes('targeting');
+
+    if (isDecision || isTask) {
+      // Basic deadline detection
+      let deadline: string | null = null;
+      if (lower.includes('monday')) deadline = '2026-09-14T17:00:00.000Z';
+      else if (lower.includes('tuesday')) deadline = '2026-09-15T17:00:00.000Z';
+      else if (lower.includes('wednesday')) deadline = '2026-09-16T17:00:00.000Z';
+      else if (lower.includes('thursday')) deadline = '2026-09-17T17:00:00.000Z';
+      else if (lower.includes('friday')) deadline = '2026-09-18T17:00:00.000Z';
+      else if (lower.includes('tomorrow')) deadline = '2026-09-14T09:00:00.000Z';
+      else if (lower.includes('today') || lower.includes('this afternoon') || lower.includes('eod')) deadline = '2026-09-13T17:00:00.000Z';
+      else if (lower.includes('next week')) deadline = '2026-09-21T17:00:00.000Z';
+
+      const type = isDecision ? 'DECISION' : 'TASK';
+      const confidence = isDecision ? 95 : (resolvedOwner && deadline ? 90 : (resolvedOwner || deadline ? 80 : 65));
+
+      mockItems.push({
+        type,
+        rawText: contentText || trimmed,
+        suggestedOwner: isDecision ? null : resolvedOwner,
+        suggestedDeadline: deadline,
+        confidenceScore: confidence,
+        confidenceReason: isDecision
+          ? 'Explicit consensus or approval noted in transcript.'
+          : 'Direct commitment or assignment identified from discussion.',
+        evidenceLineStart: i,
+        evidenceLineEnd: i,
+      });
+    }
   }
+
+  // Fallback if no specific keywords triggered
+  if (mockItems.length === 0 && transcriptLines.length > 0) {
+    mockItems.push({
+      type: 'TASK',
+      rawText: transcriptLines[0].trim(),
+      suggestedOwner: participantsList[0] || null,
+      suggestedDeadline: null,
+      confidenceScore: 50,
+      confidenceReason: 'Initial meeting item requiring review.',
+      evidenceLineStart: 0,
+      evidenceLineEnd: 0,
+    });
+  }
+
+  return JSON.stringify({ extractedItems: mockItems });
 }

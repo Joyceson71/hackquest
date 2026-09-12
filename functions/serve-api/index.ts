@@ -43,8 +43,10 @@ export const handler = async (event: any) => {
         Item: {
           PK: { S: newMeetingId },
           SK: { S: 'MEETING' },
-          title: { S: body.title || 'Untitled Meeting' },
+          title: { S: body.title?.trim() || 'Untitled Meeting' },
+          participants: { S: body.participants?.trim() || '' },
           status: { S: 'UPLOADING' },
+          extractionStatus: { S: 'PENDING' },
           createdAt: { S: new Date().toISOString() },
           transcriptS3Key: { S: s3Key },
         }
@@ -81,10 +83,29 @@ export const handler = async (event: any) => {
     }
 
     if (meetingId && path === `/meetings/${meetingId}` && method === 'DELETE') {
-      await docClient.send(new DeleteItemCommand({
+      // Query all items for this meeting (MEETING, PROPOSED#*, ACTION#*, AUDIT#*)
+      const { Items: meetingItems } = await docClient.send(new QueryCommand({
         TableName: TABLE_NAME,
-        Key: { PK: { S: meetingId }, SK: { S: 'MEETING' } }
+        KeyConditionExpression: 'PK = :pk',
+        ExpressionAttributeValues: { ':pk': { S: meetingId } }
       }));
+
+      if (meetingItems && meetingItems.length > 0) {
+        for (const item of meetingItems) {
+          if (item.SK?.S) {
+            await docClient.send(new DeleteItemCommand({
+              TableName: TABLE_NAME,
+              Key: { PK: { S: meetingId }, SK: { S: item.SK.S } }
+            }));
+          }
+        }
+      } else {
+        await docClient.send(new DeleteItemCommand({
+          TableName: TABLE_NAME,
+          Key: { PK: { S: meetingId }, SK: { S: 'MEETING' } }
+        }));
+      }
+
       return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
     }
 
@@ -104,6 +125,9 @@ export const handler = async (event: any) => {
       
       if (body.action === 'CONFIRM') {
         const actionId = uuidv4();
+        const now = new Date().toISOString();
+        const lineStart = typeof body.evidenceLineStart === 'number' ? body.evidenceLineStart : parseInt(body.evidenceLineStart, 10) || 0;
+        const lineEnd = typeof body.evidenceLineEnd === 'number' ? body.evidenceLineEnd : parseInt(body.evidenceLineEnd, 10) || lineStart;
         
         // Mark PROPOSED item as CONFIRMED
         await docClient.send(new UpdateItemCommand({
@@ -113,7 +137,7 @@ export const handler = async (event: any) => {
           ExpressionAttributeValues: { ':rs': { S: 'CONFIRMED' } }
         }));
         
-        // Create CONFIRMED item
+        // Create CONFIRMED item with safe DynamoDB types
         await docClient.send(new PutItemCommand({
           TableName: TABLE_NAME,
           Item: {
@@ -121,12 +145,25 @@ export const handler = async (event: any) => {
             SK: { S: `ACTION#${actionId}` },
             actionId: { S: actionId },
             sourceProposedItemId: { S: itemId },
-            task: { S: body.task },
-            owner: { S: body.owner },
-            deadline: { S: body.deadline },
+            task: { S: body.task || 'Untitled Task' },
+            owner: body.owner ? { S: body.owner } : { NULL: true },
+            deadline: body.deadline ? { S: body.deadline } : { NULL: true },
             status: { S: 'PENDING' },
-            evidenceLineStart: { N: body.evidenceLineStart.toString() },
-            confirmedAt: { S: new Date().toISOString() },
+            evidenceLineStart: { N: lineStart.toString() },
+            evidenceLineEnd: { N: lineEnd.toString() },
+            confirmedAt: { S: now },
+            timeline: {
+              L: [
+                {
+                  M: {
+                    event: { S: 'Action confirmed' },
+                    actor: { S: 'user' },
+                    timestamp: { S: now },
+                    note: { S: '' }
+                  }
+                }
+              ]
+            }
           }
         }));
 
@@ -137,8 +174,11 @@ export const handler = async (event: any) => {
         await docClient.send(new UpdateItemCommand({
           TableName: TABLE_NAME,
           Key: { PK: { S: meetingId }, SK: { S: `PROPOSED#${itemId}` } },
-          UpdateExpression: 'SET reviewStatus = :rs',
-          ExpressionAttributeValues: { ':rs': { S: 'REJECTED' } }
+          UpdateExpression: 'SET reviewStatus = :rs, rejectionNote = :rn',
+          ExpressionAttributeValues: {
+            ':rs': { S: 'REJECTED' },
+            ':rn': body.rejectionNote ? { S: body.rejectionNote } : { NULL: true }
+          }
         }));
         return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
       }
@@ -157,14 +197,41 @@ export const handler = async (event: any) => {
     if (meetingId && path.includes('/confirmed-actions/') && method === 'PUT') {
       const actionId = event.pathParameters?.actionId;
       const body = JSON.parse(event.body || '{}');
+      const now = new Date().toISOString();
+      const newStatus = body.status || 'PENDING';
       
-      await docClient.send(new UpdateItemCommand({
-        TableName: TABLE_NAME,
-        Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } },
-        UpdateExpression: 'SET #status = :s',
-        ExpressionAttributeNames: { '#status': 'status' },
-        ExpressionAttributeValues: { ':s': { S: body.status } }
-      }));
+      const newTimelineEvent = {
+        M: {
+          event: { S: `Status changed to ${newStatus}` },
+          actor: { S: 'user' },
+          timestamp: { S: now },
+          note: body.note ? { S: body.note } : { S: '' }
+        }
+      };
+
+      try {
+        await docClient.send(new UpdateItemCommand({
+          TableName: TABLE_NAME,
+          Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } },
+          UpdateExpression: 'SET #status = :s, timeline = list_append(if_not_exists(timeline, :empty_list), :new_event)',
+          ExpressionAttributeNames: { '#status': 'status' },
+          ExpressionAttributeValues: {
+            ':s': { S: newStatus },
+            ':empty_list': { L: [] },
+            ':new_event': { L: [newTimelineEvent] }
+          }
+        }));
+      } catch {
+        // Fallback without timeline append if list_append fails
+        await docClient.send(new UpdateItemCommand({
+          TableName: TABLE_NAME,
+          Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } },
+          UpdateExpression: 'SET #status = :s',
+          ExpressionAttributeNames: { '#status': 'status' },
+          ExpressionAttributeValues: { ':s': { S: newStatus } }
+        }));
+      }
+
       return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
     }
 

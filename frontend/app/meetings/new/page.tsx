@@ -91,8 +91,9 @@ export default function NewMeetingPage() {
     try {
       const meetingId = await createMeeting(title, participants, file);
       router.push(`/meetings/${meetingId}/transcript`);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(message);
       setLoading(false);
     }
   };
@@ -103,8 +104,9 @@ export default function NewMeetingPage() {
     try {
       const meetingId = await createMeeting('Q3 Launch Plan (Demo)', DEMO_PARTICIPANTS, SYNTHETIC_TRANSCRIPT);
       router.push(`/meetings/${meetingId}/transcript`);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setError(message);
       setDemoLoading(false);
     }
   };

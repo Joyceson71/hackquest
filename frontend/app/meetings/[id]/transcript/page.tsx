@@ -11,7 +11,6 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
   const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
     let elapsed = 0;
 
     const checkStatus = async () => {
@@ -32,7 +31,7 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
     };
 
     // Poll every 3 seconds, max 60 seconds
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       elapsed += 3;
       setElapsedTime(elapsed);
       if (elapsed > 60) {

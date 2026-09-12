@@ -186,4 +186,10 @@ export const handleProposed = async (event: any) => {
 
     return { statusCode: 400, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ error: 'Invalid action' }) };
   }
+
+  return {
+    statusCode: 405,
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    body: JSON.stringify({ error: 'Method Not Allowed' }),
+  };
 };

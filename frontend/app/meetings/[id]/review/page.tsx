@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+// trigger hmr
+import { useEffect, useState, use, useCallback } from 'react';
 import ProposedItemCard, { ProposedItem } from '@/components/review/ProposedItemCard';
 import ReviewSummary from '@/components/review/ReviewSummary';
 import { Loader2, CheckCircle2 } from 'lucide-react';
@@ -13,19 +14,33 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   const [extractionStatus, setExtractionStatus] = useState('');
   const [stats, setStats] = useState({ confirmed: 0, modified: 0, rejected: 0 });
 
-  const participants = ['Alice (Engineering Manager)', 'Bob (Backend Developer)', 'Charlie (Designer)'];
+  const [participantsList, setParticipantsList] = useState<string[]>([
+    'Alice (Engineering Manager)',
+    'Bob (Backend Developer)',
+    'Charlie (Designer)',
+  ]);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
 
-      // Also fetch meeting status
+      // Fetch meeting record
       const meetingRes = await authenticatedFetch(`${apiUrl}/meetings/${id}`);
+      let currentStatus = '';
       if (meetingRes.ok) {
         const meeting = await meetingRes.json();
-        setExtractionStatus(meeting.extractionStatus || meeting.status || '');
+        currentStatus = meeting.extractionStatus || meeting.status || '';
+        setExtractionStatus(currentStatus);
+
+        if (meeting.participants) {
+          const parsed = meeting.participants.split(/[\r\n,]+/).map((p: string) => p.trim()).filter(Boolean);
+          if (parsed.length > 0) {
+            setParticipantsList(parsed);
+          }
+        }
       }
 
+      // Fetch proposed items
       const res = await authenticatedFetch(`${apiUrl}/meetings/${id}/proposed-items`);
       if (res.ok) {
         const data = await res.json();
@@ -39,16 +54,26 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchItems();
   }, [id]);
 
-  const handleProcessed = () => {
-    // Re-fetch to update the list
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchItems();
-    // Increment stats (simplified — in production this would track the specific action)
+  }, [fetchItems]);
+
+  // Polling if extraction is still in progress
+  useEffect(() => {
+    if (!['PENDING', 'EXTRACTING', 'UPLOADING'].includes(extractionStatus)) return;
+
+    const interval = setInterval(() => {
+      fetchItems();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [extractionStatus, fetchItems]);
+
+  const handleProcessed = () => {
+    fetchItems();
     setStats((prev) => ({ ...prev, confirmed: prev.confirmed + 1 }));
   };
 
@@ -111,7 +136,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
               key={item.itemId}
               item={item}
               meetingId={id}
-              participants={participants}
+              participants={participantsList}
               onProcessed={handleProcessed}
             />
           ))}

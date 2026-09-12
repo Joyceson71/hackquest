@@ -28,4 +28,10 @@ export const handleUpload = async (event: any) => {
       body: JSON.stringify({ uploadUrl }),
     };
   }
+
+  return {
+    statusCode: 405,
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    body: JSON.stringify({ error: 'Method Not Allowed' }),
+  };
 };

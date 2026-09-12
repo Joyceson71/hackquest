@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { getCurrentUser, signOut } from 'aws-amplify/auth';
+import { getCurrentUser } from 'aws-amplify/auth';
 import { configureAmplify } from '@/lib/amplify';
 import { Loader2 } from 'lucide-react';
 
@@ -13,11 +13,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    checkAuth();
-  }, [pathname]);
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       await getCurrentUser();
       setIsAuthenticated(true);
@@ -30,7 +26,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         router.push('/login');
       }
     }
-  };
+  }, [pathname, router]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    checkAuth();
+  }, [checkAuth]);
 
   if (isAuthenticated === null) {
     return (

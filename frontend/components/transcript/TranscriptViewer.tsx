@@ -101,9 +101,14 @@ export default function TranscriptViewer({ meetingId }: TranscriptViewerProps) {
   }, []);
 
   useEffect(() => {
-    handleHighlight();
+    const timer = setTimeout(() => {
+      handleHighlight();
+    }, 50);
     window.addEventListener('hashchange', handleHighlight);
-    return () => window.removeEventListener('hashchange', handleHighlight);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('hashchange', handleHighlight);
+    };
   }, [handleHighlight]);
 
   return (

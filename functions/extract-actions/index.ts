@@ -103,8 +103,8 @@ export const handler = async (event: any) => {
 
 async function updateMeetingStatus(meetingId: string, status: string, errorMessage?: string) {
   const updateExpression = errorMessage
-    ? 'SET extractionStatus = :s, errorMessage = :e, extractedAt = :t'
-    : 'SET extractionStatus = :s, extractedAt = :t';
+    ? 'SET extractionStatus = :s, #status = :s, errorMessage = :e, extractedAt = :t'
+    : 'SET extractionStatus = :s, #status = :s, extractedAt = :t';
 
   const expressionAttributeValues: Record<string, any> = {
     ':s': { S: status },
@@ -118,6 +118,7 @@ async function updateMeetingStatus(meetingId: string, status: string, errorMessa
     TableName: TABLE_NAME,
     Key: { PK: { S: meetingId }, SK: { S: 'MEETING' } },
     UpdateExpression: updateExpression,
+    ExpressionAttributeNames: { '#status': 'status' },
     ExpressionAttributeValues: expressionAttributeValues,
   }));
 }
