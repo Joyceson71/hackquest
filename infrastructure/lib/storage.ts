@@ -24,7 +24,7 @@ export class StorageStack extends cdk.Stack {
       autoDeleteObjects: true,
       cors: [
         {
-          allowedMethods: [s3.HttpMethods.PUT],
+          allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET],
           allowedOrigins: ['*'], // Restricted to CloudFront domain in production via API
           allowedHeaders: ['*'],
         },
