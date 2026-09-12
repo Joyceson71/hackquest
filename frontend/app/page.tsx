@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, ArrowRight, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 
@@ -35,6 +36,8 @@ const itemVariants: Variants = {
 export default function Dashboard() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -60,23 +63,31 @@ export default function Dashboard() {
     fetchMeetings();
   }, []);
 
-  const handleDelete = async (e: React.MouseEvent, meetingId: string) => {
+  const confirmDelete = (e: React.MouseEvent, meetingId: string) => {
     e.stopPropagation();
-    if (!confirm('NUKE THIS MEETING?')) return;
+    setMeetingToDelete(meetingId);
+    setDeleteModalOpen(true);
+  };
+
+  const executeDelete = async () => {
+    if (!meetingToDelete) return;
     
     try {
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
-      const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingId}`, {
+      const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingToDelete}`, {
         method: 'DELETE',
       });
       if (res.ok) {
-        setMeetings((prev) => prev.filter(m => m.PK !== meetingId));
+        setMeetings((prev) => prev.filter(m => m.PK !== meetingToDelete));
       } else {
         alert('Failed to delete meeting');
       }
     } catch (err) {
       console.error('Error deleting meeting', err);
       alert('Error deleting meeting');
+    } finally {
+      setDeleteModalOpen(false);
+      setMeetingToDelete(null);
     }
   };
 
@@ -159,7 +170,7 @@ export default function Dashboard() {
                     <Button 
                       variant="ghost" 
                       className="h-10 w-10 p-0 text-foreground border-2 border-border hover:bg-destructive hover:text-background"
-                      onClick={(e) => handleDelete(e, m.PK)}
+                      onClick={(e) => confirmDelete(e, m.PK)}
                     >
                       <Trash2 className="h-5 w-5 stroke-[3]" />
                     </Button>
@@ -182,6 +193,36 @@ export default function Dashboard() {
           })}
         </motion.div>
       )}
+
+      <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+        <DialogContent className="border-4 border-border shadow-brutal bg-card">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-black uppercase text-foreground flex items-center gap-3">
+              <AlertTriangle className="h-8 w-8 text-destructive stroke-[3]" />
+              Nuke this meeting?
+            </DialogTitle>
+            <DialogDescription className="text-lg font-bold text-muted-foreground uppercase pt-2">
+              This action cannot be undone. This will permanently delete the meeting transcript and all extracted actions.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 gap-4 sm:justify-start">
+            <Button 
+              variant="destructive" 
+              onClick={executeDelete}
+              className="text-lg font-black uppercase shadow-brutal border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            >
+              NUKE IT
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
+              className="text-lg font-black uppercase shadow-brutal border-2 border-border bg-card text-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-muted"
+            >
+              CANCEL
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
