@@ -63,15 +63,47 @@ OUTPUT FORMAT:
     return responseBody.outputs[0].text;
   } catch (error: any) {
     if (error.name === 'ValidationException' || error.message?.includes('not allowed') || error.message?.includes('invalid')) {
-      console.warn("Bedrock is blocked in this account. Returning fallback demo extraction.");
-      return JSON.stringify({
-        extractedItems: [
-          { type: "TASK", rawText: "I'll have the API schema finalized by Thursday EOD. I'll share it in Confluence.", suggestedOwner: "Bob", suggestedDeadline: "2026-09-17T00:00:00.000Z", confidenceScore: 95, confidenceReason: "Clear commitment with deadline.", evidenceLineStart: 3, evidenceLineEnd: 3 },
-          { type: "DECISION", rawText: "Decision made — we're going with DynamoDB for the new service.", suggestedOwner: null, suggestedDeadline: null, confidenceScore: 90, confidenceReason: "Explicitly agreed upon by Alice and Charlie.", evidenceLineStart: 8, evidenceLineEnd: 8 },
-          { type: "TASK", rawText: "I'll have the GitHub Actions pipeline ready by Monday.", suggestedOwner: "Charlie", suggestedDeadline: "2026-09-21T00:00:00.000Z", confidenceScore: 90, confidenceReason: "Clear commitment to Alice's request.", evidenceLineStart: 10, evidenceLineEnd: 10 },
-          { type: "TASK", rawText: "I can start drafting the migration guide... need until next Wednesday to finish.", suggestedOwner: "Bob", suggestedDeadline: "2026-09-23T00:00:00.000Z", confidenceScore: 85, confidenceReason: "Clear commitment.", evidenceLineStart: 12, evidenceLineEnd: 12 }
-        ]
-      });
+      console.warn("Bedrock is blocked in this account. Using dynamic rule-based mock extraction.");
+      
+      const mockItems = [];
+      for (let i = 0; i < transcriptLines.length; i++) {
+        const line = transcriptLines[i];
+        const lower = line.toLowerCase();
+        
+        // Simple heuristic: if the line contains task-like keywords
+        if (lower.includes('will') || lower.includes("i'll") || lower.includes("can you") || lower.includes("need to")) {
+          // Attempt to extract the speaker name (assuming format "00:00:05 - Alice: ...")
+          const match = line.match(/- ([^:]+):/);
+          const owner = match ? match[1].trim() : null;
+          
+          mockItems.push({
+            type: lower.includes("decide") || lower.includes("decision") ? "DECISION" : "TASK",
+            rawText: line.replace(/^[0-9:\s-]+[^:]+:\s*/, ''), // Strip timestamp and speaker prefix for raw text
+            suggestedOwner: owner,
+            suggestedDeadline: null, // Hard to parse dates with regex, leave null
+            confidenceScore: 85,
+            confidenceReason: "Rule-based fallback extraction.",
+            evidenceLineStart: i,
+            evidenceLineEnd: i
+          });
+        }
+      }
+      
+      // If the heuristic found nothing, at least return one item so the dashboard isn't completely empty
+      if (mockItems.length === 0 && transcriptLines.length > 0) {
+        mockItems.push({
+          type: "TASK",
+          rawText: "Please review the transcript.",
+          suggestedOwner: null,
+          suggestedDeadline: null,
+          confidenceScore: 50,
+          confidenceReason: "Fallback item.",
+          evidenceLineStart: 0,
+          evidenceLineEnd: 0
+        });
+      }
+
+      return JSON.stringify({ extractedItems: mockItems });
     }
     throw error;
   }
