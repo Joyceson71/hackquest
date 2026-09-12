@@ -104,14 +104,14 @@ export default function Dashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex flex-col h-[calc(100vh-80px)] justify-center"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b-8 border-border pb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-4 border-border pb-6">
         <motion.div variants={itemVariants}>
-          <h1 className="text-5xl md:text-7xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
+          <h1 className="text-4xl md:text-5xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
             YOUR MEETINGS
           </h1>
-          <p className="text-xl font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block">
+          <p className="text-sm font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block">
             REVIEW EXTRACTED ACTIONS & BURN THE EVIDENCE
           </p>
         </motion.div>
@@ -119,26 +119,26 @@ export default function Dashboard() {
           <Button 
             size="lg" 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-primary hover:bg-primary text-background text-xl py-8 px-6 font-black uppercase shadow-brutal border-4 border-border transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            className="bg-primary hover:bg-primary text-background text-base py-6 px-6 font-black uppercase shadow-brutal border-4 border-border transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
           >
-            <Plus className="mr-2 h-6 w-6 stroke-[3]" />
+            <Plus className="mr-2 h-5 w-5 stroke-[3]" />
             UPLOAD NEW TRANSCRIPT
           </Button>
         </motion.div>
       </div>
 
       {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-12 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1">
-          <div className="bg-primary p-6 rounded-full inline-block border-4 border-border shadow-brutal mb-8">
-            <Loader2 className="h-16 w-16 text-background" />
+        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-8 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1 mt-4">
+          <div className="bg-primary p-4 rounded-full inline-block border-4 border-border shadow-brutal mb-6">
+            <Loader2 className="h-10 w-10 text-background" />
           </div>
-          <h2 className="text-4xl font-black uppercase mb-4">NOTHING HERE YET!</h2>
-          <p className="text-xl font-bold mb-8">
+          <h2 className="text-3xl font-black uppercase mb-3">NOTHING HERE YET!</h2>
+          <p className="text-base font-bold mb-6">
             FEED THE MACHINE. UPLOAD A TRANSCRIPT TO EXTRACT ACTION ITEMS.
           </p>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-secondary text-foreground hover:bg-secondary text-2xl py-8 px-12 font-black uppercase shadow-brutal border-4 border-border"
+            className="bg-secondary text-foreground hover:bg-secondary text-lg py-6 px-10 font-black uppercase shadow-brutal border-4 border-border"
           >
             GET STARTED
           </Button>

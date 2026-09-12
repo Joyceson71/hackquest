@@ -92,6 +92,7 @@ export class ApiStack extends cdk.Stack {
 
     const singleMeeting = meetings.addResource('{id}');
     singleMeeting.addMethod('GET', lambdaIntegration, authOpts);
+    singleMeeting.addMethod('PATCH', lambdaIntegration, authOpts);
     singleMeeting.addMethod('DELETE', lambdaIntegration, authOpts);
 
     const upload = singleMeeting.addResource('upload');
@@ -107,7 +108,25 @@ export class ApiStack extends cdk.Stack {
     confirmedActions.addMethod('GET', lambdaIntegration, authOpts);
 
     const singleAction = confirmedActions.addResource('{actionId}');
+    singleAction.addMethod('GET', lambdaIntegration, authOpts);
     singleAction.addMethod('PUT', lambdaIntegration, authOpts);
+    singleAction.addMethod('DELETE', lambdaIntegration, authOpts);
+
+    // Escalation sub-resources: /confirmed-actions/{actionId}/escalation/accept|decline
+    const escalationResource = singleAction.addResource('escalation');
+    const escalationAccept = escalationResource.addResource('accept');
+    escalationAccept.addMethod('POST', lambdaIntegration, authOpts);
+    const escalationDecline = escalationResource.addResource('decline');
+    escalationDecline.addMethod('POST', lambdaIntegration, authOpts);
+
+    // Escalations inbox: /meetings/{id}/escalations
+    const escalations = singleMeeting.addResource('escalations');
+    escalations.addMethod('GET', lambdaIntegration, authOpts);
+
+    // Participants: /meetings/{id}/participants/unavailable
+    const participants = singleMeeting.addResource('participants');
+    const unavailable = participants.addResource('unavailable');
+    unavailable.addMethod('POST', lambdaIntegration, authOpts);
 
     this.apiUrl = api.url;
 
