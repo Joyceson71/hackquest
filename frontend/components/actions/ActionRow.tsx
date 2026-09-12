@@ -48,28 +48,28 @@ export default function ActionRow({ action, meetingId, onStatusChange }: ActionR
 
   return (
     <>
-      <TableRow className="hover:bg-muted/30 transition-colors duration-150">
-        <TableCell className="w-8">
+      <TableRow className="bg-white hover:bg-muted transition-colors duration-150 border-b-4 border-black">
+        <TableCell className="w-12 border-r-4 border-black text-center">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-1 rounded hover:bg-muted transition-colors"
+            className="p-1 rounded bg-black text-white hover:bg-primary transition-colors shadow-brutal-sm border-2 border-black"
             aria-label={expanded ? 'Collapse corrections' : 'Expand corrections'}
           >
             {expanded
-              ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              ? <ChevronDown className="h-5 w-5" />
+              : <ChevronRight className="h-5 w-5" />
             }
           </button>
         </TableCell>
-        <TableCell className="max-w-xs">
-          <span className="line-clamp-2 text-sm" title={action.task}>{action.task}</span>
+        <TableCell className="max-w-xs border-r-4 border-black p-4">
+          <span className="line-clamp-2 text-lg font-bold uppercase text-black" title={action.task}>{action.task}</span>
         </TableCell>
-        <TableCell className="text-sm">{action.owner || '—'}</TableCell>
-        <TableCell className="text-sm whitespace-nowrap">{formatDate(action.deadline)}</TableCell>
-        <TableCell>
+        <TableCell className="text-lg font-bold text-black border-r-4 border-black uppercase p-4 bg-muted">{action.owner || '—'}</TableCell>
+        <TableCell className="text-lg font-bold text-black whitespace-nowrap border-r-4 border-black uppercase p-4 bg-muted">{formatDate(action.deadline)}</TableCell>
+        <TableCell className="p-4 border-r-4 border-black">
           <StatusDropdown value={action.status} onChange={(s) => onStatusChange(action.actionId, s)} />
         </TableCell>
-        <TableCell>
+        <TableCell className="p-4 bg-secondary">
           <EvidenceLink meetingId={meetingId} lineStart={action.evidenceLineStart} lineEnd={action.evidenceLineEnd} />
         </TableCell>
       </TableRow>

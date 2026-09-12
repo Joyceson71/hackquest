@@ -1,61 +1,62 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Syne:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * MeetingCompiler Dark Claymorphism + Maximalism Theme
+ * MeetingCompiler Neo-Brutalist / Maximalist Theme
  */
 
 :root {
-  /* Dark Maximalist Colors */
-  --background: #0F1117; /* Deep Blue-Black */
-  --foreground: #F8FAFC; /* White text */
+  /* High-Contrast Maximalist Colors */
+  --background: #FAEA48; /* Bright Yellow */
+  --foreground: #000000; /* Pure Black text */
   
-  --card: #181C27; /* Slightly lighter deep blue */
-  --card-foreground: #F8FAFC; 
+  --card: #FFFFFF; /* Pure White */
+  --card-foreground: #000000; 
   
-  --popover: #181C27;
-  --popover-foreground: #F8FAFC;
+  --popover: #FFFFFF;
+  --popover-foreground: #000000;
   
-  --primary: #4F8EF7; /* Electric Blue */
+  --primary: #FF2E93; /* Hot Pink */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #252B3B; /* Muted Slate */
-  --secondary-foreground: #F8FAFC;
+  --secondary: #00E5FF; /* Cyan */
+  --secondary-foreground: #000000;
   
-  --muted: #1E2333; 
-  --muted-foreground: #94A3B8;
+  --muted: #E2E8F0; 
+  --muted-foreground: #475569;
   
-  --accent: #E879F9; /* Neon Fuchsia */
+  --accent: #FF7B00; /* Neon Orange */
   --accent-foreground: #FFFFFF;
   
-  --destructive: #F43F5E; /* Neon Rose */
+  --destructive: #FF0000; /* Pure Red */
   --destructive-foreground: #FFFFFF;
   
-  --border: rgba(255,255,255,0.05);
-  --input: rgba(0,0,0,0.2);
-  --ring: #4F8EF7;
+  --border: #000000; /* Heavy Black Borders */
+  --input: #FFFFFF;
+  --ring: #FF2E93;
 
   /* Status / Confidence colors */
-  --color-success: #10B981; /* Emerald */
-  --color-warning: #F59E0B; /* Amber */
-  --color-decision: #8B5CF6; /* Violet */
-  --color-task: #14B8A6; /* Teal */
+  --color-success: #00E676; /* Bright Green */
+  --color-warning: #FFEA00; /* Yellow */
+  --color-decision: #7C3AED; /* Purple */
+  --color-task: #FF2E93; /* Hot Pink */
 
-  /* Exaggerated Radii for Claymorphism */
-  --radius: 1.5rem;
+  /* Brutalist Geometry */
+  --radius: 0px;
   
-  /* Dark Claymorphism Shadows */
-  --shadow-clay: 12px 12px 24px rgba(0,0,0,0.6), inset 2px 2px 4px rgba(255,255,255,0.05), inset -4px -4px 8px rgba(0,0,0,0.4);
-  --shadow-clay-sm: 6px 6px 12px rgba(0,0,0,0.6), inset 1px 1px 2px rgba(255,255,255,0.05), inset -2px -2px 4px rgba(0,0,0,0.4);
-  --shadow-clay-inset: inset 6px 6px 12px rgba(0,0,0,0.5), inset -2px -2px 4px rgba(255,255,255,0.05);
+  /* Hard Black Shadows */
+  --shadow-brutal: 4px 4px 0px 0px #000000;
+  --shadow-brutal-sm: 2px 2px 0px 0px #000000;
+  --shadow-brutal-lg: 8px 8px 0px 0px #000000;
+  --shadow-brutal-inset: inset 4px 4px 0px 0px #000000;
 }
 
 @theme inline {
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Syne", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -81,16 +82,17 @@
   --color-decision: var(--color-decision);
   --color-task: var(--color-task);
 
-  --radius-sm: 0.75rem;
-  --radius-md: 1rem;
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: 2rem;
-  --radius-2xl: 2.5rem;
-  --radius-3xl: 3rem;
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
   
-  --shadow-clay: var(--shadow-clay);
-  --shadow-clay-sm: var(--shadow-clay-sm);
-  --shadow-clay-inset: var(--shadow-clay-inset);
+  --shadow-clay: var(--shadow-brutal); /* override old tokens for compat */
+  --shadow-clay-sm: var(--shadow-brutal-sm);
+  --shadow-brutal: var(--shadow-brutal);
+  --shadow-brutal-lg: var(--shadow-brutal-lg);
 }
 
 @layer base {
@@ -100,8 +102,10 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    /* Soft noise background for texture (Maximalist touch) */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    /* Dotted background pattern for maximalism */
+    background-image: radial-gradient(#000000 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    background-position: 0 0;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -114,7 +118,16 @@
     outline-offset: 4px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tight;
+    @apply font-heading font-black tracking-tighter uppercase;
+  }
+  
+  /* Brutalist button hover effects globally */
+  button, .btn, a, .card-hover {
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  button:not(:disabled):active, .btn:not(:disabled):active, .card-hover:active {
+    transform: translate(4px, 4px) !important;
+    box-shadow: 0px 0px 0px 0px #000000 !important;
   }
 }
 
@@ -136,5 +149,4 @@
 .evidence-highlight {
   animation: evidence-fade 3s ease-out forwards;
   border-left: 6px solid var(--primary);
-  border-radius: 0 1rem 1rem 0;
 }

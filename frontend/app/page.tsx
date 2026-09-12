@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
-import { Card, CardHeader, CardTitle, CardContent, CardAction, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Calendar, ArrowRight, Trash2 } from 'lucide-react';
+import { Loader2, Plus, ArrowRight, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 interface Meeting {
   PK: string;
@@ -13,6 +13,24 @@ interface Meeting {
   createdAt: string;
   status: string;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0, rotate: -2 },
+  visible: { 
+    y: 0, 
+    opacity: 1, 
+    rotate: 0,
+    transition: { type: 'spring', stiffness: 300, damping: 20 }
+  }
+};
 
 export default function Dashboard() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -26,7 +44,6 @@ export default function Dashboard() {
         const res = await authenticatedFetch(`${apiUrl}/meetings`);
         if (res.ok) {
           const data = await res.json();
-          // Sort by newest first
           const sorted = data.sort((a: Meeting, b: Meeting) => {
             const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
             const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -45,7 +62,7 @@ export default function Dashboard() {
 
   const handleDelete = async (e: React.MouseEvent, meetingId: string) => {
     e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this meeting?')) return;
+    if (!confirm('NUKE THIS MEETING?')) return;
     
     try {
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
@@ -66,78 +83,105 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black text-foreground">Your Meetings</h1>
-          <p className="text-foreground/70 mt-1">Review AI-extracted actions from past meetings.</p>
-        </div>
-        <Button size="lg" onClick={() => router.push('/meetings/new')} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Plus className="mr-2 h-5 w-5" />
-          Upload Transcript
-        </Button>
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12"
+    >
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b-8 border-black pb-8">
+        <motion.div variants={itemVariants}>
+          <h1 className="text-5xl md:text-7xl font-black text-black uppercase tracking-tighter drop-shadow-[-4px_4px_0px_#FF2E93]">
+            YOUR MEETINGS
+          </h1>
+          <p className="text-xl font-bold mt-2 px-2 py-1 bg-black text-white inline-block">
+            REVIEW EXTRACTED ACTIONS & BURN THE EVIDENCE
+          </p>
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <Button 
+            size="lg" 
+            onClick={() => router.push('/meetings/new')} 
+            className="bg-primary hover:bg-primary text-white text-xl py-8 px-6 font-black uppercase shadow-brutal border-4 border-black transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+          >
+            <Plus className="mr-2 h-6 w-6 stroke-[3]" />
+            UPLOAD NEW TRANSCRIPT
+          </Button>
+        </motion.div>
       </div>
 
       {meetings.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="bg-primary/20 p-4 rounded-full mb-4">
-            <Calendar className="h-10 w-10 text-primary" />
+        <motion.div variants={itemVariants} className="bg-white border-8 border-black p-12 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1">
+          <div className="bg-primary p-6 rounded-full inline-block border-4 border-black shadow-brutal mb-8">
+            <Loader2 className="h-16 w-16 text-white" />
           </div>
-          <CardTitle className="text-2xl mb-2">No meetings yet!</CardTitle>
-          <CardDescription className="text-base max-w-sm mb-6">
-            Upload your first meeting transcript and let the AI extract your action items automatically.
-          </CardDescription>
-          <Button onClick={() => router.push('/meetings/new')} variant="default">
-            Get Started
+          <h2 className="text-4xl font-black uppercase mb-4">NOTHING HERE YET!</h2>
+          <p className="text-xl font-bold mb-8">
+            FEED THE MACHINE. UPLOAD A TRANSCRIPT TO EXTRACT ACTION ITEMS.
+          </p>
+          <Button 
+            onClick={() => router.push('/meetings/new')} 
+            className="bg-secondary text-black hover:bg-secondary text-2xl py-8 px-12 font-black uppercase shadow-brutal border-4 border-black"
+          >
+            GET STARTED
           </Button>
-        </Card>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {meetings.map((m) => {
+        <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {meetings.map((m, idx) => {
             const dateStr = m.createdAt || new Date().toISOString();
             const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'
             });
+            // Rotate cards slightly for a chaotic maximalist feel
+            const rotation = idx % 2 === 0 ? 1 : -1;
+
             return (
-              <Card key={m.PK} className="hover:-translate-y-1 transition-transform cursor-pointer" onClick={() => router.push(`/meetings/${m.PK}/transcript`)}>
-                <CardHeader className="relative">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-bold text-muted-foreground">{date}</span>
-                    </div>
+              <motion.div 
+                key={m.PK}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05, rotate: 0 }}
+                className="card-hover bg-white border-4 border-black p-6 shadow-brutal cursor-pointer flex flex-col justify-between h-[250px]"
+                style={{ rotate: `${rotation}deg` }}
+                onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4 border-b-4 border-black pb-4">
+                    <span className="text-sm font-black uppercase bg-accent text-white px-3 py-1 border-2 border-black">
+                      {date}
+                    </span>
                     <Button 
                       variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 z-10"
+                      className="h-10 w-10 p-0 text-black border-2 border-black hover:bg-destructive hover:text-white"
                       onClick={(e) => handleDelete(e, m.PK)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-5 w-5 stroke-[3]" />
                     </Button>
                   </div>
-                  <CardTitle className="text-xl line-clamp-2 pr-8">{m.title || 'Untitled Meeting'}</CardTitle>
-                </CardHeader>
-                <CardContent className="mt-4 pt-4 border-t-2 border-border/50">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs font-bold px-2 py-1 rounded-full bg-secondary/20 text-secondary">
-                      {m.status || 'PROCESSED'}
-                    </div>
-                    <div className="text-primary font-bold flex items-center text-sm group-hover:underline">
-                      Open <ArrowRight className="ml-1 h-4 w-4" />
-                    </div>
+                  <h3 className="text-2xl font-black uppercase line-clamp-2 leading-tight">
+                    {m.title || 'UNTITLED MEETING'}
+                  </h3>
+                </div>
+                
+                <div className="mt-4 pt-4 flex items-center justify-between">
+                  <div className="text-sm font-black px-3 py-1 bg-secondary text-black border-2 border-black uppercase">
+                    {m.status || 'PROCESSED'}
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="text-primary font-black uppercase flex items-center group">
+                    OPEN <ArrowRight className="ml-2 h-5 w-5 stroke-[3] group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

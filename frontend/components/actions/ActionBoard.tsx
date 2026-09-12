@@ -60,67 +60,67 @@ export default function ActionBoard({ actions, meetingId, participants, onStatus
 
   if (actions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 bg-card rounded-xl border border-border text-center">
-        <svg className="h-12 w-12 text-muted-foreground/50 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+      <div className="flex flex-col items-center justify-center py-16 bg-white border-4 border-black shadow-brutal text-center">
+        <svg className="h-16 w-16 text-primary mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <h3 className="text-lg font-semibold text-foreground">No confirmed actions yet.</h3>
-        <p className="text-sm text-muted-foreground mt-1 mb-4">
+        <h3 className="text-3xl font-black text-black uppercase">NO CONFIRMED ACTIONS YET</h3>
+        <p className="text-lg text-black/70 font-bold mt-2 mb-8 uppercase">
           Go to the Review screen to confirm proposed items.
         </p>
-        <Button variant="default" size="sm" onClick={() => window.location.href = `/meetings/${meetingId}/review`}>
-          Review proposed items <ArrowRight className="h-4 w-4 ml-1.5" />
+        <Button size="lg" className="bg-secondary text-black border-2 border-black font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-secondary" onClick={() => window.location.href = `/meetings/${meetingId}/review`}>
+          REVIEW PROPOSED ITEMS <ArrowRight className="h-5 w-5 ml-2 stroke-[3]" />
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border rounded-lg p-3">
-        <div className="flex gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-muted border-4 border-black p-4 shadow-brutal-sm">
+        <div className="flex gap-4">
           <Select value={filterOwner} onValueChange={(val) => setFilterOwner(val || '__all__')}>
-            <SelectTrigger className="w-[160px] h-8 text-xs">
-              <SelectValue placeholder="All Owners" />
+            <SelectTrigger className="w-[200px] h-10 border-2 border-black font-bold uppercase shadow-brutal-sm">
+              <SelectValue placeholder="ALL OWNERS" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__all__">All Owners</SelectItem>
+            <SelectContent className="border-4 border-black font-bold shadow-brutal">
+              <SelectItem value="__all__">ALL OWNERS</SelectItem>
               {owners.map((o) => (
                 <SelectItem key={o} value={o}>{o}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || '__all__')}>
-            <SelectTrigger className="w-[160px] h-8 text-xs">
-              <SelectValue placeholder="All Statuses" />
+            <SelectTrigger className="w-[200px] h-10 border-2 border-black font-bold uppercase shadow-brutal-sm">
+              <SelectValue placeholder="ALL STATUSES" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__all__">All Statuses</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-              <SelectItem value="DONE">Done</SelectItem>
-              <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            <SelectContent className="border-4 border-black font-bold shadow-brutal">
+              <SelectItem value="__all__">ALL STATUSES</SelectItem>
+              <SelectItem value="PENDING">PENDING</SelectItem>
+              <SelectItem value="IN_PROGRESS">IN PROGRESS</SelectItem>
+              <SelectItem value="DONE">DONE</SelectItem>
+              <SelectItem value="CANCELLED">CANCELLED</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <Button variant="outline" size="sm" onClick={handleExportCSV}>
-          <Download className="h-4 w-4 mr-1.5" />
-          Export CSV
+        <Button size="lg" className="bg-primary text-white border-2 border-black font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-primary" onClick={handleExportCSV}>
+          <Download className="h-5 w-5 mr-2 stroke-[3]" />
+          EXPORT CSV
         </Button>
       </div>
 
       {/* Table */}
-      <div className="bg-card rounded-lg border border-border overflow-x-auto">
+      <div className="bg-white border-4 border-black shadow-brutal overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead className="w-8"></TableHead>
-              <TableHead className="font-semibold">Task</TableHead>
-              <TableHead className="font-semibold">Owner</TableHead>
-              <TableHead className="font-semibold">Due Date</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Evidence</TableHead>
+            <TableRow className="bg-accent text-white border-b-4 border-black hover:bg-accent">
+              <TableHead className="w-12 border-r-4 border-black"></TableHead>
+              <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">TASK</TableHead>
+              <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">OWNER</TableHead>
+              <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">DUE DATE</TableHead>
+              <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">STATUS</TableHead>
+              <TableHead className="font-black text-black text-lg uppercase">EVIDENCE</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
