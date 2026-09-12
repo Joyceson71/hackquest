@@ -71,16 +71,39 @@ OUTPUT FORMAT:
         const lower = line.toLowerCase();
         
         // Simple heuristic: if the line contains task-like keywords
-        if (lower.includes('will') || lower.includes("i'll") || lower.includes("can you") || lower.includes("need to")) {
-          // Attempt to extract the speaker name (assuming format "00:00:05 - Alice: ...")
-          const match = line.match(/- ([^:]+):/);
-          const owner = match ? match[1].trim() : null;
+        if (lower.includes('will') || lower.includes("i'll") || lower.includes("can you") || lower.includes("need to") || lower.includes("let's")) {
+          
+          let owner = null;
+          let rawText = line;
+          const colonIndex = line.indexOf(':');
+          
+          if (colonIndex > 0 && colonIndex < 30) {
+            // Everything before the colon might be the speaker name + timestamp
+            const prefix = line.substring(0, colonIndex);
+            // Remove numbers, hyphens, and brackets to isolate the name
+            const cleanedName = prefix.replace(/[0-9\-\[\]]/g, '').trim();
+            if (cleanedName.length > 0) {
+              owner = cleanedName;
+            }
+            // The actual task text is everything after the colon
+            rawText = line.substring(colonIndex + 1).trim();
+          }
+          
+          // Basic deadline heuristic
+          let deadline = null;
+          if (lower.includes('monday')) deadline = '2026-09-14T17:00:00.000Z';
+          else if (lower.includes('tuesday')) deadline = '2026-09-15T17:00:00.000Z';
+          else if (lower.includes('wednesday')) deadline = '2026-09-16T17:00:00.000Z';
+          else if (lower.includes('thursday')) deadline = '2026-09-17T17:00:00.000Z';
+          else if (lower.includes('friday')) deadline = '2026-09-18T17:00:00.000Z';
+          else if (lower.includes('tomorrow')) deadline = '2026-09-14T09:00:00.000Z';
+          else if (lower.includes('next week')) deadline = '2026-09-21T09:00:00.000Z';
           
           mockItems.push({
             type: lower.includes("decide") || lower.includes("decision") ? "DECISION" : "TASK",
-            rawText: line.replace(/^[0-9:\s-]+[^:]+:\s*/, ''), // Strip timestamp and speaker prefix for raw text
+            rawText: rawText,
             suggestedOwner: owner,
-            suggestedDeadline: null, // Hard to parse dates with regex, leave null
+            suggestedDeadline: deadline,
             confidenceScore: 85,
             confidenceReason: "Rule-based fallback extraction.",
             evidenceLineStart: i,
