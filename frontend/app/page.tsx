@@ -5,7 +5,7 @@ import { authenticatedFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus, ArrowRight, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 interface Meeting {
   PK: string;
@@ -14,7 +14,7 @@ interface Meeting {
   status: string;
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -22,7 +22,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0, rotate: -2 },
   visible: { 
     y: 0, 
