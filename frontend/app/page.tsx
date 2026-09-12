@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
+import { useRole } from '@/lib/role-context';
+import RoleGuard from '@/components/RoleGuard';
 
 interface Meeting {
   PK: string;
@@ -39,6 +41,14 @@ export default function Dashboard() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
   const router = useRouter();
+  const { role } = useRole();
+
+  // Redirect employees away from admin dashboard
+  useEffect(() => {
+    if (role === 'employee') {
+      router.replace('/employee');
+    }
+  }, [role, router]);
 
   useEffect(() => {
     const fetchMeetings = async () => {
