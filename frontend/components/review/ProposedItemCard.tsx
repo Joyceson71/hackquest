@@ -45,7 +45,7 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
   const handleAction = async (action: 'CONFIRM' | 'REJECT', overrides?: { task?: string; owner?: string; deadline?: string }) => {
     setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
       await authenticatedFetch(`${apiUrl}/meetings/${meetingId}/proposed-items/${item.itemId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

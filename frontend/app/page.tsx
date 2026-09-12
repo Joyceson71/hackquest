@@ -22,7 +22,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchMeetings = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
         const res = await authenticatedFetch(`${apiUrl}/meetings`);
         if (res.ok) {
           const data = await res.json();
@@ -48,7 +48,7 @@ export default function Dashboard() {
     if (!confirm('Are you sure you want to delete this meeting?')) return;
     
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
       const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingId}`, {
         method: 'DELETE',
       });

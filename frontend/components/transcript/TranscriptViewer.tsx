@@ -37,7 +37,7 @@ export default function TranscriptViewer({ meetingId }: TranscriptViewerProps) {
     const loadTranscriptText = async () => {
       try {
         setLoadingText(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
         
         // 1. Get meeting metadata which includes the presigned URL
         const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingId}`);

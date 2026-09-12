@@ -17,7 +17,7 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
 
   const fetchItems = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
 
       // Also fetch meeting status
       const meetingRes = await authenticatedFetch(`${apiUrl}/meetings/${id}`);

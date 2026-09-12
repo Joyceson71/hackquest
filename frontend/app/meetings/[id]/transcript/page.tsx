@@ -16,7 +16,7 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
 
     const checkStatus = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
         const res = await authenticatedFetch(`${apiUrl}/meetings/${id}`);
         if (res.ok) {
           const data = await res.json();
