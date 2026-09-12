@@ -254,14 +254,14 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                   Mark {targetName} Unavailable?
                 </DialogTitle>
                 <DialogDescription className="text-sm font-bold text-muted-foreground pt-2 space-y-2">
-                  <p>
+                  <span className="block">
                     This will immediately escalate all open actions owned by{' '}
                     <span className="font-black text-foreground">{targetName}</span>{' '}
                     and suggest a replacement owner for each.
-                  </p>
-                  <p className="text-xs">
+                  </span>
+                  <span className="block text-xs">
                     The original owner and missed-deadline history will be permanently retained in each action's audit trail.
-                  </p>
+                  </span>
                 </DialogDescription>
               </DialogHeader>
 
@@ -306,13 +306,13 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                   Escalations Triggered
                 </DialogTitle>
                 <DialogDescription className="pt-2 text-sm font-bold text-muted-foreground space-y-2">
-                  <p>
+                  <span className="block">
                     <span className="font-black text-foreground">{result.escalatedActions} action{result.escalatedActions !== 1 ? 's' : ''}</span>{' '}
                     owned by <span className="font-black text-foreground">{targetName}</span> have been escalated.
-                  </p>
-                  <p className="text-xs">
+                  </span>
+                  <span className="block text-xs">
                     Each suggested replacement owner will see the escalation in the Escalation Inbox and must explicitly accept or decline ownership.
-                  </p>
+                  </span>
                 </DialogDescription>
               </DialogHeader>
 
