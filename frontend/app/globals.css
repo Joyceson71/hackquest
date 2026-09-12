@@ -8,34 +8,34 @@
  */
 
 :root {
-  /* High-Contrast Maximalist Colors */
-  --background: #FAEA48; /* Bright Yellow */
-  --foreground: #000000; /* Pure Black text */
+  /* High-Contrast Dark Maximalist Colors */
+  --background: #000000; /* Pure Black */
+  --foreground: #FFFFFF; /* Pure White text */
   
-  --card: #FFFFFF; /* Pure White */
-  --card-foreground: #000000; 
+  --card: #121212; /* Dark Gray */
+  --card-foreground: #FFFFFF; 
   
-  --popover: #FFFFFF;
-  --popover-foreground: #000000;
+  --popover: #121212;
+  --popover-foreground: #FFFFFF;
   
   --primary: #FF2E93; /* Hot Pink */
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #000000;
   
   --secondary: #00E5FF; /* Cyan */
   --secondary-foreground: #000000;
   
-  --muted: #E2E8F0; 
-  --muted-foreground: #475569;
+  --muted: #2A2A2A; 
+  --muted-foreground: #A0A0A0;
   
-  --accent: #FF7B00; /* Neon Orange */
-  --accent-foreground: #FFFFFF;
+  --accent: #FFEA00; /* Bright Yellow */
+  --accent-foreground: #000000;
   
   --destructive: #FF0000; /* Pure Red */
   --destructive-foreground: #FFFFFF;
   
-  --border: #000000; /* Heavy Black Borders */
-  --input: #FFFFFF;
-  --ring: #FF2E93;
+  --border: #FFFFFF; /* Heavy White Borders */
+  --input: #1A1A1A;
+  --ring: #00E5FF;
 
   /* Status / Confidence colors */
   --color-success: #00E676; /* Bright Green */
@@ -46,11 +46,11 @@
   /* Brutalist Geometry */
   --radius: 0px;
   
-  /* Hard Black Shadows */
-  --shadow-brutal: 4px 4px 0px 0px #000000;
-  --shadow-brutal-sm: 2px 2px 0px 0px #000000;
-  --shadow-brutal-lg: 8px 8px 0px 0px #000000;
-  --shadow-brutal-inset: inset 4px 4px 0px 0px #000000;
+  /* Hard Shadows - Using bright neon colors for Dark Maximalism */
+  --shadow-brutal: 4px 4px 0px 0px #FF2E93;
+  --shadow-brutal-sm: 2px 2px 0px 0px #00E5FF;
+  --shadow-brutal-lg: 8px 8px 0px 0px #FFEA00;
+  --shadow-brutal-inset: inset 4px 4px 0px 0px #FF2E93;
 }
 
 @theme inline {
@@ -103,7 +103,7 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
     /* Dotted background pattern for maximalism */
-    background-image: radial-gradient(#000000 1.5px, transparent 1.5px);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
     background-size: 24px 24px;
     background-position: 0 0;
   }
@@ -127,7 +127,7 @@
   }
   button:not(:disabled):active, .btn:not(:disabled):active, .card-hover:active {
     transform: translate(4px, 4px) !important;
-    box-shadow: 0px 0px 0px 0px #000000 !important;
+    box-shadow: 0px 0px 0px 0px transparent !important;
   }
 }
 

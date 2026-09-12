@@ -50,11 +50,11 @@ export default function ActionRow({ action, meetingId, onStatusChange, onDeleteA
 
   return (
     <>
-      <TableRow className="bg-white hover:bg-muted transition-colors duration-150 border-b-4 border-black">
-        <TableCell className="w-12 border-r-4 border-black text-center">
+      <TableRow className="bg-card hover:bg-muted transition-colors duration-150 border-b-4 border-border">
+        <TableCell className="w-12 border-r-4 border-border text-center">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-1 rounded bg-black text-white hover:bg-primary transition-colors shadow-brutal-sm border-2 border-black"
+            className="p-1 rounded bg-foreground text-background hover:bg-primary transition-colors shadow-brutal-sm border-2 border-border"
             aria-label={expanded ? 'Collapse corrections' : 'Expand corrections'}
           >
             {expanded
@@ -63,15 +63,15 @@ export default function ActionRow({ action, meetingId, onStatusChange, onDeleteA
             }
           </button>
         </TableCell>
-        <TableCell className="max-w-xs border-r-4 border-black p-4">
-          <span className="line-clamp-2 text-lg font-bold uppercase text-black" title={action.task}>{action.task}</span>
+        <TableCell className="max-w-xs border-r-4 border-border p-4">
+          <span className="line-clamp-2 text-lg font-bold uppercase text-foreground" title={action.task}>{action.task}</span>
         </TableCell>
-        <TableCell className="text-lg font-bold text-black border-r-4 border-black uppercase p-4 bg-muted">{action.owner || '—'}</TableCell>
-        <TableCell className="text-lg font-bold text-black whitespace-nowrap border-r-4 border-black uppercase p-4 bg-muted">{formatDate(action.deadline)}</TableCell>
-        <TableCell className="p-4 border-r-4 border-black">
+        <TableCell className="text-lg font-bold text-foreground border-r-4 border-border uppercase p-4 bg-muted">{action.owner || '—'}</TableCell>
+        <TableCell className="text-lg font-bold text-foreground whitespace-nowrap border-r-4 border-border uppercase p-4 bg-muted">{formatDate(action.deadline)}</TableCell>
+        <TableCell className="p-4 border-r-4 border-border">
           <StatusDropdown value={action.status} onChange={(s) => onStatusChange(action.actionId, s)} />
         </TableCell>
-        <TableCell className="p-4 border-r-4 border-black bg-secondary">
+        <TableCell className="p-4 border-r-4 border-border bg-secondary">
           <EvidenceLink meetingId={meetingId} lineStart={action.evidenceLineStart} lineEnd={action.evidenceLineEnd} />
         </TableCell>
         <TableCell className="p-4 text-center">
@@ -79,7 +79,7 @@ export default function ActionRow({ action, meetingId, onStatusChange, onDeleteA
             variant="ghost" 
             size="icon" 
             onClick={() => onDeleteAction(action.actionId)}
-            className="h-10 w-10 border-2 border-black shadow-brutal-sm bg-white text-black hover:bg-destructive hover:text-white transition-colors"
+            className="h-10 w-10 border-2 border-border shadow-brutal-sm bg-card text-foreground hover:bg-destructive hover:text-background transition-colors"
           >
             <Trash2 className="h-5 w-5 stroke-[3]" />
           </Button>
@@ -87,7 +87,7 @@ export default function ActionRow({ action, meetingId, onStatusChange, onDeleteA
       </TableRow>
       {expanded && (
         <TableRow>
-          <TableCell colSpan={7} className="bg-muted/20 px-8 py-4 border-b-4 border-black">
+          <TableCell colSpan={7} className="bg-muted px-8 py-4 border-b-4 border-border">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <CorrectionTimeline corrections={action.corrections || []} />
               
