@@ -36,14 +36,14 @@ export default function UserMenu() {
     <div className="flex items-center gap-3">
       {/* Role badge */}
       <div
-        className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold ${
+        className={`hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 text-xs font-black uppercase shadow-brutal-sm ${
           isAdmin
-            ? 'text-violet-400 bg-violet-400/10 border-violet-400/20'
-            : 'text-blue-400 bg-blue-400/10 border-blue-400/20'
+            ? 'text-background bg-primary border-border'
+            : 'text-background bg-secondary border-border'
         }`}
       >
-        {isAdmin ? <ShieldCheck className="h-3 w-3" /> : <User className="h-3 w-3" />}
-        {isAdmin ? 'Admin' : 'Employee'}
+        {isAdmin ? <ShieldCheck className="h-3 w-3 stroke-[3]" /> : <User className="h-3 w-3 stroke-[3]" />}
+        {isAdmin ? 'ADMIN' : 'EMPLOYEE'}
       </div>
 
       <span className="text-sm text-muted-foreground hidden sm:inline-block max-w-[140px] truncate">
@@ -54,10 +54,10 @@ export default function UserMenu() {
         variant="outline"
         size="sm"
         onClick={handleSignOut}
-        className="bg-white/5 border-white/10 hover:bg-white/10 rounded-xl"
+        className="font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
       >
-        <LogOut className="h-4 w-4 mr-2" />
-        Sign Out
+        <LogOut className="h-4 w-4 mr-2 stroke-[3]" />
+        SIGN OUT
       </Button>
     </div>
   );
