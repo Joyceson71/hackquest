@@ -1,4 +1,4 @@
-import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,9 +23,12 @@ export const handler = async (event: any) => {
     };
 
     if (path === '/meetings' && method === 'GET') {
-      // NOTE: For MVP, using a global secondary index or scan to get all meetings
-      // Usually we'd query by an index. Here we return a simple mock response to avoid complex GSI setup for MVP.
-      return { statusCode: 200, headers, body: JSON.stringify([{ id: 'test-meeting', title: 'Sample Meeting' }]) };
+      const { Items } = await docClient.send(new ScanCommand({
+        TableName: TABLE_NAME,
+        FilterExpression: 'SK = :sk',
+        ExpressionAttributeValues: { ':sk': { S: 'MEETING' } },
+      }));
+      return { statusCode: 200, headers, body: JSON.stringify(Items || []) };
     }
 
     if (path === '/meetings' && method === 'POST') {
