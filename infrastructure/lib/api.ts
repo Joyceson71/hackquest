@@ -61,8 +61,8 @@ export class ApiStack extends cdk.Stack {
     // Grant DynamoDB read/write to fn-api
     props.mainTable.grantReadWriteData(serveApiFn);
 
-    // Grant S3 write for presigned PUT URLs
-    props.transcriptsBucket.grantWrite(serveApiFn);
+    // Grant S3 read/write for presigned PUT/GET URLs
+    props.transcriptsBucket.grantReadWrite(serveApiFn);
 
     // API Gateway (REST API with Cognito Authorizer)
     const api = new apigw.RestApi(this, 'MeetingCompilerApi', {
@@ -92,6 +92,7 @@ export class ApiStack extends cdk.Stack {
 
     const singleMeeting = meetings.addResource('{id}');
     singleMeeting.addMethod('GET', lambdaIntegration, authOpts);
+    singleMeeting.addMethod('DELETE', lambdaIntegration, authOpts);
 
     const upload = singleMeeting.addResource('upload');
     upload.addMethod('POST', lambdaIntegration, authOpts);
