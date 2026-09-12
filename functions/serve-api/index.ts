@@ -1,4 +1,4 @@
-import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand, DeleteItemCommand } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -78,6 +78,14 @@ export const handler = async (event: any) => {
       }
       
       return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItem) };
+    }
+
+    if (meetingId && path === `/meetings/${meetingId}` && method === 'DELETE') {
+      await docClient.send(new DeleteItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: meetingId }, SK: { S: 'MEETING' } }
+      }));
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
     }
 
     if (meetingId && path === `/meetings/${meetingId}/proposed-items` && method === 'GET') {

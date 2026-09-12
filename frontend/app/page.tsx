@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { Card, CardHeader, CardTitle, CardContent, CardAction, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus, Calendar, ArrowRight } from 'lucide-react';
+import { Loader2, Plus, Calendar, ArrowRight, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface Meeting {
@@ -42,6 +42,26 @@ export default function Dashboard() {
     };
     fetchMeetings();
   }, []);
+
+  const handleDelete = async (e: React.MouseEvent, meetingId: string) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this meeting?')) return;
+    
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setMeetings((prev) => prev.filter(m => m.PK !== meetingId));
+      } else {
+        alert('Failed to delete meeting');
+      }
+    } catch (err) {
+      console.error('Error deleting meeting', err);
+      alert('Error deleting meeting');
+    }
+  };
 
   if (loading) {
     return (
@@ -86,12 +106,22 @@ export default function Dashboard() {
             });
             return (
               <Card key={m.PK} className="hover:-translate-y-1 transition-transform cursor-pointer" onClick={() => router.push(`/meetings/${m.PK}/transcript`)}>
-                <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-bold text-muted-foreground">{date}</span>
+                <CardHeader className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-bold text-muted-foreground">{date}</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 z-10"
+                      onClick={(e) => handleDelete(e, m.PK)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <CardTitle className="text-xl line-clamp-2">{m.title || 'Untitled Meeting'}</CardTitle>
+                  <CardTitle className="text-xl line-clamp-2 pr-8">{m.title || 'Untitled Meeting'}</CardTitle>
                 </CardHeader>
                 <CardContent className="mt-4 pt-4 border-t-2 border-border/50">
                   <div className="flex items-center justify-between">
