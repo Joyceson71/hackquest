@@ -49,6 +49,21 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
     }
   };
 
+  const handleDeleteAction = async (actionId: string) => {
+    if (!confirm('NUKE THIS ACTION?')) return;
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      await authenticatedFetch(`${apiUrl}/meetings/${id}/confirmed-actions/${actionId}`, {
+        method: 'DELETE',
+      });
+      // Optimistic update
+      setActions((prev) => prev.filter((a) => a.actionId !== actionId));
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete action');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
@@ -72,6 +87,7 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
         meetingId={id}
         participants={participants}
         onStatusChange={handleStatusChange}
+        onDeleteAction={handleDeleteAction}
       />
     </div>
   );

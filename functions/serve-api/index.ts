@@ -168,6 +168,15 @@ export const handler = async (event: any) => {
       return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
     }
 
+    if (meetingId && path.includes('/confirmed-actions/') && method === 'DELETE') {
+      const actionId = event.pathParameters?.actionId;
+      await docClient.send(new DeleteItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } }
+      }));
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true }) };
+    }
+
     return { statusCode: 404, headers, body: JSON.stringify({ error: 'Route not found' }) };
 
   } catch (error) {

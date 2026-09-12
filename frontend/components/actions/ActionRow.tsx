@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import StatusDropdown from './StatusDropdown';
 import EvidenceLink from './EvidenceLink';
 import CorrectionTimeline, { Correction } from './CorrectionTimeline';
@@ -41,9 +42,10 @@ interface ActionRowProps {
   action: ConfirmedAction;
   meetingId: string;
   onStatusChange: (actionId: string, newStatus: string) => void;
+  onDeleteAction: (actionId: string) => void;
 }
 
-export default function ActionRow({ action, meetingId, onStatusChange }: ActionRowProps) {
+export default function ActionRow({ action, meetingId, onStatusChange, onDeleteAction }: ActionRowProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -69,13 +71,23 @@ export default function ActionRow({ action, meetingId, onStatusChange }: ActionR
         <TableCell className="p-4 border-r-4 border-black">
           <StatusDropdown value={action.status} onChange={(s) => onStatusChange(action.actionId, s)} />
         </TableCell>
-        <TableCell className="p-4 bg-secondary">
+        <TableCell className="p-4 border-r-4 border-black bg-secondary">
           <EvidenceLink meetingId={meetingId} lineStart={action.evidenceLineStart} lineEnd={action.evidenceLineEnd} />
+        </TableCell>
+        <TableCell className="p-4 text-center">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onDeleteAction(action.actionId)}
+            className="h-10 w-10 border-2 border-black shadow-brutal-sm bg-white text-black hover:bg-destructive hover:text-white transition-colors"
+          >
+            <Trash2 className="h-5 w-5 stroke-[3]" />
+          </Button>
         </TableCell>
       </TableRow>
       {expanded && (
         <TableRow>
-          <TableCell colSpan={6} className="bg-muted/20 px-8 py-4">
+          <TableCell colSpan={7} className="bg-muted/20 px-8 py-4 border-b-4 border-black">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <CorrectionTimeline corrections={action.corrections || []} />
               

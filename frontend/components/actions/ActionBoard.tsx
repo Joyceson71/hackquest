@@ -24,9 +24,10 @@ interface ActionBoardProps {
   meetingId: string;
   participants: string[];
   onStatusChange: (actionId: string, newStatus: string) => void;
+  onDeleteAction: (actionId: string) => void;
 }
 
-export default function ActionBoard({ actions, meetingId, participants, onStatusChange }: ActionBoardProps) {
+export default function ActionBoard({ actions, meetingId, participants, onStatusChange, onDeleteAction }: ActionBoardProps) {
   const [filterOwner, setFilterOwner] = useState('__all__');
   const [filterStatus, setFilterStatus] = useState('__all__');
 
@@ -120,7 +121,8 @@ export default function ActionBoard({ actions, meetingId, participants, onStatus
               <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">OWNER</TableHead>
               <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">DUE DATE</TableHead>
               <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">STATUS</TableHead>
-              <TableHead className="font-black text-black text-lg uppercase">EVIDENCE</TableHead>
+              <TableHead className="font-black text-black border-r-4 border-black text-lg uppercase">EVIDENCE</TableHead>
+              <TableHead className="font-black text-black text-lg uppercase text-center">ACTIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,6 +132,7 @@ export default function ActionBoard({ actions, meetingId, participants, onStatus
                 action={action}
                 meetingId={meetingId}
                 onStatusChange={onStatusChange}
+                onDeleteAction={onDeleteAction}
               />
             ))}
           </TableBody>
