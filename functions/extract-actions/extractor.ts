@@ -66,11 +66,10 @@ OUTPUT FORMAT:
       console.warn("Bedrock is blocked in this account. Returning fallback demo extraction.");
       return JSON.stringify({
         extractedItems: [
-          { type: "DECISION", rawText: "Agreed — we're going with Headline B.", suggestedOwner: null, suggestedDeadline: null, confidenceScore: 95, confidenceReason: "Explicitly agreed upon.", evidenceLineStart: 2, evidenceLineEnd: 2 },
-          { type: "TASK", rawText: "I'll have the updated landing page copy ready by Friday.", suggestedOwner: "Marcus", suggestedDeadline: "2026-09-18T00:00:00.000Z", confidenceScore: 90, confidenceReason: "Clear commitment.", evidenceLineStart: 1, evidenceLineEnd: 1 },
-          { type: "TASK", rawText: "I can handle the email campaign setup... targeting end of next week.", suggestedOwner: "Priya", suggestedDeadline: "2026-09-25T00:00:00.000Z", confidenceScore: 85, confidenceReason: "Clear commitment.", evidenceLineStart: 3, evidenceLineEnd: 3 },
-          { type: "TASK", rawText: "I'll send the brief to design this afternoon.", suggestedOwner: "Marcus", suggestedDeadline: "2026-09-13T17:00:00.000Z", confidenceScore: 90, confidenceReason: "Clear commitment.", evidenceLineStart: 5, evidenceLineEnd: 5 },
-          { type: "TASK", rawText: "I need two more days — so Wednesday should be fine.", suggestedOwner: "Dev", suggestedDeadline: "2026-09-16T00:00:00.000Z", confidenceScore: 85, confidenceReason: "Clear commitment.", evidenceLineStart: 7, evidenceLineEnd: 8 }
+          { type: "TASK", rawText: "I'll have the API schema finalized by Thursday EOD. I'll share it in Confluence.", suggestedOwner: "Bob", suggestedDeadline: "2026-09-17T00:00:00.000Z", confidenceScore: 95, confidenceReason: "Clear commitment with deadline.", evidenceLineStart: 3, evidenceLineEnd: 3 },
+          { type: "DECISION", rawText: "Decision made — we're going with DynamoDB for the new service.", suggestedOwner: null, suggestedDeadline: null, confidenceScore: 90, confidenceReason: "Explicitly agreed upon by Alice and Charlie.", evidenceLineStart: 8, evidenceLineEnd: 8 },
+          { type: "TASK", rawText: "I'll have the GitHub Actions pipeline ready by Monday.", suggestedOwner: "Charlie", suggestedDeadline: "2026-09-21T00:00:00.000Z", confidenceScore: 90, confidenceReason: "Clear commitment to Alice's request.", evidenceLineStart: 10, evidenceLineEnd: 10 },
+          { type: "TASK", rawText: "I can start drafting the migration guide... need until next Wednesday to finish.", suggestedOwner: "Bob", suggestedDeadline: "2026-09-23T00:00:00.000Z", confidenceScore: 85, confidenceReason: "Clear commitment.", evidenceLineStart: 12, evidenceLineEnd: 12 }
         ]
       });
     }

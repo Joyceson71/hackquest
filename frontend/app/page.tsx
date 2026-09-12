@@ -8,10 +8,10 @@ import { Loader2, Plus, Calendar, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface Meeting {
-  PK: { S: string };
-  title: { S: string };
-  createdAt: { S: string };
-  status: { S: string };
+  PK: string;
+  title: string;
+  createdAt: string;
+  status: string;
 }
 
 export default function Dashboard() {
@@ -27,9 +27,11 @@ export default function Dashboard() {
         if (res.ok) {
           const data = await res.json();
           // Sort by newest first
-          const sorted = data.sort((a: Meeting, b: Meeting) => 
-            new Date(b.createdAt.S).getTime() - new Date(a.createdAt.S).getTime()
-          );
+          const sorted = data.sort((a: Meeting, b: Meeting) => {
+            const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return timeB - timeA;
+          });
           setMeetings(sorted);
         }
       } catch (e) {
@@ -78,22 +80,23 @@ export default function Dashboard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {meetings.map((m) => {
-            const date = new Date(m.createdAt.S).toLocaleDateString('en-US', {
+            const dateStr = m.createdAt || new Date().toISOString();
+            const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'
             });
             return (
-              <Card key={m.PK.S} className="hover:-translate-y-1 transition-transform cursor-pointer" onClick={() => router.push(`/meetings/${m.PK.S}/transcript`)}>
+              <Card key={m.PK} className="hover:-translate-y-1 transition-transform cursor-pointer" onClick={() => router.push(`/meetings/${m.PK}/transcript`)}>
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="h-4 w-4 text-primary" />
                     <span className="text-xs font-bold text-muted-foreground">{date}</span>
                   </div>
-                  <CardTitle className="text-xl line-clamp-2">{m.title?.S || 'Untitled Meeting'}</CardTitle>
+                  <CardTitle className="text-xl line-clamp-2">{m.title || 'Untitled Meeting'}</CardTitle>
                 </CardHeader>
                 <CardContent className="mt-4 pt-4 border-t-2 border-border/50">
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-bold px-2 py-1 rounded-full bg-secondary/20 text-secondary">
-                      {m.status?.S || 'PROCESSED'}
+                      {m.status || 'PROCESSED'}
                     </div>
                     <div className="text-primary font-bold flex items-center text-sm group-hover:underline">
                       Open <ArrowRight className="ml-1 h-4 w-4" />

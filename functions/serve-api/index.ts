@@ -1,4 +1,5 @@
 import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,7 +29,8 @@ export const handler = async (event: any) => {
         FilterExpression: 'SK = :sk',
         ExpressionAttributeValues: { ':sk': { S: 'MEETING' } },
       }));
-      return { statusCode: 200, headers, body: JSON.stringify(Items || []) };
+      const unmarshalledItems = (Items || []).map(item => unmarshall(item));
+      return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItems) };
     }
 
     if (path === '/meetings' && method === 'POST') {
@@ -64,7 +66,8 @@ export const handler = async (event: any) => {
         KeyConditionExpression: 'PK = :pk AND SK = :sk',
         ExpressionAttributeValues: { ':pk': { S: meetingId }, ':sk': { S: 'MEETING' } }
       }));
-      return { statusCode: 200, headers, body: JSON.stringify(Items?.[0] || {}) };
+      const unmarshalledItem = Items && Items.length > 0 ? unmarshall(Items[0]) : {};
+      return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItem) };
     }
 
     if (meetingId && path === `/meetings/${meetingId}/proposed-items` && method === 'GET') {
@@ -73,7 +76,8 @@ export const handler = async (event: any) => {
         KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
         ExpressionAttributeValues: { ':pk': { S: meetingId }, ':skPrefix': { S: 'PROPOSED#' } }
       }));
-      return { statusCode: 200, headers, body: JSON.stringify(Items || []) };
+      const unmarshalledItems = (Items || []).map(item => unmarshall(item));
+      return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItems) };
     }
 
     if (meetingId && path.includes('/proposed-items/') && method === 'PUT') {
@@ -128,7 +132,8 @@ export const handler = async (event: any) => {
         KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
         ExpressionAttributeValues: { ':pk': { S: meetingId }, ':skPrefix': { S: 'ACTION#' } }
       }));
-      return { statusCode: 200, headers, body: JSON.stringify(Items || []) };
+      const unmarshalledItems = (Items || []).map(item => unmarshall(item));
+      return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItems) };
     }
 
     if (meetingId && path.includes('/confirmed-actions/') && method === 'PUT') {
