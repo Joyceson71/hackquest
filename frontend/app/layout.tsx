@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import UserMenu from '@/components/UserMenu';
+import InteractiveBackground from '@/components/InteractiveBackground';
 
 export const metadata: Metadata = {
   title: 'MeetingCompiler — Meeting-to-Action Compiler',
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased font-sans min-h-screen flex flex-col bg-background text-foreground">
+        <InteractiveBackground />
         <header className="sticky top-0 z-50 bg-card border-b-8 border-border shadow-brutal">
           <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
             <a href="/meetings/new" className="flex items-center gap-3 group">
