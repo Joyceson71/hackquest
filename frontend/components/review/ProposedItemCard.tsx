@@ -17,6 +17,17 @@ import ConfidenceBadge from './ConfidenceBadge';
 import EditConfirmForm from './EditConfirmForm';
 import { authenticatedFetch } from '@/lib/api';
 
+function formatDate(isoString: string | null) {
+  if (!isoString) return 'No deadline stated';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return isoString;
+  }
+}
+
 export interface ProposedItem {
   itemId: string;
   type: string;
@@ -95,7 +106,7 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
         {/* Metadata */}
         <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
           <span><strong className="font-medium text-foreground">Owner:</strong> {item.suggestedOwner || 'No owner identified'}</span>
-          <span><strong className="font-medium text-foreground">Deadline:</strong> {item.suggestedDeadline || 'No deadline stated'}</span>
+          <span><strong className="font-medium text-foreground">Deadline:</strong> {formatDate(item.suggestedDeadline)}</span>
         </div>
 
         {/* Action buttons — View mode */}

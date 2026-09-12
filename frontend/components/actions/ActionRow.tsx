@@ -7,6 +7,17 @@ import StatusDropdown from './StatusDropdown';
 import EvidenceLink from './EvidenceLink';
 import CorrectionTimeline, { Correction } from './CorrectionTimeline';
 
+function formatDate(isoString: string) {
+  if (!isoString) return '—';
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return isoString;
+  }
+}
+
 export interface TimelineEvent {
   event: string;
   actor: string;
@@ -54,7 +65,7 @@ export default function ActionRow({ action, meetingId, onStatusChange }: ActionR
           <span className="line-clamp-2 text-sm" title={action.task}>{action.task}</span>
         </TableCell>
         <TableCell className="text-sm">{action.owner || '—'}</TableCell>
-        <TableCell className="text-sm whitespace-nowrap">{action.deadline || '—'}</TableCell>
+        <TableCell className="text-sm whitespace-nowrap">{formatDate(action.deadline)}</TableCell>
         <TableCell>
           <StatusDropdown value={action.status} onChange={(s) => onStatusChange(action.actionId, s)} />
         </TableCell>
