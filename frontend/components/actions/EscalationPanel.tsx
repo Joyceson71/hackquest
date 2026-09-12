@@ -68,7 +68,7 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
         return;
       }
       onAction();
-    } catch (e) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setAccepting(false);
@@ -130,7 +130,7 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
         <div className="flex items-start gap-2 text-xs text-muted-foreground border-l-4 border-primary/40 pl-3 py-1">
           <FileText className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           <span>
-            Evidence: [{action.evidenceTimestamp}]{action.speakerContext ? ` ${action.speakerContext}:` : ''} "{action.task}"
+            Evidence: [{action.evidenceTimestamp}]{action.speakerContext ? ` ${action.speakerContext}:` : ''} &quot;{action.task}&quot;
           </span>
         </div>
       )}

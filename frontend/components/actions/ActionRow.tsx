@@ -297,7 +297,7 @@ export default function ActionRow({
                     {action.corrections.map((c, i) => (
                       <div key={i} className="flex flex-col gap-0.5 text-xs border-l-2 border-secondary/50 pl-3">
                         <span className="font-medium text-foreground capitalize">
-                          {c.field}: "{c.originalValue}" → "{c.correctedValue}"
+                          {c.field}: &quot;{c.originalValue}&quot; → &quot;{c.correctedValue}&quot;
                         </span>
                         <span className="text-muted-foreground">
                           {c.source || 'REVIEW'} · {new Date(c.correctedAt).toLocaleString()}

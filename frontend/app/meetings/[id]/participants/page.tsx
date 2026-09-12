@@ -85,14 +85,16 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
       }
 
       setParticipants(parsed);
-    } catch (e: any) {
-      setError(e.message || 'Failed to load participants');
+    } catch (e: unknown) {
+      setError((e as Error).message || 'Failed to load participants');
     } finally {
       setLoading(false);
     }
   }, [id, apiUrl]);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, [fetchData]);
 
   const openConfirmModal = (name: string) => {
     setTargetName(name);
@@ -260,13 +262,13 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                     and suggest a replacement owner for each.
                   </span>
                   <span className="block text-xs">
-                    The original owner and missed-deadline history will be permanently retained in each action's audit trail.
+                    The original owner and missed-deadline history will be permanently retained in each action&apos;s audit trail.
                   </span>
                 </DialogDescription>
               </DialogHeader>
 
               {/* Affected actions preview */}
-              {participants.find(p => p.name === targetName)?.openActionCount > 0 && (
+              {(participants.find(p => p.name === targetName)?.openActionCount ?? 0) > 0 && (
                 <div className="flex items-center gap-2 bg-destructive/10 border-2 border-destructive/30 p-3 mt-2">
                   <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
                   <span className="text-sm font-bold text-foreground">
@@ -320,7 +322,7 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                 <div className="flex items-center gap-2 bg-primary/10 border-2 border-primary/30 p-3 mt-2">
                   <CheckCircle className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-sm font-bold text-foreground">
-                    Original owner & missed-deadline history preserved in each action's audit trail.
+                    Original owner & missed-deadline history preserved in each action&apos;s audit trail.
                   </span>
                 </div>
               )}

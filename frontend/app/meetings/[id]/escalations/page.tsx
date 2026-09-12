@@ -24,10 +24,11 @@ export default function EscalationsPage({ params }: { params: Promise<{ id: stri
         if (raw) {
           const parsed = JSON.parse(raw);
           const nameAttr = parsed?.UserAttributes?.find(
-            (a: any) => a.Name === 'name' || a.Name === 'email'
+            (a: Record<string, unknown>) => a.Name === 'name' || a.Name === 'email'
           );
           if (nameAttr?.Value) {
-            setCurrentUserName(nameAttr.Value);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setCurrentUserName(nameAttr.Value as string);
             break;
           }
         }
@@ -55,6 +56,7 @@ export default function EscalationsPage({ params }: { params: Promise<{ id: stri
   }, [id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchEscalations();
   }, [fetchEscalations]);
 

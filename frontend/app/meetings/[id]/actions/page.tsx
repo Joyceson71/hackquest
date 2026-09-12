@@ -44,6 +44,7 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
   }, [id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchActions();
   }, [fetchActions]);
 
@@ -56,9 +57,10 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
         const raw = localStorage.getItem(key);
         if (raw) {
           const parsed = JSON.parse(raw);
-          const nameAttr = parsed?.UserAttributes?.find((a: any) => a.Name === 'name' || a.Name === 'email');
+          const nameAttr = parsed?.UserAttributes?.find((a: Record<string, unknown>) => a.Name === 'name' || a.Name === 'email');
           if (nameAttr?.Value) {
-            setCurrentUserName(nameAttr.Value);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setCurrentUserName(nameAttr.Value as string);
             break;
           }
         }
