@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import TranscriptLine from './TranscriptLine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/api';
 
 // Mock transcript for MVP demonstration
 const MOCK_TRANSCRIPT = [
@@ -28,6 +30,42 @@ interface TranscriptViewerProps {
 
 export default function TranscriptViewer({ meetingId }: TranscriptViewerProps) {
   const [highlightedLines, setHighlightedLines] = useState<Set<number>>(new Set());
+  const [transcriptLines, setTranscriptLines] = useState<string[]>([]);
+  const [loadingText, setLoadingText] = useState(true);
+
+  useEffect(() => {
+    const loadTranscriptText = async () => {
+      try {
+        setLoadingText(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        
+        // 1. Get meeting metadata which includes the presigned URL
+        const res = await authenticatedFetch(`${apiUrl}/meetings/${meetingId}`);
+        if (!res.ok) throw new Error('Failed to fetch meeting metadata');
+        const meeting = await res.json();
+        
+        // 2. Fetch the actual text file from S3 using the presigned URL
+        if (meeting.transcriptUrl) {
+          const textRes = await fetch(meeting.transcriptUrl);
+          const rawText = await textRes.text();
+          
+          // Clean and split lines
+          const lines = rawText.split(/\r?\n/).filter(line => line.trim().length > 0);
+          setTranscriptLines(lines);
+        } else {
+          // Fallback if no URL is present
+          setTranscriptLines(MOCK_TRANSCRIPT);
+        }
+      } catch (err) {
+        console.error('Failed to load transcript file', err);
+        setTranscriptLines(MOCK_TRANSCRIPT);
+      } finally {
+        setLoadingText(false);
+      }
+    };
+    
+    loadTranscriptText();
+  }, [meetingId]);
 
   const handleHighlight = useCallback(() => {
     const hash = window.location.hash;
@@ -75,14 +113,21 @@ export default function TranscriptViewer({ meetingId }: TranscriptViewerProps) {
       </CardHeader>
       <CardContent className="p-0">
         <div className="max-h-[600px] overflow-y-auto px-4 pb-4 space-y-0.5">
-          {MOCK_TRANSCRIPT.map((line, index) => (
-            <TranscriptLine
-              key={index}
-              index={index}
-              text={line}
-              isHighlighted={highlightedLines.has(index)}
-            />
-          ))}
+          {loadingText ? (
+            <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+              <Loader2 className="h-6 w-6 animate-spin mb-2" />
+              <p className="text-sm">Loading transcript file...</p>
+            </div>
+          ) : (
+            transcriptLines.map((line, index) => (
+              <TranscriptLine
+                key={index}
+                index={index}
+                text={line}
+                isHighlighted={highlightedLines.has(index)}
+              />
+            ))
+          )}
         </div>
       </CardContent>
     </Card>

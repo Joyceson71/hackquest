@@ -1,6 +1,6 @@
 import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -67,6 +67,16 @@ export const handler = async (event: any) => {
         ExpressionAttributeValues: { ':pk': { S: meetingId }, ':sk': { S: 'MEETING' } }
       }));
       const unmarshalledItem = Items && Items.length > 0 ? unmarshall(Items[0]) : {};
+      
+      // Generate presigned GET URL if transcriptS3Key exists
+      if (unmarshalledItem.transcriptS3Key) {
+        const getCommand = new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: unmarshalledItem.transcriptS3Key
+        });
+        unmarshalledItem.transcriptUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+      }
+      
       return { statusCode: 200, headers, body: JSON.stringify(unmarshalledItem) };
     }
 
