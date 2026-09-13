@@ -19,11 +19,11 @@ interface RoleGuardProps {
  *   <RoleGuard allowedRole="employee"><EmployeePage /></RoleGuard>
  */
 export default function RoleGuard({ allowedRole, children }: RoleGuardProps) {
-  const { role } = useRole();
+  const { role, isLoaded } = useRole();
   const router = useRouter();
 
   useEffect(() => {
-    if (role === null) return; // Still loading
+    if (!isLoaded) return; // Still loading
     if (role !== allowedRole) {
       if (role === 'admin') {
         router.replace('/');
@@ -31,9 +31,9 @@ export default function RoleGuard({ allowedRole, children }: RoleGuardProps) {
         router.replace('/employee');
       }
     }
-  }, [role, allowedRole, router]);
+  }, [role, allowedRole, router, isLoaded]);
 
-  if (role === null) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

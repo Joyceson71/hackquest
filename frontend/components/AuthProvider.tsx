@@ -20,7 +20,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { role, setRole, setUserEmail, setUserName } = useRole();
+  const { role, isLoaded, setRole, setUserEmail, setUserName } = useRole();
 
   const checkAuth = useCallback(async () => {
     try {
@@ -41,8 +41,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       }
 
       // Role should already be set from login page selection (stored in localStorage via RoleContext)
-      // If somehow missing, default to employee for safety
-      if (!role) {
+      // If somehow missing and we are fully loaded, default to employee for safety
+      if (!role && isLoaded) {
         setRole('employee');
       }
 
@@ -71,12 +71,15 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         router.push('/login');
       }
     }
-  }, [pathname, router, role, setRole, setUserEmail, setUserName]);
+  }, [pathname, router, role, isLoaded, setRole, setUserEmail, setUserName]);
 
   useEffect(() => {
+    // Only check auth once the role context has finished hydrating from localStorage
+    if (!isLoaded) return;
+    
     // eslint-disable-next-line react-hooks/set-state-in-effect
     checkAuth();
-  }, [checkAuth]);
+  }, [checkAuth, isLoaded]);
 
   if (isAuthenticated === null) {
     return (

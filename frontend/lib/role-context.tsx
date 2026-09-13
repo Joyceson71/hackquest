@@ -8,6 +8,7 @@ interface RoleContextValue {
   role: UserRole;
   userEmail: string | null;
   userName: string | null;
+  isLoaded: boolean;
   setRole: (role: UserRole) => void;
   setUserEmail: (email: string | null) => void;
   setUserName: (name: string | null) => void;
@@ -18,6 +19,7 @@ const RoleContext = createContext<RoleContextValue>({
   role: null,
   userEmail: null,
   userName: null,
+  isLoaded: false,
   setRole: () => {},
   setUserEmail: () => {},
   setUserName: () => {},
@@ -42,12 +44,14 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const [role, setRoleState] = useState<UserRole>(null);
   const [userEmail, setUserEmailState] = useState<string | null>(null);
   const [userName, setUserNameState] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Hydrate from localStorage only on client to prevent hydration mismatch
   useEffect(() => {
     setRoleState(loadFromStorage<UserRole>(ROLE_STORAGE_KEY, null));
     setUserEmailState(loadFromStorage<string | null>(EMAIL_STORAGE_KEY, null));
     setUserNameState(loadFromStorage<string | null>(NAME_STORAGE_KEY, null));
+    setIsLoaded(true);
   }, []);
 
   const setRole = useCallback((r: UserRole) => {
@@ -87,7 +91,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <RoleContext.Provider value={{ role, userEmail, userName, setRole, setUserEmail, setUserName, clearRole }}>
+    <RoleContext.Provider value={{ role, userEmail, userName, isLoaded, setRole, setUserEmail, setUserName, clearRole }}>
       {children}
     </RoleContext.Provider>
   );
