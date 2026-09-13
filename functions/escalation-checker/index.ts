@@ -9,6 +9,7 @@ import { DynamoDBClient, QueryCommand, ScanCommand } from '@aws-sdk/client-dynam
 import { detectInactivityEscalations, parseParticipants } from './detector';
 import { rankReplacementCandidates } from './ranker';
 import { writeEscalation } from './writer';
+import { processTeamEscalations } from './team-escalator';
 
 const docClient = new DynamoDBClient({});
 const TABLE_NAME = process.env.TABLE_NAME!;
@@ -71,7 +72,14 @@ export const handler = async (event: any) => {
     }
 
     console.log(`[escalation-checker] Scan complete. Total escalated: ${totalEscalated}`);
-    return { statusCode: 200, body: JSON.stringify({ escalated: totalEscalated }) };
+    
+    // Process team-based escalations and auto-reassignments
+    const teamEscalated = await processTeamEscalations();
+
+    return { statusCode: 200, body: JSON.stringify({ 
+      escalatedMeetings: totalEscalated, 
+      escalatedTeams: teamEscalated 
+    }) };
 
   } catch (error: any) {
     console.error('[escalation-checker] Fatal error:', error);

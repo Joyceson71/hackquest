@@ -46,7 +46,7 @@ export class ApiStack extends cdk.Stack {
 
     // Lambda: fn-api
     // Permissions: DynamoDB GetItem, Query, UpdateItem (all), PutItem (ConfirmedActions, AuditLog)
-    const serveApiFn = new nodejs.NodejsFunction(this, 'ServeApiFunction', {
+    const serveApiFn = new nodejs.NodejsFunction(this, 'ServeApiFunctionV2', {
       runtime: lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, '../../functions/serve-api/index.ts'),
       handler: 'handler',
@@ -92,52 +92,12 @@ export class ApiStack extends cdk.Stack {
     const lambdaIntegration = new apigw.LambdaIntegration(serveApiFn);
     const authOpts = { authorizer, authorizationType: apigw.AuthorizationType.COGNITO };
 
-    // Routes
-    const meetings = api.root.addResource('meetings');
-    meetings.addMethod('GET', lambdaIntegration, authOpts);
-    meetings.addMethod('POST', lambdaIntegration, authOpts);
+    // Use wildcard proxy to prevent Lambda Resource Policy size limit (20KB)
+    const apiProxy = api.root.addResource('{proxy+}');
+    apiProxy.addMethod('ANY', lambdaIntegration, authOpts);
+    api.root.addMethod('ANY', lambdaIntegration, authOpts);
 
-    const singleMeeting = meetings.addResource('{id}');
-    singleMeeting.addMethod('GET', lambdaIntegration, authOpts);
-    singleMeeting.addMethod('PATCH', lambdaIntegration, authOpts);
-    singleMeeting.addMethod('DELETE', lambdaIntegration, authOpts);
 
-    const upload = singleMeeting.addResource('upload');
-    upload.addMethod('POST', lambdaIntegration, authOpts);
-
-    const proposedItems = singleMeeting.addResource('proposed-items');
-    proposedItems.addMethod('GET', lambdaIntegration, authOpts);
-
-    const singleProposed = proposedItems.addResource('{itemId}');
-    singleProposed.addMethod('PUT', lambdaIntegration, authOpts);
-
-    const confirmedActions = singleMeeting.addResource('confirmed-actions');
-    confirmedActions.addMethod('GET', lambdaIntegration, authOpts);
-
-    const singleAction = confirmedActions.addResource('{actionId}');
-    singleAction.addMethod('GET', lambdaIntegration, authOpts);
-    singleAction.addMethod('PUT', lambdaIntegration, authOpts);
-    singleAction.addMethod('DELETE', lambdaIntegration, authOpts);
-
-    // Escalation sub-resources: /confirmed-actions/{actionId}/escalation/accept|decline
-    const escalationResource = singleAction.addResource('escalation');
-    const escalationAccept = escalationResource.addResource('accept');
-    escalationAccept.addMethod('POST', lambdaIntegration, authOpts);
-    const escalationDecline = escalationResource.addResource('decline');
-    escalationDecline.addMethod('POST', lambdaIntegration, authOpts);
-
-    // Escalations inbox: /meetings/{id}/escalations
-    const escalations = singleMeeting.addResource('escalations');
-    escalations.addMethod('GET', lambdaIntegration, authOpts);
-
-    // Participants: /meetings/{id}/participants/unavailable
-    const participants = singleMeeting.addResource('participants');
-    const unavailable = participants.addResource('unavailable');
-    unavailable.addMethod('POST', lambdaIntegration, authOpts);
-
-    // Employees Directory: /employees
-    const employees = api.root.addResource('employees');
-    employees.addMethod('GET', lambdaIntegration, authOpts);
 
     this.apiUrl = api.url;
 

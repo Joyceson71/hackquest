@@ -7,6 +7,7 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { v4 as uuidv4 } from 'uuid';
+import { handleTeamRoutes } from './teams';
 
 const docClient = new DynamoDBClient({});
 const s3Client = new S3Client({});
@@ -78,9 +79,16 @@ function mapActionItem(item: any) {
 export const handler = async (event: any) => {
   console.log('Event:', JSON.stringify(event));
 
-  const path: string = event.path || '';
+  let path: string = event.path || '';
+  path = path.replace(/\/+/g, '/');
+  if (!path.startsWith('/')) path = '/' + path;
+  
   const method: string = event.httpMethod || '';
-  const meetingId: string | undefined = event.pathParameters?.id;
+  
+  // Extract meetingId either from explicit path parameters or fallback to manual path parsing for proxy integration
+  const meetingMatch = path.match(/^\/meetings\/([a-zA-Z0-9-]+)/);
+  const meetingId: string | undefined = event.pathParameters?.id || (meetingMatch ? meetingMatch[1] : undefined);
+  
   const now = new Date().toISOString();
 
   // Handle preflight (API GW handles this via defaultCorsPreflightOptions but just in case)
@@ -649,6 +657,12 @@ export const handler = async (event: any) => {
 
       return ok({ success: true, escalatedActions: escalatedCount });
     }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // TEAM ROUTES
+    // ──────────────────────────────────────────────────────────────────────────
+    const teamRouteResponse = await handleTeamRoutes(path, method, event);
+    if (teamRouteResponse !== null) return teamRouteResponse;
 
     // ──────────────────────────────────────────────────────────────────────────
     // 404 fallthrough

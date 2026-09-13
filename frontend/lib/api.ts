@@ -9,7 +9,15 @@ export async function authenticatedFetch(input: RequestInfo | URL, init?: Reques
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  return fetch(input, {
+  // Normalize double slashes in URL path (e.g. if NEXT_PUBLIC_API_URL ends with a slash)
+  let normalizedUrl = input;
+  if (typeof input === 'string') {
+    normalizedUrl = input.replace(/([^:]\/)\/+/g, '$1');
+  } else if (input instanceof URL) {
+    normalizedUrl = input.href.replace(/([^:]\/)\/+/g, '$1');
+  }
+
+  return fetch(normalizedUrl, {
     ...init,
     headers,
   });

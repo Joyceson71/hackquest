@@ -30,13 +30,32 @@ export default function UserMenu() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push('/team')}
-          className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-primary hover:text-primary bg-card"
+          onClick={() => router.push('/admin/teams')}
+          className="hidden md:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-primary hover:text-primary bg-card"
         >
           <Users className="h-4 w-4 mr-2 stroke-[3]" />
-          TEAM
+          ADMIN TEAMS
         </Button>
       )}
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => router.push('/team')}
+        className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card"
+      >
+        <Users className="h-4 w-4 mr-2 stroke-[3]" />
+        MY TEAM
+      </Button>
+
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => router.push('/tasks')}
+        className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card"
+      >
+        MY TASKS
+      </Button>
 
       {/* Role badge */}
       <div

@@ -1,158 +1,217 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { authenticatedFetch } from '@/lib/api';
-import RoleGuard from '@/components/RoleGuard';
-import { motion, Variants } from 'framer-motion';
-import { Loader2, Users, Mail, UserCheck, UserX, Clock, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useRole } from '@/lib/role-context';
+import { Loader2, Users, CheckCircle, Clock, AlertTriangle, Plus, BarChart } from 'lucide-react';
+import Link from 'next/link';
 
-interface Employee {
-  id: string;
+interface TeamMember {
   email: string;
   name: string;
-  status: string;
-  isVerified: boolean;
-  created: string;
-  lastModified: string;
+  role: string;
 }
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
+interface TeamData {
+  teamId: string;
+  name: string;
+  description: string;
+  leaderEmail: string;
+  members: TeamMember[];
+}
 
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-};
+interface Task {
+  actionId: string;
+  task: string;
+  description: string;
+  priority: string;
+  status: string;
+  currentOwner: string | null;
+  deadline: string | null;
+}
 
-function TeamPageInner() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
+export default function TeamDashboardPage() {
+  const { userEmail } = useRole();
+  const [teams, setTeams] = useState<TeamData[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<TeamData | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
 
-  const fetchEmployees = useCallback(async () => {
-    setLoading(true);
-    try {
-      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
-      const res = await authenticatedFetch(`${apiUrl}/employees`);
-      if (res.ok) {
-        const data = await res.json();
-        setEmployees(data);
+  // Load teams this user belongs to
+  useEffect(() => {
+    if (!userEmail) return;
+    
+    const fetchMyTeams = async () => {
+      try {
+        const res = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${encodeURIComponent(userEmail)}/teams`);
+        if (res.ok) {
+          const myTeams = await res.json();
+          setTeams(myTeams);
+          if (myTeams.length > 0) {
+            fetchTeamDetails(myTeams[0].teamId);
+          } else {
+            setLoading(false);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
+    };
+    fetchMyTeams();
+  }, [userEmail]);
+
+  const fetchTeamDetails = async (teamId: string) => {
+    try {
+      const [teamRes, taskRes] = await Promise.all([
+        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`),
+        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/tasks`)
+      ]);
+      
+      if (teamRes.ok && taskRes.ok) {
+        const teamData = await teamRes.json();
+        const taskData = await taskRes.json();
+        setSelectedTeam(teamData);
+        setTasks(taskData);
+      }
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchEmployees();
-  }, [fetchEmployees]);
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 animate-spin" /></div>;
 
-  const filteredEmployees = employees.filter((e) => 
-    e.name.toLowerCase().includes(search.toLowerCase()) || 
-    e.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-7xl mx-auto space-y-8"
-    >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-4 border-border pb-6">
-        <motion.div variants={itemVariants}>
-          <h1 className="text-4xl md:text-5xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
-            TEAM DIRECTORY
-          </h1>
-          <p className="text-sm font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block uppercase">
-            REGISTERED EMPLOYEES & USERS IN THE SYSTEM
-          </p>
-        </motion.div>
-        
-        <motion.div variants={itemVariants} className="w-full sm:w-auto relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground stroke-[3]" />
-          <Input 
-            placeholder="SEARCH TEAM..." 
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 font-black uppercase border-4 border-border bg-card shadow-brutal-sm w-full sm:w-80" 
-          />
-        </motion.div>
+  if (teams.length === 0) {
+    return (
+      <div className="container mx-auto px-6 py-20 max-w-4xl text-center">
+        <h1 className="text-4xl font-black uppercase mb-4">No Teams Found</h1>
+        <p className="text-xl font-bold text-muted-foreground uppercase">You have not been assigned to any teams yet.</p>
       </div>
+    );
+  }
 
-      {loading ? (
-        <div className="bg-card border-8 border-border p-12 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1 mt-12">
-          <div className="bg-primary p-4 rounded-full inline-block border-4 border-border shadow-brutal mb-6">
-            <Loader2 className="h-10 w-10 text-background animate-spin" />
-          </div>
-          <h2 className="text-3xl font-black uppercase mb-3">LOADING DIRECTORY</h2>
-          <p className="text-base font-bold">FETCHING USER DATA FROM THE MAINFRAME...</p>
-        </div>
-      ) : filteredEmployees.length === 0 ? (
-         <div className="bg-card border-8 border-border p-12 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1 mt-12">
-          <div className="bg-destructive p-4 rounded-full inline-block border-4 border-border shadow-brutal mb-6">
-            <UserX className="h-10 w-10 text-background stroke-[3]" />
-          </div>
-          <h2 className="text-3xl font-black uppercase mb-3">NO EMPLOYEES FOUND</h2>
-          <p className="text-base font-bold">THEY EITHER QUIT OR HAVEN&apos;T SIGNED UP YET.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEmployees.map((emp, idx) => {
-            const date = emp.created ? new Date(emp.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'UNKNOWN';
-            const isConfirmed = emp.status === 'CONFIRMED';
-            const rotation = idx % 2 === 0 ? 1 : -1;
-            
-            return (
-              <motion.div 
-                key={emp.id}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02, rotate: 0 }}
-                className="bg-card border-4 border-border p-6 shadow-brutal flex flex-col justify-between h-[220px]"
-                style={{ rotate: `${rotation}deg` }}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4 border-b-4 border-border pb-4">
-                    <div className={`px-2 py-1 border-2 border-border text-xs font-black uppercase ${isConfirmed ? 'bg-accent text-background' : 'bg-warning text-background'}`}>
-                      {emp.status}
-                    </div>
-                    <div className="flex items-center gap-1.5 px-2 py-1 border-2 border-border bg-background text-foreground text-xs font-black uppercase">
-                      {emp.isVerified ? <UserCheck className="h-3 w-3 text-accent stroke-[3]" /> : <Clock className="h-3 w-3 text-warning stroke-[3]" />}
-                      {emp.isVerified ? 'VERIFIED' : 'PENDING'}
-                    </div>
-                  </div>
-                  <h3 className="text-2xl font-black uppercase line-clamp-1 truncate" title={emp.name}>
-                    {emp.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-2 text-muted-foreground font-bold text-sm truncate">
-                    <Mail className="h-4 w-4 shrink-0 stroke-[3]" />
-                    <span className="truncate">{emp.email}</span>
-                  </div>
-                </div>
-                
-                <div className="mt-4 pt-4 border-t-4 border-border/20 flex items-center justify-between text-xs font-bold uppercase text-muted-foreground">
-                  <span>JOINED</span>
-                  <span className="text-foreground">{date}</span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
-    </motion.div>
-  );
-}
+  if (!selectedTeam) return null;
 
-export default function TeamPage() {
+  const isLeader = selectedTeam.leaderEmail?.toLowerCase() === userEmail?.toLowerCase();
+
+  // Calculate workloads
+  const workloads: Record<string, { active: number, pending: number, overdue: number, score: number }> = {};
+  selectedTeam.members.forEach(m => {
+    workloads[m.email] = { active: 0, pending: 0, overdue: 0, score: 0 };
+  });
+
+  const now = new Date();
+  tasks.forEach(t => {
+    if (!t.currentOwner || !workloads[t.currentOwner]) return;
+    
+    const isOverdue = t.deadline && new Date(t.deadline) < now;
+    if (isOverdue) {
+      workloads[t.currentOwner].overdue++;
+      workloads[t.currentOwner].score += 5;
+    } else if (t.status === 'IN_PROGRESS') {
+      workloads[t.currentOwner].active++;
+      workloads[t.currentOwner].score += 3;
+    } else if (t.status === 'PENDING') {
+      workloads[t.currentOwner].pending++;
+      workloads[t.currentOwner].score += 2;
+    }
+  });
+
   return (
-    <RoleGuard allowedRole="admin">
-      <TeamPageInner />
-    </RoleGuard>
+    <div className="container mx-auto px-6 py-12 max-w-7xl">
+      <header className="mb-12 border-b-4 border-white pb-6 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
+            {selectedTeam.name}
+          </h1>
+          <p className="text-xl font-bold uppercase text-primary">
+            {isLeader ? 'Team Leader Dashboard' : 'Team Member View'}
+          </p>
+        </div>
+        
+        {isLeader && (
+          <Link href={`/team/new-task?teamId=${selectedTeam.teamId}`} className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-white hover:bg-white hover:text-black transition-colors flex items-center gap-2">
+            <Plus className="w-5 h-5" /> Assign Task
+          </Link>
+        )}
+      </header>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        
+        {/* Workload Dashboard - ONLY FOR LEADERS */}
+        {isLeader && (
+          <div className="lg:col-span-1 space-y-6">
+            <h2 className="text-3xl font-black uppercase tracking-tight flex items-center gap-2">
+              <BarChart className="w-8 h-8 text-primary" /> Workload
+            </h2>
+            
+            <div className="space-y-4">
+              {selectedTeam.members.map(member => {
+                const w = workloads[member.email];
+                if (!w) return null;
+                return (
+                  <div key={member.email} className="bg-card border-4 border-white p-4 shadow-brutal flex flex-col justify-between">
+                    <h3 className="font-black uppercase truncate text-foreground" title={member.email}>{member.email}</h3>
+                    <div className="flex gap-2 mt-2 text-xs font-bold uppercase">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1">Act: {w.active}</span>
+                      <span className="bg-yellow-100 text-yellow-800 px-2 py-1">Pnd: {w.pending}</span>
+                      <span className="bg-destructive/20 text-destructive px-2 py-1 border-2 border-destructive">Ovd: {w.overdue}</span>
+                    </div>
+                    <div className="mt-4 pt-4 border-t-2 border-white/20 flex justify-between">
+                      <span className="font-bold uppercase text-xs text-foreground">Workload Score</span>
+                      <span className="font-black text-primary text-lg leading-none">{w.score}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Tasks List */}
+        <div className={isLeader ? "lg:col-span-2 space-y-6" : "lg:col-span-3 space-y-6"}>
+          <h2 className="text-3xl font-black uppercase tracking-tight flex items-center gap-2">
+            <Users className="w-8 h-8 text-primary" /> Active Tasks
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {tasks.map(task => {
+              const isOverdue = task.deadline && new Date(task.deadline) < now;
+              return (
+                <div key={task.actionId} className={`bg-card border-4 ${isOverdue ? 'border-destructive shadow-[6px_6px_0px_0px_theme(colors.destructive.DEFAULT)]' : 'border-white shadow-brutal'} p-5 flex flex-col justify-between`}>
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="bg-primary text-primary-foreground px-2 py-1 text-xs font-black uppercase border-2 border-primary">{task.status}</span>
+                      {isOverdue && <span className="bg-destructive text-destructive-foreground px-2 py-1 text-xs font-black uppercase flex items-center gap-1 border-2 border-destructive"><AlertTriangle className="w-3 h-3"/> Overdue</span>}
+                    </div>
+                    <h3 className="font-black text-xl uppercase mb-1 text-foreground">{task.task}</h3>
+                    <p className="text-sm font-bold text-muted-foreground mb-4 truncate">{task.description}</p>
+                  </div>
+                  
+                  <div className="pt-4 border-t-2 border-white/20">
+                    <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground mb-1">
+                      <span>Assignee</span>
+                      <span>{task.currentOwner || 'Unassigned'}</span>
+                    </div>
+                    <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground">
+                      <span>Deadline</span>
+                      <span>{task.deadline ? new Date(task.deadline).toLocaleDateString() : 'None'}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {tasks.length === 0 && (
+              <div className="col-span-full text-center py-12 border-4 border-white/20 border-dashed font-black uppercase text-2xl text-muted-foreground">
+                No active tasks in this team.
+              </div>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }

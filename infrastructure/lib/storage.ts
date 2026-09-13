@@ -40,5 +40,13 @@ export class StorageStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true, // Audit trail protection
     });
+
+    // GSI1: Used for querying Teams by User, and Tasks by Team
+    this.mainTable.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'GSI1PK', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'GSI1SK', type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    });
   }
 }
