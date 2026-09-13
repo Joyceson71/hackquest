@@ -8,7 +8,7 @@ import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle, FileText } from 'luci
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 import { useRole } from '@/lib/role-context';
-import RoleGuard from '@/components/RoleGuard';
+
 
 interface Meeting {
   PK: string;
@@ -161,7 +161,7 @@ export default function Dashboard() {
         </motion.div>
       ) : (
         <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {meetings.map((m, idx) => {
+          {meetings.map((m) => {
             const dateStr = m.createdAt || new Date().toISOString();
             const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'

@@ -43,7 +43,7 @@ interface Props {
   item: ProposedItem;
   participants: string[];
   meetingId: string;
-  onProcessed: () => void;
+  onProcessed: (itemId: string, action: 'CONFIRM' | 'REJECT') => void;
 }
 
 export default function ProposedItemCard({ item, participants, meetingId, onProcessed }: Props) {
@@ -69,7 +69,7 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
           rejectionNote: action === 'REJECT' ? rejectionNote : undefined,
         }),
       });
-      onProcessed();
+      onProcessed(item.itemId, action);
     } catch (err) {
       console.error(err);
     } finally {

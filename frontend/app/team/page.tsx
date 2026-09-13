@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { useRole } from '@/lib/role-context';
-import { Loader2, Users, CheckCircle, Clock, AlertTriangle, Plus, BarChart } from 'lucide-react';
+import { Loader2, Users, AlertTriangle, Plus, BarChart } from 'lucide-react';
 import Link from 'next/link';
 
 interface TeamMember {
@@ -37,6 +37,26 @@ export default function TeamDashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchTeamDetails = async (teamId: string) => {
+    try {
+      const [teamRes, taskRes] = await Promise.all([
+        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`),
+        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/tasks`)
+      ]);
+      
+      if (teamRes.ok && taskRes.ok) {
+        const teamData = await teamRes.json();
+        const taskData = await taskRes.json();
+        setSelectedTeam(teamData);
+        setTasks(taskData);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load teams this user belongs to
   useEffect(() => {
     if (!userEmail) return;
@@ -60,26 +80,6 @@ export default function TeamDashboardPage() {
     };
     fetchMyTeams();
   }, [userEmail]);
-
-  const fetchTeamDetails = async (teamId: string) => {
-    try {
-      const [teamRes, taskRes] = await Promise.all([
-        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`),
-        authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/tasks`)
-      ]);
-      
-      if (teamRes.ok && taskRes.ok) {
-        const teamData = await teamRes.json();
-        const taskData = await taskRes.json();
-        setSelectedTeam(teamData);
-        setTasks(taskData);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-[40vh]">

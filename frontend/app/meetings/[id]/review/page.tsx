@@ -72,9 +72,13 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
     return () => clearInterval(interval);
   }, [extractionStatus, fetchItems]);
 
-  const handleProcessed = () => {
-    fetchItems();
-    setStats((prev) => ({ ...prev, confirmed: prev.confirmed + 1 }));
+  const handleProcessed = (itemId: string, action: 'CONFIRM' | 'REJECT') => {
+    setItems((prev) => prev.filter(i => i.itemId !== itemId));
+    setStats((prev) => ({ 
+      ...prev, 
+      confirmed: action === 'CONFIRM' ? prev.confirmed + 1 : prev.confirmed,
+      rejected: action === 'REJECT' ? prev.rejected + 1 : prev.rejected 
+    }));
   };
 
   if (loading) {

@@ -20,6 +20,7 @@ export const handleProposed = async (event: any) => {
   if (method === 'GET' && !itemId) {
     const { Items } = await docClient.send(new QueryCommand({
       TableName: TABLE_NAME,
+      ConsistentRead: true,
       KeyConditionExpression: 'PK = :pk AND begins_with(SK, :skPrefix)',
       ExpressionAttributeValues: {
         ':pk': { S: meetingId },
