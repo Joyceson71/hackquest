@@ -1,4 +1,5 @@
-import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, DeleteItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, QueryCommand, UpdateItemCommand, DeleteItemCommand, ScanCommand, TransactWriteItemsCommand, GetItemCommand } from '@aws-sdk/client-dynamodb';
+import { CognitoIdentityProviderClient, ListUsersCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,12 +14,14 @@ const CORS = {
 
 function ok(body: any) { return { statusCode: 200, headers: CORS, body: JSON.stringify(body) }; }
 function badRequest(msg: string) { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: msg }) }; }
+function forbidden(msg: string) { return { statusCode: 403, headers: CORS, body: JSON.stringify({ error: msg }) }; }
 
-export async function handleTeamRoutes(path: string, method: string, event: any) {
+export async function handleTeamRoutes(path: string, method: string, event: any, auth: any, isAdmin: boolean) {
   const now = new Date().toISOString();
   
   // POST /teams (Admin creates team)
   if (path === '/teams' && method === 'POST') {
+    if (!isAdmin) return forbidden('Admin only');
     const body = JSON.parse(event.body || '{}');
     if (!body.name) return badRequest('Team name is required');
     
@@ -36,7 +39,15 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
         status: { S: 'ACTIVE' },
         createdAt: { S: now },
         updatedAt: { S: now },
-        leaderEmail: { NULL: true },
+        leaderUserId: { NULL: true },
+        leaderRequired: { BOOL: true },
+        config: { M: {
+          autoReassignmentEnabled: { BOOL: true },
+          reminderAfterHours: { N: '12' },
+          leaderAlertAfterHours: { N: '24' },
+          autoReassignAfterHours: { N: '48' },
+          maxReassignments: { N: '2' },
+        }}
       }
     }));
     return ok({ teamId, name: body.name });
@@ -44,6 +55,7 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
 
   // GET /teams (Admin list all teams)
   if (path === '/teams' && method === 'GET') {
+    if (!isAdmin) return forbidden('Admin only');
     // Scan is acceptable here since the number of teams is very small in an org.
     // If it gets large, we'd add a dedicated GSI pattern like GSI2PK="ALL_TEAMS".
     const { Items } = await docClient.send(new ScanCommand({
@@ -58,6 +70,16 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
   const teamMatch = path.match(/^\/teams\/([a-zA-Z0-9-]+)$/);
   if (teamMatch && method === 'GET') {
     const teamId = teamMatch[1];
+    
+    // Auth Check: Admin, or Member of the team
+    if (!isAdmin) {
+      const { Item: membership } = await docClient.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: `MEMBER#${auth.userId}` } }
+      }));
+      if (!membership) return forbidden('You must be a member of this team to view it');
+    }
+
     const { Items } = await docClient.send(new QueryCommand({
       TableName: TABLE_NAME,
       KeyConditionExpression: 'PK = :pk',
@@ -84,61 +106,123 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
   // POST /teams/{teamId}/members (Admin adds member)
   const memberPostMatch = path.match(/^\/teams\/([a-zA-Z0-9-]+)\/members$/);
   if (memberPostMatch && method === 'POST') {
+    if (!isAdmin) return forbidden('Admin only');
     const teamId = memberPostMatch[1];
     const body = JSON.parse(event.body || '{}');
-    if (!body.email) return badRequest('Member email is required');
-    const email = body.email.toLowerCase();
+    let email = (body.email || '').toLowerCase();
+    let userId = body.userId;
 
-    // Check if team exists
-    const { Items } = await docClient.send(new QueryCommand({
-      TableName: TABLE_NAME,
-      KeyConditionExpression: 'PK = :pk AND SK = :sk',
-      ExpressionAttributeValues: { ':pk': { S: `TEAM#${teamId}` }, ':sk': { S: 'METADATA' } }
-    }));
-    if (!Items || Items.length === 0) return badRequest('Team not found');
-
-    await docClient.send(new PutItemCommand({
-      TableName: TABLE_NAME,
-      Item: {
-        PK: { S: `TEAM#${teamId}` },
-        SK: { S: `MEMBER#${email}` },
-        GSI1PK: { S: `USER#${email}` },
-        GSI1SK: { S: `TEAM#${teamId}` },
-        teamId: { S: teamId },
-        email: { S: email },
-        name: { S: body.name || email }, // Best effort name
-        role: { S: body.role || 'MEMBER' }, // 'LEADER' | 'MEMBER'
-        status: { S: 'ACTIVE' },
-        joinedAt: { S: now },
+    if (!userId && email && process.env.USER_POOL_ID) {
+      try {
+        const cognito = new CognitoIdentityProviderClient({});
+        const { Users } = await cognito.send(new ListUsersCommand({
+          UserPoolId: process.env.USER_POOL_ID,
+          Filter: `email = "${email}"`,
+          Limit: 1
+        }));
+        if (Users && Users.length > 0) {
+          userId = Users[0].Username; // sub is stored in Username for custom aliases
+        }
+      } catch (e) {
+        console.error('Cognito lookup failed:', e);
       }
-    }));
-    
-    // If assigned as leader, update the team metadata
-    if (body.role === 'LEADER') {
-      await docClient.send(new UpdateItemCommand({
-        TableName: TABLE_NAME,
-        Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } },
-        UpdateExpression: 'SET leaderEmail = :le, updatedAt = :now',
-        ExpressionAttributeValues: { ':le': { S: email }, ':now': { S: now } }
-      }));
     }
 
-    return ok({ success: true, email });
+    if (!userId) return badRequest('Member userId could not be determined. Make sure they have registered.');
+
+    // Check if team exists
+    const { Item: teamData } = await docClient.send(new GetItemCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } }
+    }));
+    if (!teamData) return badRequest('Team not found');
+
+    const role = body.role === 'LEADER' ? 'LEADER' : 'MEMBER';
+    const txItems: any[] = [];
+
+    // If assigning leader, conditionally remove current leader
+    if (role === 'LEADER') {
+      const currentLeaderUserId = teamData.leaderUserId?.S;
+      if (currentLeaderUserId && currentLeaderUserId !== body.userId) {
+        txItems.push({
+          Update: {
+            TableName: TABLE_NAME,
+            Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: `MEMBER#${currentLeaderUserId}` } },
+            UpdateExpression: 'SET #r = :m',
+            ExpressionAttributeNames: { '#r': 'role' },
+            ExpressionAttributeValues: { ':m': { S: 'MEMBER' } }
+          }
+        });
+      }
+      
+      txItems.push({
+        Update: {
+          TableName: TABLE_NAME,
+          Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } },
+          UpdateExpression: 'SET leaderUserId = :le, leaderEmail = :lem, leaderRequired = :lr, updatedAt = :now',
+          ExpressionAttributeValues: { ':le': { S: body.userId }, ':lem': { S: email }, ':lr': { BOOL: false }, ':now': { S: now } }
+        }
+      });
+    }
+
+    txItems.push({
+      Put: {
+        TableName: TABLE_NAME,
+        Item: {
+          PK: { S: `TEAM#${teamId}` },
+          SK: { S: `MEMBER#${body.userId}` },
+          GSI1PK: { S: `USER#${body.userId}` },
+          GSI1SK: { S: `TEAM#${teamId}` },
+          teamId: { S: teamId },
+          userId: { S: userId },
+          email: { S: email },
+          name: { S: body.name || email }, // Best effort name
+          role: { S: role },
+          status: { S: 'ACTIVE' },
+          joinedAt: { S: now },
+        }
+      }
+    });
+
+    await docClient.send(new TransactWriteItemsCommand({ TransactItems: txItems }));
+    return ok({ success: true, userId });
   }
 
-  // DELETE /teams/{teamId}/members/{email} (Admin removes member)
+  // DELETE /teams/{teamId}/members/{userId} (Admin removes member)
   const memberDelMatch = path.match(/^\/teams\/([a-zA-Z0-9-]+)\/members\/(.+)$/);
   if (memberDelMatch && method === 'DELETE') {
+    if (!isAdmin) return forbidden('Admin only');
     const teamId = memberDelMatch[1];
-    const email = decodeURIComponent(memberDelMatch[2]).toLowerCase();
+    const userId = decodeURIComponent(memberDelMatch[2]);
 
-    // Soft delete or hard delete? A hard delete works for MVP.
-    // If they were leader, clear leaderEmail on team metadata
-    await docClient.send(new DeleteItemCommand({
+    const { Item: teamData } = await docClient.send(new GetItemCommand({
       TableName: TABLE_NAME,
-      Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: `MEMBER#${email}` } }
+      Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } }
     }));
+    if (!teamData) return badRequest('Team not found');
 
+    const txItems: any[] = [];
+    
+    // If they were leader, clear leaderUserId on team metadata
+    if (teamData.leaderUserId?.S === userId) {
+       txItems.push({
+         Update: {
+           TableName: TABLE_NAME,
+           Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } },
+           UpdateExpression: 'REMOVE leaderUserId, leaderEmail SET leaderRequired = :true, updatedAt = :now',
+           ExpressionAttributeValues: { ':true': { BOOL: true }, ':now': { S: now } }
+         }
+       });
+    }
+
+    txItems.push({
+      Delete: {
+        TableName: TABLE_NAME,
+        Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: `MEMBER#${userId}` } }
+      }
+    });
+
+    await docClient.send(new TransactWriteItemsCommand({ TransactItems: txItems }));
     return ok({ success: true });
   }
 
@@ -147,7 +231,20 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
   if (taskPostMatch && method === 'POST') {
     const teamId = taskPostMatch[1];
     const body = JSON.parse(event.body || '{}');
+
+    // Auth Check: Admin or Team Leader
+    if (!isAdmin) {
+      const { Item: teamData } = await docClient.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } }
+      }));
+      if (teamData?.leaderUserId?.S !== auth.userId) {
+         return forbidden('Only the team leader or admin can create tasks');
+      }
+    }
+
     const taskId = uuidv4();
+    const assigneeUserId = body.assigneeUserId || null;
     
     await docClient.send(new PutItemCommand({
       TableName: TABLE_NAME,
@@ -156,24 +253,30 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
         SK: { S: `ACTION#${taskId}` },
         GSI1PK: { S: `TEAM#${teamId}` },
         GSI1SK: { S: `ACTION#${taskId}` },
+        // Add GSI2 for user task efficient querying
+        ...(assigneeUserId ? { GSI2PK: { S: `USER#${assigneeUserId}` }, GSI2SK: { S: `ACTION#${taskId}` } } : {}),
         teamId: { S: teamId },
         actionId: { S: taskId },
         task: { S: body.task || 'Untitled Task' },
         description: { S: body.description || '' },
         priority: { S: body.priority || 'MEDIUM' },
-        owner: body.assignee ? { S: body.assignee } : { NULL: true },
-        currentOwner: body.assignee ? { S: body.assignee } : { NULL: true },
+        assigneeUserId: assigneeUserId ? { S: assigneeUserId } : { NULL: true },
+        currentOwner: body.assigneeEmail ? { S: body.assigneeEmail } : { NULL: true }, // display fallback
         deadline: body.deadline ? { S: body.deadline } : { NULL: true },
         status: { S: 'PENDING' },
+        assignmentVersion: { N: '1' },
         escalationStatus: { S: 'NONE' },
+        escalationLevel: { S: 'NONE' },
         confirmedAt: { S: now },
         createdAt: { S: now },
         lastActivityAt: { S: now },
+        acknowledgedAt: { NULL: true },
+        startedAt: { NULL: true },
         timeline: {
           L: [{
             M: {
               event: { S: 'Task created and assigned' },
-              actor: { S: body.assignedBy || 'leader' },
+              actorId: { S: auth.userId },
               timestamp: { S: now },
               note: { S: '' }
             }
@@ -189,6 +292,16 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
   const taskGetMatch = path.match(/^\/teams\/([a-zA-Z0-9-]+)\/tasks$/);
   if (taskGetMatch && method === 'GET') {
     const teamId = taskGetMatch[1];
+    
+    // Auth Check: Admin or Member of team
+    if (!isAdmin) {
+      const { Item: membership } = await docClient.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: `MEMBER#${auth.userId}` } }
+      }));
+      if (!membership) return forbidden('You must be a member of this team to view its tasks');
+    }
+
     const { Items } = await docClient.send(new QueryCommand({
       TableName: TABLE_NAME,
       IndexName: 'GSI1',
@@ -203,67 +316,106 @@ export async function handleTeamRoutes(path: string, method: string, event: any)
   if (taskUpdateMatch && method === 'PUT') {
     const taskId = taskUpdateMatch[1];
     const body = JSON.parse(event.body || '{}');
-
-    // First find the PK of the task using GSI1 if we only have taskId?
-    // Wait, we know PK is TASK#taskId OR meetingId.
-    // If it's a meeting action, its PK is meetingId. 
-    // To update a task by just taskId, we'd need to know its PK.
-    // Let's assume the frontend passes `meetingId` if it belongs to a meeting, or `pk` in the body.
     const pk = body.pk || `TASK#${taskId}`;
+
+    // 1. Fetch Task
+    const { Item: actionItem } = await docClient.send(new GetItemCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: { S: pk }, SK: { S: `ACTION#${taskId}` } }
+    }));
+    if (!actionItem) return badRequest('Task not found');
+    
+    // Auth Check: Is caller assigneeUserId, Team Leader, or Admin?
+    const assigneeUserId = actionItem.assigneeUserId?.S;
+    if (!isAdmin && assigneeUserId !== auth.userId) {
+       // Check if they are team leader
+       const teamId = actionItem.teamId?.S;
+       if (!teamId) return forbidden('Only the assignee can update this task');
+       const { Item: teamData } = await docClient.send(new GetItemCommand({
+         TableName: TABLE_NAME,
+         Key: { PK: { S: `TEAM#${teamId}` }, SK: { S: 'METADATA' } }
+       }));
+       if (teamData?.leaderUserId?.S !== auth.userId) {
+         return forbidden('Only the assignee, team leader, or admin can update this task');
+       }
+    }
+
+    const currentStatus = actionItem.status?.S || 'PENDING';
+    const newStatus = body.status;
+
+    // Enforce valid transitions if status is changing
+    if (newStatus && newStatus !== currentStatus) {
+      const validTransitions: Record<string, string[]> = {
+         'PENDING': ['ACKNOWLEDGED', 'REASSIGNED'],
+         'ACKNOWLEDGED': ['IN_PROGRESS'],
+         'IN_PROGRESS': ['COMPLETED', 'BLOCKED', 'REASSIGNED'],
+         'BLOCKED': ['IN_PROGRESS', 'REASSIGNED'],
+         'COMPLETED': ['IN_PROGRESS'], // reopen
+      };
+      
+      if (!validTransitions[currentStatus]?.includes(newStatus)) {
+         return badRequest(`Invalid state transition from ${currentStatus} to ${newStatus}`);
+      }
+    }
 
     const parts = [];
     const vals: any = { ':now': { S: now } };
+    const names: any = {};
 
-    if (body.status) {
+    if (newStatus && newStatus !== currentStatus) {
       parts.push('#s = :st');
-      vals[':st'] = { S: body.status };
-    }
-    if (body.status === 'ACKNOWLEDGED' && body.previousStatus === 'PENDING') {
-      parts.push('acknowledgedAt = :now');
-    }
-    if (body.status === 'IN_PROGRESS' && body.previousStatus !== 'IN_PROGRESS') {
-      parts.push('startedAt = :now');
-    }
-    if (body.status === 'COMPLETED') {
-      parts.push('completedAt = :now');
+      names['#s'] = 'status';
+      vals[':st'] = { S: newStatus };
+      
+      if (newStatus === 'ACKNOWLEDGED') {
+        parts.push('acknowledgedAt = :now');
+      }
+      if (newStatus === 'IN_PROGRESS' && currentStatus !== 'IN_PROGRESS') {
+        parts.push('startedAt = :now');
+      }
+      if (newStatus === 'COMPLETED') {
+        parts.push('completedAt = :now');
+      }
     }
 
     parts.push('lastActivityAt = :now');
 
     const tlEvent = {
       M: {
-        event: { S: `Status changed to ${body.status}` },
-        actor: { S: body.actor || 'user' },
+        event: { S: newStatus ? `Status changed to ${newStatus}` : 'Task updated' },
+        actorId: { S: auth.userId },
         timestamp: { S: now },
-        note: { S: '' }
+        note: { S: body.note || '' }
       }
     };
     parts.push('timeline = list_append(if_not_exists(timeline, :el), :te)');
     vals[':el'] = { L: [] };
     vals[':te'] = { L: [tlEvent] };
+    
+    // Assignment Version Bump if reassigned
+    if (newStatus === 'REASSIGNED') {
+      parts.push('assignmentVersion = assignmentVersion + :one');
+      vals[':one'] = { N: '1' };
+    }
 
     await docClient.send(new UpdateItemCommand({
       TableName: TABLE_NAME,
       Key: { PK: { S: pk }, SK: { S: `ACTION#${taskId}` } },
       UpdateExpression: `SET ${parts.join(', ')}`,
-      ExpressionAttributeNames: body.status ? { '#s': 'status' } : undefined,
+      ExpressionAttributeNames: Object.keys(names).length > 0 ? names : undefined,
       ExpressionAttributeValues: vals
     }));
 
     return ok({ success: true });
   }
 
-  // GET /users/{email}/teams (Get all teams a user belongs to)
-  const userTeamsMatch = path.match(/^\/users\/(.+)\/teams$/);
-  if (userTeamsMatch && method === 'GET') {
-    const email = decodeURIComponent(userTeamsMatch[1]).toLowerCase();
-    
-    // Query GSI1 for USER#email
+  // GET /me/teams (Get all teams the caller belongs to)
+  if (path === '/me/teams' && method === 'GET') {
     const { Items } = await docClient.send(new QueryCommand({
       TableName: TABLE_NAME,
       IndexName: 'GSI1',
       KeyConditionExpression: 'GSI1PK = :gpk AND begins_with(GSI1SK, :gskPrefix)',
-      ExpressionAttributeValues: { ':gpk': { S: `USER#${email}` }, ':gskPrefix': { S: 'TEAM#' } }
+      ExpressionAttributeValues: { ':gpk': { S: `USER#${auth.userId}` }, ':gskPrefix': { S: 'TEAM#' } }
     }));
     
     return ok((Items || []).map(item => unmarshall(item)));

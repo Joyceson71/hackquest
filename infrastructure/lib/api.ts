@@ -55,6 +55,7 @@ export class ApiStack extends cdk.Stack {
         TABLE_NAME: props.mainTable.tableName,
         BUCKET_NAME: props.transcriptsBucket.bucketName,
         USER_POOL_ID: userPool.userPoolId,
+        ADMIN_EMAILS: 'admin@example.com,joycesondanielraj00@gmail.com',
       },
       projectRoot: path.join(__dirname, '../../'),
     });

@@ -96,6 +96,22 @@ export const handler = async (event: any) => {
     return { statusCode: 200, headers: CORS, body: '' };
   }
 
+  // Extract identity from Cognito Authorizer claims
+  const claims = event.requestContext?.authorizer?.claims || {};
+  const auth = {
+    userId: claims.sub,
+    email: claims.email?.toLowerCase(),
+    name: claims.name || claims.email,
+    groups: claims['cognito:groups'] || '',
+  };
+
+  if (!auth.userId) {
+    return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'Unauthorized: Missing claims' }) };
+  }
+
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+  const isAdmin = adminEmails.includes(auth.email) || auth.groups.includes('Admins');
+
   try {
     // ──────────────────────────────────────────────────────────────────────────
     // GET /meetings
@@ -311,6 +327,9 @@ export const handler = async (event: any) => {
             speakerContext: proposedItem?.speakerContext || { NULL: true },
             // Status
             status: { S: 'PENDING' },
+            assignmentVersion: { N: '1' },
+            acknowledgedAt: { NULL: true },
+            startedAt: { NULL: true },
             // Escalation
             escalationStatus: { S: 'NONE' },
             escalationTriggeredAt: { NULL: true },
@@ -325,7 +344,7 @@ export const handler = async (event: any) => {
               L: [{
                 M: {
                   event: { S: 'Action confirmed from transcript extraction' },
-                  actor: { S: 'user' },
+                  actor: { S: auth.userId },
                   timestamp: { S: now },
                   note: { S: '' }
                 }
@@ -333,6 +352,7 @@ export const handler = async (event: any) => {
             },
             confirmedAt: { S: now },
             completedAt: { NULL: true },
+            lastActivityAt: { S: now },
           }
         }));
 
@@ -375,33 +395,48 @@ export const handler = async (event: any) => {
       const body = JSON.parse(event.body || '{}');
       const newStatus = body.status || 'PENDING';
 
+      // First fetch the action to verify state transitions and ownership
+      const { Item: actionItem } = await docClient.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } }
+      }));
+      if (!actionItem) return notFound('Action not found');
+
+      // Authorization: Caller must be the current owner OR admin OR team leader
+      // Since this is a meeting confirmed-action (not a team task), it might not have a teamId.
+      // If it's a meeting action, we just check if auth.email matches owner, or isAdmin.
+      const currentOwnerEmail = actionItem.currentOwner?.S?.toLowerCase() || '';
+      if (!isAdmin && currentOwnerEmail !== auth.email) {
+        return { statusCode: 403, headers: CORS, body: JSON.stringify({ error: 'Forbidden: Only the assignee or admin can update this action' }) };
+      }
+
       const timelineEntry = {
         M: {
           event: { S: `Status changed to ${newStatus}` },
-          actor: { S: 'user' },
+          actor: { S: auth.userId },
           timestamp: { S: now },
           note: { S: body.note || '' }
         }
       };
 
+      const parts = ['#s = :s', 'lastActivityAt = :now'];
+      const vals: any = { ':s': { S: newStatus }, ':now': { S: now }, ':el': { L: [] }, ':te': { L: [timelineEntry] } };
+      
+      if (newStatus === 'COMPLETED') {
+         parts.push('completedAt = :now');
+      }
+
       try {
         await docClient.send(new UpdateItemCommand({
           TableName: TABLE_NAME,
           Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } },
-          UpdateExpression: 'SET #s = :s, timeline = list_append(if_not_exists(timeline, :el), :te)',
+          UpdateExpression: `SET ${parts.join(', ')}, timeline = list_append(if_not_exists(timeline, :el), :te)`,
           ExpressionAttributeNames: { '#s': 'status' },
-          ExpressionAttributeValues: {
-            ':s': { S: newStatus }, ':el': { L: [] }, ':te': { L: [timelineEntry] }
-          }
+          ExpressionAttributeValues: vals
         }));
-      } catch {
-        await docClient.send(new UpdateItemCommand({
-          TableName: TABLE_NAME,
-          Key: { PK: { S: meetingId }, SK: { S: `ACTION#${actionId}` } },
-          UpdateExpression: 'SET #s = :s',
-          ExpressionAttributeNames: { '#s': 'status' },
-          ExpressionAttributeValues: { ':s': { S: newStatus } }
-        }));
+      } catch (e: any) {
+         console.error('Update action error:', e);
+         return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'Failed to update action' }) };
       }
       return ok({ success: true });
     }
@@ -659,9 +694,22 @@ export const handler = async (event: any) => {
     }
 
     // ──────────────────────────────────────────────────────────────────────────
+    // GET /me/tasks
+    // ──────────────────────────────────────────────────────────────────────────
+    if (path === '/me/tasks' && method === 'GET') {
+      const { Items } = await docClient.send(new QueryCommand({
+        TableName: TABLE_NAME,
+        IndexName: 'GSI2',
+        KeyConditionExpression: 'GSI2PK = :gpk AND begins_with(GSI2SK, :gskPrefix)',
+        ExpressionAttributeValues: { ':gpk': { S: `USER#${auth.userId}` }, ':gskPrefix': { S: 'ACTION#' } }
+      }));
+      return ok((Items || []).map(item => unmarshall(item)));
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
     // TEAM ROUTES
     // ──────────────────────────────────────────────────────────────────────────
-    const teamRouteResponse = await handleTeamRoutes(path, method, event);
+    const teamRouteResponse = await handleTeamRoutes(path, method, event, auth, isAdmin);
     if (teamRouteResponse !== null) return teamRouteResponse;
 
     // ──────────────────────────────────────────────────────────────────────────

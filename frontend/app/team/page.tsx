@@ -43,7 +43,7 @@ export default function TeamDashboardPage() {
     
     const fetchMyTeams = async () => {
       try {
-        const res = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${encodeURIComponent(userEmail)}/teams`);
+        const res = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/me/teams`);
         if (res.ok) {
           const myTeams = await res.json();
           setTeams(myTeams);
@@ -94,7 +94,8 @@ export default function TeamDashboardPage() {
 
   if (!selectedTeam) return null;
 
-  const isLeader = selectedTeam.leaderEmail?.toLowerCase() === userEmail?.toLowerCase();
+  const currentUserMember = selectedTeam.members.find(m => m.email.toLowerCase() === userEmail?.toLowerCase());
+  const isLeader = currentUserMember?.role === 'LEADER';
 
   // Calculate workloads
   const workloads: Record<string, { active: number, pending: number, overdue: number, score: number }> = {};

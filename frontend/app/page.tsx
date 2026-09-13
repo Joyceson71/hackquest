@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 import { useRole } from '@/lib/role-context';
 import RoleGuard from '@/components/RoleGuard';
+import { signOut } from 'aws-amplify/auth';
 
 interface Meeting {
   PK: string;
@@ -68,6 +69,7 @@ export default function Dashboard() {
           localStorage.removeItem('meetingcompiler_user_role');
           localStorage.removeItem('meetingcompiler_user_email');
           localStorage.removeItem('meetingcompiler_user_name');
+          try { await signOut(); } catch (e) { /* ignore */ }
           window.location.href = '/login';
         }
       } catch (e) {

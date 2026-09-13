@@ -5,6 +5,7 @@ import { authenticatedFetch } from '@/lib/api';
 import { useRole } from '@/lib/role-context';
 import { ConfirmedAction } from '@/components/actions/ActionRow';
 import RoleGuard from '@/components/RoleGuard';
+import { signOut } from 'aws-amplify/auth';
 import { motion, Variants } from 'framer-motion';
 import {
   Loader2,
@@ -34,8 +35,10 @@ interface EmployeeAction extends ConfirmedAction {
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   PENDING: { label: 'Pending', color: 'text-amber-400 bg-amber-400/10 border-amber-400/20', icon: Clock },
+  ACKNOWLEDGED: { label: 'Acknowledged', color: 'text-purple-400 bg-purple-400/10 border-purple-400/20', icon: CheckCircle },
   IN_PROGRESS: { label: 'In Progress', color: 'text-blue-400 bg-blue-400/10 border-blue-400/20', icon: RefreshCw },
   DONE: { label: 'Done', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20', icon: CheckCircle },
+  COMPLETED: { label: 'Completed', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20', icon: CheckCircle },
   BLOCKED: { label: 'Blocked', color: 'text-red-400 bg-red-400/10 border-red-400/20', icon: AlertTriangle },
   ESCALATED: { label: 'Escalated', color: 'text-orange-400 bg-orange-400/10 border-orange-400/20', icon: AlertTriangle },
 };
@@ -74,9 +77,14 @@ function ActionCard({
   const StatusIcon = cfg.icon;
   const isUpdating = updating === action.actionId;
   const isOverdue =
-    action.deadline && new Date(action.deadline) < new Date() && status !== 'DONE';
+    action.deadline && new Date(action.deadline) < new Date() && !['DONE', 'COMPLETED'].includes(status);
 
-  const nextStatuses = ['PENDING', 'IN_PROGRESS', 'DONE', 'BLOCKED'].filter((s) => s !== status);
+  let nextStatuses: string[] = [];
+  if (status === 'PENDING') nextStatuses = ['ACKNOWLEDGED'];
+  else if (status === 'ACKNOWLEDGED') nextStatuses = ['IN_PROGRESS'];
+  else if (status === 'IN_PROGRESS') nextStatuses = ['COMPLETED', 'BLOCKED'];
+  else if (status === 'BLOCKED') nextStatuses = ['IN_PROGRESS'];
+  else if (status === 'COMPLETED' || status === 'DONE') nextStatuses = ['IN_PROGRESS'];
 
   return (
     <motion.div variants={itemVariants} className="glass-card overflow-hidden group">
@@ -190,57 +198,27 @@ function EmployeeDashboardInner() {
     try {
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
 
-      // 1. Fetch all meetings
-      const meetingsRes = await authenticatedFetch(`${apiUrl}/meetings`);
-      if (meetingsRes.status === 401 || meetingsRes.status === 403) {
+      // 1. Fetch user's tasks
+      const res = await authenticatedFetch(`${apiUrl}/me/tasks`);
+      if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('meetingcompiler_user_role');
         localStorage.removeItem('meetingcompiler_user_email');
         localStorage.removeItem('meetingcompiler_user_name');
+        try { await signOut(); } catch (e) { /* ignore */ }
         window.location.href = '/login';
         return;
       }
-      if (!meetingsRes.ok) return;
-      const meetings: MeetingMeta[] = await meetingsRes.json();
-
-      // 2. For each meeting, fetch confirmed actions and filter by current user
-      const allActions: EmployeeAction[] = [];
-      const userIdentifier = userName || userEmail || '';
-
-      await Promise.all(
-        meetings.map(async (meeting) => {
-          try {
-            const res = await authenticatedFetch(
-              `${apiUrl}/meetings/${meeting.PK}/confirmed-actions`
-            );
-            if (!res.ok) return;
-            const data: ConfirmedAction[] = await res.json();
-
-            // Filter actions assigned to this employee (case-insensitive partial match)
-            const mine = data.filter((a) => {
-              const owner = (a.currentOwner || a.owner || '').toLowerCase();
-              const id = userIdentifier.toLowerCase();
-              return owner && id && (owner.includes(id) || id.includes(owner));
-            });
-
-            for (const action of mine) {
-              allActions.push({
-                ...action,
-                meetingTitle: meeting.title || 'Untitled Meeting',
-                meetingId: meeting.PK,
-              });
-            }
-          } catch { /* skip failed meetings */ }
-        })
-      );
+      if (!res.ok) return;
+      const data: EmployeeAction[] = await res.json();
 
       // Sort: overdue first, then by deadline
-      allActions.sort((a, b) => {
+      data.sort((a, b) => {
         const aDate = a.deadline ? new Date(a.deadline).getTime() : Infinity;
         const bDate = b.deadline ? new Date(b.deadline).getTime() : Infinity;
         return aDate - bDate;
       });
 
-      setActions(allActions);
+      setActions(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -257,7 +235,11 @@ function EmployeeDashboardInner() {
     setUpdating(actionId);
     try {
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/$/, '');
-      await authenticatedFetch(`${apiUrl}/meetings/${meetingId}/confirmed-actions/${actionId}`, {
+      const endpoint = meetingId
+        ? `${apiUrl}/meetings/${meetingId}/confirmed-actions/${actionId}`
+        : `${apiUrl}/tasks/${actionId}`;
+
+      await authenticatedFetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -272,17 +254,17 @@ function EmployeeDashboardInner() {
     }
   };
 
-  const statuses = ['ALL', 'PENDING', 'IN_PROGRESS', 'DONE', 'BLOCKED'];
+  const statuses = ['ALL', 'PENDING', 'ACKNOWLEDGED', 'IN_PROGRESS', 'COMPLETED', 'BLOCKED'];
   const filtered =
-    filter === 'ALL' ? actions : actions.filter((a) => a.status === filter);
+    filter === 'ALL' ? actions : actions.filter((a) => a.status === filter || (filter === 'COMPLETED' && a.status === 'DONE'));
 
   const stats = {
     total: actions.length,
-    pending: actions.filter((a) => a.status === 'PENDING').length,
+    pending: actions.filter((a) => a.status === 'PENDING' || a.status === 'ACKNOWLEDGED').length,
     inProgress: actions.filter((a) => a.status === 'IN_PROGRESS').length,
-    done: actions.filter((a) => a.status === 'DONE').length,
+    done: actions.filter((a) => a.status === 'DONE' || a.status === 'COMPLETED').length,
     overdue: actions.filter(
-      (a) => a.deadline && new Date(a.deadline) < new Date() && a.status !== 'DONE'
+      (a) => a.deadline && new Date(a.deadline) < new Date() && !['DONE', 'COMPLETED'].includes(a.status || '')
     ).length,
   };
 
