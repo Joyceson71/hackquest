@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useRole, UserRole } from '@/lib/role-context';
+import { useRole, UserRole, isAdminEmail } from '@/lib/role-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck,
@@ -42,6 +42,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      if (selectedRole === 'admin' && !isAdminEmail(email)) {
+        throw new Error("You are not authorized to access or create an Admin account.");
+      }
+
       if (mode === 'LOGIN') {
         const { isSignedIn, nextStep } = await signIn({ username: email, password });
         if (isSignedIn) {
