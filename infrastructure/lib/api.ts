@@ -54,9 +54,16 @@ export class ApiStack extends cdk.Stack {
       environment: {
         TABLE_NAME: props.mainTable.tableName,
         BUCKET_NAME: props.transcriptsBucket.bucketName,
+        USER_POOL_ID: userPool.userPoolId,
       },
       projectRoot: path.join(__dirname, '../../'),
     });
+
+    // Grant Lambda permission to ListUsers in the User Pool
+    serveApiFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['cognito-idp:ListUsers'],
+      resources: [userPool.userPoolArn],
+    }));
 
     // Grant DynamoDB read/write to fn-api
     props.mainTable.grantReadWriteData(serveApiFn);
@@ -127,6 +134,10 @@ export class ApiStack extends cdk.Stack {
     const participants = singleMeeting.addResource('participants');
     const unavailable = participants.addResource('unavailable');
     unavailable.addMethod('POST', lambdaIntegration, authOpts);
+
+    // Employees Directory: /employees
+    const employees = api.root.addResource('employees');
+    employees.addMethod('GET', lambdaIntegration, authOpts);
 
     this.apiUrl = api.url;
 

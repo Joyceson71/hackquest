@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { signOut } from 'aws-amplify/auth';
 import { Button } from '@/components/ui/button';
-import { LogOut, ShieldCheck, User } from 'lucide-react';
+import { LogOut, ShieldCheck, User, Users } from 'lucide-react';
 import { useRole } from '@/lib/role-context';
 
 export default function UserMenu() {
@@ -26,6 +26,18 @@ export default function UserMenu() {
 
   return (
     <div className="flex items-center gap-3">
+      {isAdmin && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push('/team')}
+          className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-primary hover:text-primary bg-card"
+        >
+          <Users className="h-4 w-4 mr-2 stroke-[3]" />
+          TEAM
+        </Button>
+      )}
+
       {/* Role badge */}
       <div
         className={`hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 text-xs font-black uppercase shadow-brutal-sm ${
