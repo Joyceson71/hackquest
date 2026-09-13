@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 export type UserRole = 'admin' | 'employee' | null;
 
@@ -39,15 +39,16 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 }
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
-  const [role, setRoleState] = useState<UserRole>(() =>
-    loadFromStorage<UserRole>(ROLE_STORAGE_KEY, null)
-  );
-  const [userEmail, setUserEmailState] = useState<string | null>(() =>
-    loadFromStorage<string | null>(EMAIL_STORAGE_KEY, null)
-  );
-  const [userName, setUserNameState] = useState<string | null>(() =>
-    loadFromStorage<string | null>(NAME_STORAGE_KEY, null)
-  );
+  const [role, setRoleState] = useState<UserRole>(null);
+  const [userEmail, setUserEmailState] = useState<string | null>(null);
+  const [userName, setUserNameState] = useState<string | null>(null);
+
+  // Hydrate from localStorage only on client to prevent hydration mismatch
+  useEffect(() => {
+    setRoleState(loadFromStorage<UserRole>(ROLE_STORAGE_KEY, null));
+    setUserEmailState(loadFromStorage<string | null>(EMAIL_STORAGE_KEY, null));
+    setUserNameState(loadFromStorage<string | null>(NAME_STORAGE_KEY, null));
+  }, []);
 
   const setRole = useCallback((r: UserRole) => {
     setRoleState(r);
