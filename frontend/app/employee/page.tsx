@@ -192,6 +192,13 @@ function EmployeeDashboardInner() {
 
       // 1. Fetch all meetings
       const meetingsRes = await authenticatedFetch(`${apiUrl}/meetings`);
+      if (meetingsRes.status === 401 || meetingsRes.status === 403) {
+        localStorage.removeItem('meetingcompiler_user_role');
+        localStorage.removeItem('meetingcompiler_user_email');
+        localStorage.removeItem('meetingcompiler_user_name');
+        window.location.href = '/login';
+        return;
+      }
       if (!meetingsRes.ok) return;
       const meetings: MeetingMeta[] = await meetingsRes.json();
 

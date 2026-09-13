@@ -6,10 +6,10 @@ export async function authenticatedFetch(input: RequestInfo | URL, init?: Reques
 
   const headers = new Headers(init?.headers);
   if (token) {
-    headers.set('Authorization', token);
+    headers.set('Authorization', `Bearer ${token}`);
   }
 
-  // Normalize double slashes in URL path (e.g. if NEXT_PUBLIC_API_URL ends with a slash)
+  // Normalize double slashes in URL path
   let normalizedUrl = input;
   if (typeof input === 'string') {
     normalizedUrl = input.replace(/([^:]\/)\/+/g, '$1');
@@ -17,8 +17,24 @@ export async function authenticatedFetch(input: RequestInfo | URL, init?: Reques
     normalizedUrl = input.href.replace(/([^:]\/)\/+/g, '$1');
   }
 
-  return fetch(normalizedUrl, {
-    ...init,
-    headers,
-  });
+  try {
+    const res = await fetch(normalizedUrl, {
+      ...init,
+      headers,
+    });
+    return res;
+  } catch (error: any) {
+    if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+      console.error(
+        `[authenticatedFetch] Network or CORS Error fetching ${normalizedUrl}. ` +
+        `This often happens if API Gateway rejects the token (401 Unauthorized) but does not return CORS headers.`
+      );
+      // Return a graceful 401 response to prevent the app from completely crashing
+      return new Response(JSON.stringify({ error: 'Network or CORS Error (Likely Unauthorized)' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    throw error;
+  }
 }

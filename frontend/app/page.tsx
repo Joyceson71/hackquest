@@ -63,6 +63,12 @@ export default function Dashboard() {
             return timeB - timeA;
           });
           setMeetings(sorted);
+        } else if (res.status === 401 || res.status === 403) {
+          // Token is likely invalid, expired, or missing.
+          localStorage.removeItem('meetingcompiler_user_role');
+          localStorage.removeItem('meetingcompiler_user_email');
+          localStorage.removeItem('meetingcompiler_user_name');
+          window.location.href = '/login';
         }
       } catch (e) {
         console.error('Failed to fetch meetings', e);
