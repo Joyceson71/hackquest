@@ -140,32 +140,63 @@ OUTPUT FORMAT:
       lower.includes('decided') ||
       lower.includes('decision:');
 
-    const isTask =
-      lower.includes('will') ||
+    // Dynamic deadline detection — calculates dates relative to now
+    const now = new Date();
+    function nextWeekday(dayOfWeek: number): string {
+      const d = new Date(now);
+      const diff = (dayOfWeek - d.getDay() + 7) % 7 || 7;
+      d.setDate(d.getDate() + diff);
+      d.setHours(17, 0, 0, 0);
+      return d.toISOString();
+    }
+
+    let deadline: string | null = null;
+    let hasTimeKeyword = false;
+
+    if (/\bmonday\b/.test(lower))         { deadline = nextWeekday(1); hasTimeKeyword = true; }
+    else if (/\btuesday\b/.test(lower))   { deadline = nextWeekday(2); hasTimeKeyword = true; }
+    else if (/\bwednesday\b/.test(lower)) { deadline = nextWeekday(3); hasTimeKeyword = true; }
+    else if (/\bthursday\b/.test(lower))  { deadline = nextWeekday(4); hasTimeKeyword = true; }
+    else if (/\bfriday\b/.test(lower))    { deadline = nextWeekday(5); hasTimeKeyword = true; }
+    else if (/\bsaturday\b/.test(lower))  { deadline = nextWeekday(6); hasTimeKeyword = true; }
+    else if (/\bsunday\b/.test(lower))    { deadline = nextWeekday(0); hasTimeKeyword = true; }
+    else if (/\btomorrow\b/.test(lower) || /\bend of day\b/.test(lower) || /\beod\b/.test(lower)) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + 1); d.setHours(17, 0, 0, 0);
+      deadline = d.toISOString(); hasTimeKeyword = true;
+    }
+    else if (/\btoday\b/.test(lower) || /\bthis afternoon\b/.test(lower)) {
+      const d = new Date(now);
+      d.setHours(17, 0, 0, 0);
+      deadline = d.toISOString(); hasTimeKeyword = true;
+    }
+    else if (/\bthis week\b/.test(lower)) { deadline = nextWeekday(5); hasTimeKeyword = true; }
+    else if (/\bnext week\b/.test(lower)) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + 7); d.setHours(17, 0, 0, 0);
+      deadline = d.toISOString(); hasTimeKeyword = true;
+    }
+
+    // Commitment signals: first-person ("I'll", "I will") OR explicit assignments ("can you take", "owns")
+    const hasCommitment =
       lower.includes("i'll") ||
-      lower.includes('can handle') ||
-      lower.includes('can you') ||
-      lower.includes('need to') ||
-      lower.includes("let's") ||
-      lower.includes('owns') ||
-      lower.includes('own that') ||
+      lower.includes("i will") ||
+      lower.includes("i'm on it") ||
+      lower.includes("i have the") ||
       lower.includes('action item') ||
-      lower.includes('targeting');
+      lower.includes('take on') ||
+      lower.includes('can handle') ||
+      lower.includes('owns') ||
+      lower.includes('assigned') ||
+      (lower.includes('can you') && resolvedOwner !== speakerName);
+
+    // TASK must have both a commitment signal AND a time keyword
+    // This prevents casual statements like "Let's kick off" or "Let's reconvene" from being extracted
+    const isTask = hasCommitment && hasTimeKeyword;
 
     if (isDecision || isTask) {
-      // Basic deadline detection
-      let deadline: string | null = null;
-      if (lower.includes('monday')) deadline = '2026-09-14T17:00:00.000Z';
-      else if (lower.includes('tuesday')) deadline = '2026-09-15T17:00:00.000Z';
-      else if (lower.includes('wednesday')) deadline = '2026-09-16T17:00:00.000Z';
-      else if (lower.includes('thursday')) deadline = '2026-09-17T17:00:00.000Z';
-      else if (lower.includes('friday')) deadline = '2026-09-18T17:00:00.000Z';
-      else if (lower.includes('tomorrow')) deadline = '2026-09-14T09:00:00.000Z';
-      else if (lower.includes('today') || lower.includes('this afternoon') || lower.includes('eod')) deadline = '2026-09-13T17:00:00.000Z';
-      else if (lower.includes('next week')) deadline = '2026-09-21T17:00:00.000Z';
-
       const type = isDecision ? 'DECISION' : 'TASK';
-      const confidence = isDecision ? 95 : (resolvedOwner && deadline ? 90 : (resolvedOwner || deadline ? 80 : 65));
+      const confidence = isDecision ? 95 : (resolvedOwner && hasTimeKeyword ? 90 : 80);
 
       mockItems.push({
         type,
@@ -175,7 +206,7 @@ OUTPUT FORMAT:
         confidenceScore: confidence,
         confidenceReason: isDecision
           ? 'Explicit consensus or approval noted in transcript.'
-          : 'Direct commitment or assignment identified from discussion.',
+          : 'Direct commitment with explicit time deadline identified.',
         evidenceLineStart: i,
         evidenceLineEnd: i,
       });
