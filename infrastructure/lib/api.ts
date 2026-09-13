@@ -97,7 +97,59 @@ export class ApiStack extends cdk.Stack {
     const apiProxy = api.root.addResource('{proxy+}');
     apiProxy.addMethod('ANY', lambdaIntegration, authOpts);
     api.root.addMethod('ANY', lambdaIntegration, authOpts);
+    // ─── Gateway Responses: inject CORS headers on 401/403 ───────────────────
+    // When the Cognito authorizer rejects a request, API Gateway returns the
+    // 401/403 BEFORE the Lambda runs, so the Lambda's CORS headers are never
+    // sent. This means the browser gets a CORS-blocked response and throws a
+    // TypeError('Failed to fetch'), making the error invisible to the app.
+    // Adding Gateway Responses here ensures CORS headers are always present.
+    const corsResponseParams = {
+      'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+      'gatewayresponse.header.Access-Control-Allow-Headers': "'Content-Type,Authorization'",
+      'gatewayresponse.header.Access-Control-Allow-Methods': "'GET,POST,PUT,PATCH,DELETE,OPTIONS'",
+    };
 
+    new apigw.GatewayResponse(this, 'UnauthorizedGatewayResponse', {
+      restApi: api,
+      type: apigw.ResponseType.UNAUTHORIZED,
+      statusCode: '401',
+      responseHeaders: corsResponseParams,
+      templates: {
+        'application/json': '{"message": "$context.authorizer.claims.iss Unauthorized", "error": "Unauthorized"}',
+      },
+    });
+
+    new apigw.GatewayResponse(this, 'AccessDeniedGatewayResponse', {
+      restApi: api,
+      type: apigw.ResponseType.ACCESS_DENIED,
+      statusCode: '403',
+      responseHeaders: corsResponseParams,
+      templates: {
+        'application/json': '{"message": "Access Denied", "error": "Forbidden"}',
+      },
+    });
+
+    new apigw.GatewayResponse(this, 'ExpiredTokenGatewayResponse', {
+      restApi: api,
+      type: apigw.ResponseType.EXPIRED_TOKEN,
+      statusCode: '401',
+      responseHeaders: corsResponseParams,
+      templates: {
+        'application/json': '{"message": "Token expired", "error": "Unauthorized"}',
+      },
+    });
+
+    new apigw.GatewayResponse(this, 'InvalidSignatureGatewayResponse', {
+      restApi: api,
+      type: apigw.ResponseType.INVALID_SIGNATURE,
+      statusCode: '401',
+      responseHeaders: corsResponseParams,
+      templates: {
+        'application/json': '{"message": "Invalid signature", "error": "Unauthorized"}',
+      },
+    });
+
+    // ─── Outputs ─────────────────────────────────────────────────────────────
 
 
     this.apiUrl = api.url;

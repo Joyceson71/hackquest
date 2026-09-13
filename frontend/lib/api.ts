@@ -6,7 +6,7 @@ export async function authenticatedFetch(input: RequestInfo | URL, init?: Reques
 
   const headers = new Headers(init?.headers);
   if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
+    headers.set('Authorization', token);
   }
 
   // Normalize double slashes in URL path

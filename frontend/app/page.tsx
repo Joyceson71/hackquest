@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 import { useRole } from '@/lib/role-context';
 import RoleGuard from '@/components/RoleGuard';
-import { signOut } from 'aws-amplify/auth';
 
 interface Meeting {
   PK: string;
@@ -65,12 +64,11 @@ export default function Dashboard() {
           });
           setMeetings(sorted);
         } else if (res.status === 401 || res.status === 403) {
-          // Token is likely invalid, expired, or missing.
-          localStorage.removeItem('meetingcompiler_user_role');
-          localStorage.removeItem('meetingcompiler_user_email');
-          localStorage.removeItem('meetingcompiler_user_name');
-          try { await signOut(); } catch (e) { /* ignore */ }
-          window.location.href = '/login';
+          // API rejected our token. Log but do NOT aggressively redirect —
+          // the AuthProvider is responsible for session management.
+          // A stale/expired token on one fetch should not nuke the whole session.
+          console.error('[Dashboard] API returned', res.status, '— token may be expired. Please refresh.');
+          setMeetings([]);
         }
       } catch (e) {
         console.error('Failed to fetch meetings', e);
