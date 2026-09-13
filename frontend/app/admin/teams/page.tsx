@@ -59,7 +59,7 @@ export default function AdminTeamsPage() {
   return (
     <RoleGuard allowedRole="admin">
       <div className="container mx-auto px-6 py-12 max-w-6xl">
-        <header className="mb-12 border-b-4 border-white pb-6 flex justify-between items-end">
+        <header className="mb-10 border-b-4 border-border pb-6 flex flex-wrap gap-4 justify-between items-end">
           <div>
             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
               Teams Management
@@ -70,25 +70,28 @@ export default function AdminTeamsPage() {
           </div>
         </header>
 
-        <div className="bg-card border-4 border-white shadow-brutal-lg p-6 mb-12 flex gap-4">
+        <div className="bg-card border-4 border-border shadow-brutal-lg p-6 mb-10 flex flex-wrap gap-4">
           <input 
             type="text" 
             placeholder="New Team Name" 
-            className="flex-1 bg-background border-4 border-white p-3 font-bold uppercase focus:outline-none focus:border-primary text-foreground"
+            className="flex-1 min-w-0 bg-background border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
             value={newTeamName}
             onChange={(e) => setNewTeamName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleCreateTeam()}
           />
           <button 
             onClick={handleCreateTeam}
             disabled={!newTeamName.trim()}
-            className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-white hover:bg-white hover:text-black transition-colors disabled:opacity-50"
+            className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-border hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 shadow-brutal-sm flex items-center gap-2 whitespace-nowrap"
           >
-            Create Team
+            <Plus className="w-4 h-4 stroke-[3]" /> Create Team
           </button>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 animate-spin" /></div>
+          <div className="flex justify-center items-center min-h-[30vh]">
+            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+          </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teams.map(team => (

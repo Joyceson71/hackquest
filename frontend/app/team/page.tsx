@@ -81,7 +81,11 @@ export default function TeamDashboardPage() {
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 animate-spin" /></div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[40vh]">
+      <Loader2 className="w-12 h-12 animate-spin text-primary" />
+    </div>
+  );
 
   if (teams.length === 0) {
     return (
@@ -155,10 +159,10 @@ export default function TeamDashboardPage() {
                 return (
                   <div key={member.email} className="bg-card border-4 border-white p-4 shadow-brutal flex flex-col justify-between">
                     <h3 className="font-black uppercase truncate text-foreground" title={member.email}>{member.email}</h3>
-                    <div className="flex gap-2 mt-2 text-xs font-bold uppercase">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1">Act: {w.active}</span>
-                      <span className="bg-yellow-100 text-yellow-800 px-2 py-1">Pnd: {w.pending}</span>
-                      <span className="bg-destructive/20 text-destructive px-2 py-1 border-2 border-destructive">Ovd: {w.overdue}</span>
+                    <div className="flex flex-wrap gap-2 mt-2 text-xs font-black uppercase">
+                      <span className="badge-inprogress px-2 py-1">Act: {w.active}</span>
+                      <span className="badge-pending px-2 py-1">Pnd: {w.pending}</span>
+                      <span className="badge-overdue px-2 py-1">Ovd: {w.overdue}</span>
                     </div>
                     <div className="mt-4 pt-4 border-t-2 border-white/20 flex justify-between">
                       <span className="font-bold uppercase text-xs text-foreground">Workload Score</span>
@@ -188,7 +192,7 @@ export default function TeamDashboardPage() {
                       {isOverdue && <span className="bg-destructive text-destructive-foreground px-2 py-1 text-xs font-black uppercase flex items-center gap-1 border-2 border-destructive"><AlertTriangle className="w-3 h-3"/> Overdue</span>}
                     </div>
                     <h3 className="font-black text-xl uppercase mb-1 text-foreground">{task.task}</h3>
-                    <p className="text-sm font-bold text-muted-foreground mb-4 truncate">{task.description}</p>
+                    <p className="text-sm font-bold text-muted-foreground mb-4 line-clamp-2">{task.description}</p>
                   </div>
                   
                   <div className="pt-4 border-t-2 border-white/20">

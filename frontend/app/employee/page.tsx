@@ -33,14 +33,14 @@ interface EmployeeAction extends ConfirmedAction {
   meetingId?: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  PENDING: { label: 'Pending', color: 'text-amber-400 bg-amber-400/10 border-amber-400/20', icon: Clock },
-  ACKNOWLEDGED: { label: 'Acknowledged', color: 'text-purple-400 bg-purple-400/10 border-purple-400/20', icon: CheckCircle },
-  IN_PROGRESS: { label: 'In Progress', color: 'text-blue-400 bg-blue-400/10 border-blue-400/20', icon: RefreshCw },
-  DONE: { label: 'Done', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20', icon: CheckCircle },
-  COMPLETED: { label: 'Completed', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20', icon: CheckCircle },
-  BLOCKED: { label: 'Blocked', color: 'text-red-400 bg-red-400/10 border-red-400/20', icon: AlertTriangle },
-  ESCALATED: { label: 'Escalated', color: 'text-orange-400 bg-orange-400/10 border-orange-400/20', icon: AlertTriangle },
+const STATUS_CONFIG: Record<string, { label: string; badgeClass: string; icon: React.ElementType }> = {
+  PENDING:     { label: 'Pending',     badgeClass: 'badge-pending',     icon: Clock },
+  ACKNOWLEDGED:{ label: 'Acknowledged',badgeClass: 'badge-acknowledged',icon: CheckCircle },
+  IN_PROGRESS: { label: 'In Progress', badgeClass: 'badge-inprogress',  icon: RefreshCw },
+  DONE:        { label: 'Done',        badgeClass: 'badge-completed',   icon: CheckCircle },
+  COMPLETED:   { label: 'Completed',   badgeClass: 'badge-completed',   icon: CheckCircle },
+  BLOCKED:     { label: 'Blocked',     badgeClass: 'badge-blocked',     icon: AlertTriangle },
+  ESCALATED:   { label: 'Escalated',   badgeClass: 'badge-overdue',     icon: AlertTriangle },
 };
 
 function formatDate(iso: string | null | undefined) {
@@ -88,9 +88,9 @@ function ActionCard({
 
   return (
     <motion.div variants={itemVariants} className="glass-card overflow-hidden group">
-      {/* Overdue indicator */}
+      {/* Overdue top-bar indicator */}
       {isOverdue && (
-        <div className="h-1 w-full bg-gradient-to-r from-red-500 to-orange-500" />
+        <div className="h-1.5 w-full bg-destructive" />
       )}
 
       <div className="p-5">
@@ -107,14 +107,14 @@ function ActionCard({
             <p className="text-sm font-semibold text-foreground leading-snug">{action.task}</p>
           </div>
           {/* Status badge */}
-          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full border shrink-0 ${cfg.color}`}>
+          <span className={`inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 border shrink-0 uppercase ${cfg.badgeClass}`}>
             <StatusIcon className="h-3 w-3" />
             {cfg.label}
           </span>
         </div>
 
         {/* Meta row */}
-        <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <User className="h-3 w-3" />
             {action.currentOwner || action.owner || '—'}
@@ -146,7 +146,7 @@ function ActionCard({
                   variant="outline"
                   disabled={isUpdating}
                   onClick={() => onStatusChange(action.actionId, s, action.meetingId || '')}
-                  className="text-xs h-7 px-3 bg-white/5 border-white/10 hover:bg-white/10 rounded-lg"
+                  className="text-xs h-8 px-3 font-black uppercase border-2 border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
                 >
                   {isUpdating ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -165,7 +165,7 @@ function ActionCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="mt-4 p-3 bg-white/5 rounded-xl border border-white/10"
+            className="mt-4 p-3 bg-muted border-2 border-border border-dashed"
           >
             <div className="flex items-start gap-2 text-xs text-muted-foreground">
               <FileText className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
@@ -279,8 +279,8 @@ function EmployeeDashboardInner() {
       <motion.div variants={itemVariants}>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-4xl font-black tracking-tight text-foreground">
-              My Tasks
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-foreground">
+              MY TASKS
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               Showing actions assigned to{' '}
@@ -292,7 +292,7 @@ function EmployeeDashboardInner() {
             size="sm"
             onClick={fetchMyActions}
             disabled={loading}
-            className="bg-white/5 border-white/10 hover:bg-white/10 rounded-xl"
+            className="font-black uppercase border-2 border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-brutal-sm"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -303,14 +303,14 @@ function EmployeeDashboardInner() {
       {/* Stats row */}
       <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total', value: stats.total, color: 'text-foreground', bg: 'bg-white/5' },
-          { label: 'Pending', value: stats.pending, color: 'text-amber-400', bg: 'bg-amber-400/5' },
-          { label: 'In Progress', value: stats.inProgress, color: 'text-blue-400', bg: 'bg-blue-400/5' },
-          { label: 'Overdue', value: stats.overdue, color: 'text-red-400', bg: 'bg-red-400/5' },
-        ].map(({ label, value, color, bg }) => (
-          <div key={label} className={`glass-card p-4 ${bg}`}>
-            <div className={`text-2xl font-black ${color}`}>{value}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+          { label: 'Total',       value: stats.total,      color: 'text-foreground',  border: 'border-border' },
+          { label: 'Pending',     value: stats.pending,    color: 'text-amber-400',   border: 'border-amber-400/50' },
+          { label: 'In Progress', value: stats.inProgress, color: 'text-secondary',   border: 'border-secondary/50' },
+          { label: 'Overdue',     value: stats.overdue,    color: 'text-destructive', border: 'border-destructive/50' },
+        ].map(({ label, value, color, border }) => (
+          <div key={label} className={`glass-card p-4 border-2 ${border}`}>
+            <div className={`text-3xl font-black ${color}`}>{value}</div>
+            <div className="text-xs font-bold uppercase text-muted-foreground mt-1">{label}</div>
           </div>
         ))}
       </motion.div>
@@ -324,10 +324,10 @@ function EmployeeDashboardInner() {
               key={s}
               type="button"
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              className={`px-3 py-1.5 text-xs font-black uppercase border-2 transition-all ${
                 filter === s
-                  ? 'bg-primary/20 border-primary/40 text-primary'
-                  : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-brutal-sm'
+                  : 'bg-card text-muted-foreground border-border hover:border-primary hover:text-foreground'
               }`}
             >
               {s === 'ALL' ? 'All' : STATUS_CONFIG[s]?.label || s} ({count})
@@ -347,7 +347,7 @@ function EmployeeDashboardInner() {
           <div className="bg-primary/10 p-4 rounded-full inline-block border border-primary/20 mb-6">
             <CheckCircle className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">
+          <h2 className="text-2xl font-black uppercase mb-2">
             {filter === 'ALL' ? 'No tasks assigned to you yet' : `No ${filter.toLowerCase()} tasks`}
           </h2>
           <p className="text-muted-foreground text-sm">

@@ -7,7 +7,6 @@ import { Loader2, CheckCircle, Clock, AlertTriangle, Play, AlertCircle } from 'l
 
 interface Task {
   actionId: string;
-  PK: string;
   task: string;
   description: string;
   priority: string;
@@ -22,66 +21,56 @@ export default function MyTasksPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchMyTasks = async () => {
-    if (!userEmail) return;
-    
     try {
-      // 1. Get user's teams
-      const teamRes = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${encodeURIComponent(userEmail)}/teams`);
-      const myTeams = await teamRes.json();
-      
-      // 2. Fetch tasks for all those teams
-      let allTasks: Task[] = [];
-      for (const team of myTeams) {
-        const taskRes = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${team.teamId}/tasks`);
-        if (taskRes.ok) {
-          const teamTasks = await taskRes.json();
-          allTasks = [...allTasks, ...teamTasks];
-        }
+      // Use the /me/tasks endpoint (GSI2) — single efficient query, no N+1
+      const res = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/me/tasks`);
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(Array.isArray(data) ? data : []);
+      } else {
+        console.error('[MyTasksPage] Failed to fetch tasks, status:', res.status);
+        setTasks([]);
       }
-
-      // 3. Filter down to only tasks assigned to ME
-      const myTasks = allTasks.filter(t => t.currentOwner?.toLowerCase() === userEmail.toLowerCase());
-      setTasks(myTasks);
     } catch (e) {
-      console.error(e);
+      console.error('[MyTasksPage] Error fetching tasks:', e);
+      setTasks([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMyTasks();
-  }, [userEmail]);
+  }, []);
 
   const updateTaskStatus = async (task: Task, newStatus: string) => {
-    if (!userEmail) return;
-
-    // Use the stored PK (which could be TASK#id or meetingId)
-    const pk = task.PK || `TASK#${task.actionId}`;
-
     try {
+      // pk and actor are NOT sent — the backend derives identity from the auth token
       const res = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${task.actionId}`, {
         method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pk: pk,
           status: newStatus,
           previousStatus: task.status,
-          actor: userEmail
         })
       });
 
       if (res.ok) {
         fetchMyTasks();
+      } else {
+        console.error('[MyTasksPage] Failed to update task status:', res.status);
       }
     } catch (e) {
-      console.error(e);
+      console.error('[MyTasksPage] Error updating task:', e);
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 animate-spin" /></div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[40vh]">
+      <Loader2 className="w-12 h-12 animate-spin text-primary" />
+    </div>
+  );
 
   const now = new Date();
 
@@ -107,10 +96,15 @@ export default function MyTasksPage() {
           if (isReassigned) return null; // Don't show reassigned tasks in the active inbox
 
           return (
-            <div key={task.actionId} className={`bg-card border-4 ${isOverdue && !isCompleted ? 'border-destructive bg-destructive/10' : 'border-white'} p-5 shadow-brutal flex flex-col justify-between ${isCompleted ? 'opacity-70 grayscale' : ''}`}>
+            <div key={task.actionId} className={`bg-card border-4 ${isOverdue && !isCompleted ? 'border-destructive shadow-[4px_4px_0px_0px_theme(colors.red.700)]' : 'border-border shadow-brutal'} p-5 flex flex-col justify-between`}>
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <span className={`px-2 py-1 text-xs font-black uppercase border-2 ${isPending ? 'bg-yellow-300 text-black border-yellow-300' : isInProgress ? 'bg-secondary text-secondary-foreground border-secondary' : 'bg-primary text-primary-foreground border-primary'}`}>
+                  <span className={`px-2 py-1 text-xs font-black uppercase border-2 ${
+                    isPending ? 'badge-pending' :
+                    isInProgress ? 'badge-inprogress' :
+                    isCompleted ? 'badge-completed' :
+                    'badge-pending'
+                  }`}>
                     {task.status}
                   </span>
                   {isOverdue && !isCompleted && <span className="bg-destructive text-destructive-foreground px-2 py-1 text-xs font-black uppercase flex items-center gap-1 border-2 border-destructive"><AlertTriangle className="w-3 h-3"/> Overdue</span>}
@@ -139,7 +133,7 @@ export default function MyTasksPage() {
                   {isPending && (
                     <button 
                       onClick={() => updateTaskStatus(task, 'ACKNOWLEDGED')}
-                      className="col-span-2 bg-primary text-primary-foreground font-black uppercase py-2 border-4 border-white hover:bg-white hover:text-black flex justify-center items-center gap-2 transition-colors"
+                      className="col-span-2 bg-primary text-primary-foreground font-black uppercase py-2 border-4 border-border hover:bg-foreground hover:text-background flex justify-center items-center gap-2 transition-colors"
                     >
                       <CheckCircle className="w-4 h-4" /> Acknowledge
                     </button>
@@ -148,7 +142,7 @@ export default function MyTasksPage() {
                   {(task.status === 'ACKNOWLEDGED' || task.status === 'BLOCKED') && (
                     <button 
                       onClick={() => updateTaskStatus(task, 'IN_PROGRESS')}
-                      className="col-span-2 bg-secondary text-secondary-foreground font-black uppercase py-2 border-4 border-white hover:bg-white flex justify-center items-center gap-2 transition-colors"
+                      className="col-span-2 bg-secondary text-secondary-foreground font-black uppercase py-2 border-4 border-border hover:bg-foreground hover:text-background flex justify-center items-center gap-2 transition-colors"
                     >
                       <Play className="w-4 h-4" /> Start Working
                     </button>
@@ -158,13 +152,13 @@ export default function MyTasksPage() {
                     <>
                       <button 
                         onClick={() => updateTaskStatus(task, 'COMPLETED')}
-                        className="bg-accent text-accent-foreground font-black uppercase py-2 border-4 border-white hover:bg-white flex justify-center items-center gap-2 transition-colors"
+                        className="bg-accent text-accent-foreground font-black uppercase py-2 border-4 border-border hover:bg-foreground hover:text-background flex justify-center items-center gap-2 transition-colors"
                       >
                         <CheckCircle className="w-4 h-4" /> Complete
                       </button>
                       <button 
                         onClick={() => updateTaskStatus(task, 'BLOCKED')}
-                        className="bg-destructive text-destructive-foreground font-black uppercase py-2 border-4 border-white hover:bg-white hover:text-black flex justify-center items-center gap-2 transition-colors"
+                        className="bg-destructive text-destructive-foreground font-black uppercase py-2 border-4 border-destructive hover:bg-foreground hover:text-background hover:border-foreground flex justify-center items-center gap-2 transition-colors"
                       >
                         <AlertCircle className="w-4 h-4" /> Blocked
                       </button>

@@ -64,12 +64,23 @@ export default function NewTaskPage() {
     }
   };
 
-  if (!teamId) return <div>Missing Team ID</div>;
+  if (!teamId) return (
+    <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4">
+      <h2 className="text-3xl font-black uppercase text-destructive">Missing Team ID</h2>
+      <p className="text-muted-foreground font-bold uppercase text-sm">Navigate here from the Team Dashboard.</p>
+      <a href="/team" className="inline-flex items-center gap-2 font-black uppercase text-sm border-2 border-border px-4 py-2 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-brutal-sm">
+        <ArrowLeft className="w-4 h-4 stroke-[3]" /> Go to Team Dashboard
+      </a>
+    </div>
+  );
 
   return (
     <div className="container mx-auto px-6 py-12 max-w-3xl">
-      <Link href="/team" className="inline-flex items-center gap-2 font-bold uppercase hover:underline mb-8">
-        <ArrowLeft className="w-5 h-5" /> Back to Dashboard
+      <Link
+        href="/team"
+        className="inline-flex items-center gap-2 font-black uppercase text-sm border-2 border-border px-4 py-2 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-brutal-sm mb-8"
+      >
+        <ArrowLeft className="w-4 h-4 stroke-[3]" /> Back to Dashboard
       </Link>
 
       <header className="mb-12 border-b-4 border-white pb-6">
@@ -84,7 +95,7 @@ export default function NewTaskPage() {
           <input 
             type="text" 
             required
-            className="w-full bg-background text-foreground border-4 border-white p-3 font-bold focus:outline-none focus:border-primary"
+            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold focus:outline-none focus:border-primary placeholder:text-muted-foreground"
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
@@ -94,7 +105,7 @@ export default function NewTaskPage() {
           <label className="block text-sm font-black uppercase mb-2 text-foreground">Description</label>
           <textarea 
             rows={4}
-            className="w-full bg-background text-foreground border-4 border-white p-3 font-bold focus:outline-none focus:border-primary"
+            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold focus:outline-none focus:border-primary"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -104,7 +115,7 @@ export default function NewTaskPage() {
           <div>
             <label className="block text-sm font-black uppercase mb-2 text-foreground">Priority</label>
             <select 
-              className="w-full bg-background text-foreground border-4 border-white p-3 font-bold uppercase focus:outline-none focus:border-primary"
+              className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
             >
@@ -119,7 +130,7 @@ export default function NewTaskPage() {
             <label className="block text-sm font-black uppercase mb-2 text-foreground">Assignee</label>
             <select 
               required
-              className="w-full bg-background text-foreground border-4 border-white p-3 font-bold uppercase focus:outline-none focus:border-primary"
+              className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
             >
@@ -136,7 +147,7 @@ export default function NewTaskPage() {
           <input 
             type="datetime-local" 
             required
-            className="w-full bg-background text-foreground border-4 border-white p-3 font-bold uppercase focus:outline-none focus:border-primary"
+            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
@@ -145,7 +156,7 @@ export default function NewTaskPage() {
         <button 
           type="submit"
           disabled={loading || !task || !assignee}
-          className="w-full bg-primary text-primary-foreground font-black uppercase p-4 mt-4 border-4 border-white hover:bg-white hover:text-black transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+          className="w-full bg-primary text-primary-foreground font-black uppercase p-4 mt-4 border-4 border-border hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 flex justify-center items-center gap-2 shadow-brutal-sm"
         >
           {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Create and Assign'}
         </button>

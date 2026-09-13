@@ -23,8 +23,8 @@ export async function authenticatedFetch(input: RequestInfo | URL, init?: Reques
       headers,
     });
     return res;
-  } catch (error: any) {
-    if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+  } catch (error: unknown) {
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
       console.error(
         `[authenticatedFetch] Network or CORS Error fetching ${normalizedUrl}. ` +
         `This often happens if API Gateway rejects the token (401 Unauthorized) but does not return CORS headers.`

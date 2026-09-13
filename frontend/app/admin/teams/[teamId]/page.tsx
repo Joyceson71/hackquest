@@ -80,14 +80,25 @@ export default function AdminTeamDetailsPage({ params }: { params: Promise<{ tea
     }
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 animate-spin" /></div>;
-  if (!team) return <div className="text-center font-black uppercase text-2xl py-20">Team not found</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-[40vh]">
+      <Loader2 className="w-12 h-12 animate-spin text-primary" />
+    </div>
+  );
+  if (!team) return (
+    <div className="flex justify-center items-center min-h-[40vh] font-black uppercase text-2xl text-muted-foreground">
+      Team not found
+    </div>
+  );
 
   return (
     <RoleGuard allowedRole="admin">
       <div className="container mx-auto px-6 py-12 max-w-6xl">
-        <a href="/admin/teams" className="inline-flex items-center gap-2 font-bold uppercase hover:underline mb-8">
-          <ArrowLeft className="w-5 h-5" /> Back to Teams
+        <a
+          href="/admin/teams"
+          className="inline-flex items-center gap-2 font-black uppercase text-sm border-2 border-border px-4 py-2 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-brutal-sm mb-8"
+        >
+          <ArrowLeft className="w-4 h-4 stroke-[3]" /> Back to Teams
         </a>
 
         <header className="mb-12 border-b-4 border-white pb-6">
@@ -108,16 +119,17 @@ export default function AdminTeamDetailsPage({ params }: { params: Promise<{ tea
             
             <div className="space-y-4">
               {team.members.map(member => (
-                <div key={member.email} className="bg-card border-4 border-white p-4 shadow-brutal flex items-center justify-between">
-                  <div>
-                    <h3 className="font-black uppercase text-lg text-foreground">{member.email}</h3>
-                    <span className={`inline-block px-2 py-1 text-xs font-bold uppercase mt-1 border-2 border-white ${member.role === 'LEADER' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                <div key={member.email} className="bg-card border-4 border-border p-4 shadow-brutal flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-black uppercase text-lg text-foreground truncate" title={member.email}>{member.email}</h3>
+                    <span className={`inline-block px-2 py-1 text-xs font-black uppercase mt-1 border-2 border-border ${member.role === 'LEADER' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                       {member.role}
                     </span>
                   </div>
                   <button 
                     onClick={() => handleRemoveMember(member.email)}
-                    className="p-2 border-2 border-white hover:bg-destructive hover:text-white transition-colors"
+                    className="shrink-0 p-2 border-2 border-border hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-colors"
+                    title={`Remove ${member.email}`}
                   >
                     <Trash className="w-5 h-5" />
                   </button>
@@ -145,7 +157,7 @@ export default function AdminTeamDetailsPage({ params }: { params: Promise<{ tea
                   <input 
                     type="email" 
                     placeholder="employee@hackquest.com" 
-                    className="w-full bg-background text-foreground border-4 border-white p-3 font-bold focus:outline-none focus:border-primary"
+                    className="w-full bg-background text-foreground border-4 border-border p-3 font-bold focus:outline-none focus:border-primary placeholder:text-muted-foreground"
                     value={newMemberEmail}
                     onChange={(e) => setNewMemberEmail(e.target.value)}
                   />
@@ -154,7 +166,7 @@ export default function AdminTeamDetailsPage({ params }: { params: Promise<{ tea
                 <div>
                   <label className="block text-xs font-bold uppercase mb-2 text-muted-foreground">Role</label>
                   <select 
-                    className="w-full bg-background text-foreground border-4 border-white p-3 font-bold uppercase focus:outline-none focus:border-primary"
+                    className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
                     value={newMemberRole}
                     onChange={(e) => setNewMemberRole(e.target.value)}
                   >
@@ -166,7 +178,7 @@ export default function AdminTeamDetailsPage({ params }: { params: Promise<{ tea
                 <button 
                   onClick={handleAddMember}
                   disabled={!newMemberEmail.trim()}
-                  className="w-full bg-primary text-primary-foreground font-black uppercase p-4 mt-4 hover:bg-white hover:text-black transition-colors disabled:opacity-50 border-4 border-white"
+                  className="w-full bg-primary text-primary-foreground font-black uppercase p-4 mt-4 hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 border-4 border-border shadow-brutal-sm"
                 >
                   Add to Team
                 </button>

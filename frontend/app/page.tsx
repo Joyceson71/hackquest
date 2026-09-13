@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle } from 'lucide-react';
+import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 import { useRole } from '@/lib/role-context';
@@ -144,9 +144,9 @@ export default function Dashboard() {
       </div>
 
       {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-8 text-center shadow-brutal-lg max-w-2xl mx-auto transform -rotate-1 mt-4">
-          <div className="bg-primary p-4 rounded-full inline-block border-4 border-border shadow-brutal mb-6">
-            <Loader2 className="h-10 w-10 text-background" />
+        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-8 text-center shadow-brutal-lg max-w-2xl mx-auto mt-4">
+          <div className="bg-primary p-4 inline-flex border-4 border-border shadow-brutal mb-6">
+            <FileText className="h-10 w-10 text-background" />
           </div>
           <h2 className="text-3xl font-black uppercase mb-3">NOTHING HERE YET!</h2>
           <p className="text-base font-bold mb-6">
@@ -154,7 +154,7 @@ export default function Dashboard() {
           </p>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-secondary text-foreground hover:bg-secondary text-lg py-6 px-10 font-black uppercase shadow-brutal border-4 border-border"
+            className="bg-secondary text-secondary-foreground hover:bg-foreground hover:text-background text-lg py-6 px-10 font-black uppercase shadow-brutal border-4 border-border"
           >
             GET STARTED
           </Button>
@@ -166,15 +166,13 @@ export default function Dashboard() {
             const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'
             });
-            const rotation = idx % 2 === 0 ? 1 : -1;
 
             return (
               <motion.div 
                 key={m.PK}
                 variants={itemVariants}
-                whileHover={{ scale: 1.05, rotate: 0 }}
+                whileHover={{ scale: 1.03 }}
                 className="card-hover bg-card border-4 border-border p-6 shadow-brutal cursor-pointer flex flex-col justify-between h-[250px]"
-                style={{ rotate: `${rotation}deg` }}
                 onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
               >
                 <div>
@@ -184,7 +182,7 @@ export default function Dashboard() {
                     </span>
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 text-foreground border-2 border-border hover:bg-destructive hover:text-background"
+                      className="h-10 w-10 p-0 text-muted-foreground border-2 border-border hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
                       onClick={(e) => confirmDelete(e, m.PK)}
                     >
                       <Trash2 className="h-5 w-5 stroke-[3]" />
