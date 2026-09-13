@@ -1,22 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut, getCurrentUser } from 'aws-amplify/auth';
+import { signOut } from 'aws-amplify/auth';
 import { Button } from '@/components/ui/button';
 import { LogOut, ShieldCheck, User } from 'lucide-react';
 import { useRole } from '@/lib/role-context';
 
 export default function UserMenu() {
   const router = useRouter();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const { role, clearRole } = useRole();
-
-  useEffect(() => {
-    getCurrentUser()
-      .then((user) => setUserEmail(user.signInDetails?.loginId || user.username))
-      .catch(() => setUserEmail(null));
-  }, []);
+  const { role, clearRole, userEmail } = useRole();
 
   const handleSignOut = async () => {
     try {
