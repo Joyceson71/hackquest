@@ -64,17 +64,7 @@ export async function writeEscalation(
       missedDeadlines = list_append(if_not_exists(missedDeadlines, :empty), :md),
       #tl = list_append(if_not_exists(#tl, :empty), :te)`,
     ExpressionAttributeNames: { '#s': 'status', '#tl': 'timeline' },
-    ExpressionAttributeValues: {
-      ':s': { S: 'ESCALATED' },
-      ':es': { S: 'PENDING_ACCEPTANCE' },
-      ':eta': { S: now },
-      ':er': { S: candidate.escalationReason },
-      ':sro': suggestedReplacement ? { S: suggestedReplacement.name } : { NULL: true },
-      ':rrs': { L: rankingSnapshot },
-      ':empty': { L: [] },
-      ':md': { L: [missedDeadlineEntry] },
-      ':te': { L: [timelineEvent] },
-    },
+
     // Only escalate if still not escalated (prevent double-fire)
     ConditionExpression: 'escalationStatus = :none OR attribute_not_exists(escalationStatus)',
     ExpressionAttributeValues: {

@@ -48,7 +48,7 @@ export class ApiStack extends cdk.Stack {
     // Permissions: DynamoDB GetItem, Query, UpdateItem (all), PutItem (ConfirmedActions, AuditLog)
     const serveApiFn = new nodejs.NodejsFunction(this, 'ServeApiFunctionV2', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      entry: path.join(__dirname, '../../functions/serve-api/index.ts'),
+      entry: path.join(__dirname, '../../functions/api/index.ts'),
       handler: 'handler',
       timeout: cdk.Duration.seconds(30),
       environment: {
