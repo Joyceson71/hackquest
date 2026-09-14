@@ -4,53 +4,53 @@
 @import "shadcn/tailwind.css";
 
 /*
- * MeetingCompiler Neo-Brutalist / Maximalist Theme
+ * Hackquest Vibrant Tech Theme
  */
 
 :root {
-  /* High-Contrast Dark Maximalist Colors */
-  --background: #000000; /* Pure Black */
-  --foreground: #FFFFFF; /* Pure White text */
+  /* Vibrant Tech Colors */
+  --background: #060B19; /* Deep Space Blue */
+  --foreground: #E2E8F0; /* Soft White */
   
-  --card: #121212; /* Dark Gray */
-  --card-foreground: #FFFFFF; 
+  --card: #0F172A; /* Slate 900 */
+  --card-foreground: #F8FAFC; 
   
-  --popover: #121212;
-  --popover-foreground: #FFFFFF;
+  --popover: #0F172A;
+  --popover-foreground: #F8FAFC;
   
-  --primary: #B026FF; /* Electric Purple */
+  --primary: #8B5CF6; /* Vibrant Purple */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #00E5FF; /* Cyan */
-  --secondary-foreground: #000000;
+  --secondary: #0EA5E9; /* Vibrant Blue */
+  --secondary-foreground: #FFFFFF;
   
-  --muted: #2A2A2A; 
-  --muted-foreground: #A0A0A0;
+  --muted: #1E293B; /* Slate 800 */
+  --muted-foreground: #94A3B8; /* Slate 400 */
   
-  --accent: #39FF14; /* Neon Green */
-  --accent-foreground: #000000;
+  --accent: #38BDF8; /* Sky 400 */
+  --accent-foreground: #020617;
   
-  --destructive: #FF0000; /* Pure Red */
+  --destructive: #EF4444; 
   --destructive-foreground: #FFFFFF;
   
-  --border: #FFFFFF; /* Heavy White Borders */
-  --input: #1A1A1A;
-  --ring: #00E5FF;
+  --border: #1E293B; /* Subtle dark border */
+  --input: #1E293B;
+  --ring: #8B5CF6;
 
   /* Status / Confidence colors */
-  --color-success: #00E676; /* Bright Green */
-  --color-warning: #FFEA00; /* Yellow */
-  --color-decision: #00E5FF; /* Cyan */
-  --color-task: #B026FF; /* Electric Purple */
+  --color-success: #10B981; /* Emerald */
+  --color-warning: #F59E0B; /* Amber */
+  --color-decision: #0EA5E9; /* Sky Blue */
+  --color-task: #8B5CF6; /* Purple */
 
-  /* Brutalist Geometry */
-  --radius: 0px;
+  /* Sleek Geometry */
+  --radius: 0.75rem; /* 12px rounded corners */
   
-  /* Hard Shadows - Using bright neon colors for Dark Maximalism */
-  --shadow-brutal: 4px 4px 0px 0px #B026FF;
-  --shadow-brutal-sm: 2px 2px 0px 0px #00E5FF;
-  --shadow-brutal-lg: 8px 8px 0px 0px #39FF14;
-  --shadow-brutal-inset: inset 4px 4px 0px 0px #B026FF;
+  /* Soft, elegant shadows (mapped to previous brutalist variable names for compatibility) */
+  --shadow-brutal: 0 10px 25px -5px rgba(139, 92, 246, 0.15), 0 8px 10px -6px rgba(139, 92, 246, 0.1);
+  --shadow-brutal-sm: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -2px rgba(14, 165, 233, 0.05);
+  --shadow-brutal-lg: 0 20px 25px -5px rgba(139, 92, 246, 0.25), 0 8px 10px -6px rgba(139, 92, 246, 0.15);
+  --shadow-brutal-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 @theme inline {
@@ -102,10 +102,12 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    /* Dotted background pattern for maximalism */
-    background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
-    background-size: 24px 24px;
-    background-position: 0 0;
+    
+    /* Sleek Tech Background gradient */
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08), transparent 25%);
+    background-attachment: fixed;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -114,20 +116,20 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 4px solid var(--ring);
-    outline-offset: 4px;
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-black tracking-tighter uppercase;
+    @apply font-heading font-black tracking-tight;
   }
   
-  /* Brutalist button hover effects globally */
+  /* Smooth, modern hover effects globally */
   button, .btn, a, .card-hover {
-    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  
   button:not(:disabled):active, .btn:not(:disabled):active, .card-hover:active {
-    transform: translate(4px, 4px) !important;
-    box-shadow: 0px 0px 0px 0px transparent !important;
+    transform: scale(0.97);
   }
 }
 
@@ -141,35 +143,36 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: var(--secondary); color: var(--secondary-foreground); }
-  80% { background-color: var(--secondary); color: var(--secondary-foreground); }
+  0% { background-color: rgba(14, 165, 233, 0.2); }
+  80% { background-color: rgba(14, 165, 233, 0.2); }
   100% { background-color: transparent; }
 }
 
 .evidence-highlight {
   animation: evidence-fade 3s ease-out forwards;
-  border-left: 6px solid var(--primary);
+  border-left: 4px solid var(--primary);
 }
 
 /* ─── Utility: glass-card ──────────────────────────────────────────────────
- * Named 'glass-card' for compatibility with existing component references,
- * but styled to match the project's neo-brutalist identity.
+ * Elegant glassmorphism for cards
  */
 .glass-card {
-  background-color: var(--card);
-  border: 4px solid var(--border);
-  box-shadow: var(--shadow-brutal);
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
   color: var(--card-foreground);
+  border-radius: var(--radius);
 }
 
 /* ─── Status badge utilities ───────────────────────────────────────────────
- * High-contrast dark-theme readable status colors.
- * Background is a dark shade of the status hue, text is a light tint.
+ * Vibrant, sleek badge colors.
  */
-.badge-pending    { background: #92400e; color: #fef3c7; border: 2px solid #b45309; }
-.badge-acknowledged { background: #4c1d95; color: #ede9fe; border: 2px solid #7c3aed; }
-.badge-inprogress { background: #1e3a8a; color: #dbeafe; border: 2px solid #2563eb; }
-.badge-blocked    { background: #7f1d1d; color: #fee2e2; border: 2px solid #dc2626; }
-.badge-completed  { background: #14532d; color: #dcfce7; border: 2px solid #16a34a; }
-.badge-reassigned { background: #1e1b4b; color: #e0e7ff; border: 2px solid #4f46e5; }
-.badge-overdue    { background: #7f1d1d; color: #fee2e2; border: 2px solid #dc2626; }
+.badge-pending    { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-acknowledged { background: rgba(139, 92, 246, 0.15); color: #DDD6FE; border: 1px solid rgba(139, 92, 246, 0.3); }
+.badge-inprogress { background: rgba(14, 165, 233, 0.15); color: #BAE6FD; border: 1px solid rgba(14, 165, 233, 0.3); }
+.badge-blocked    { background: rgba(239, 68, 68, 0.15); color: #FECACA; border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-completed  { background: rgba(16, 185, 129, 0.15); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-reassigned { background: rgba(99, 102, 241, 0.15); color: #C7D2FE; border: 1px solid rgba(99, 102, 241, 0.3); }
+.badge-overdue    { background: rgba(225, 29, 72, 0.15); color: #FECDD3; border: 1px solid rgba(225, 29, 72, 0.3); }
