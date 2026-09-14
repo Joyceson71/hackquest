@@ -1,4 +1,5 @@
-const fs = require('fs');
+const fs = require('fs').promises;
+
 const files = [
   'frontend/app/page.tsx',
   'frontend/app/layout.tsx',
@@ -7,14 +8,43 @@ const files = [
   'frontend/components/review/ProposedItemCard.tsx'
 ];
 
-for (const file of files) {
-  let content = fs.readFileSync(file, 'utf8');
-  content = content.replace(/border-black/g, 'border-border');
-  content = content.replace(/bg-white/g, 'bg-card');
-  content = content.replace(/bg-black/g, 'bg-foreground');
-  content = content.replace(/text-black/g, 'text-foreground');
-  content = content.replace(/text-white/g, 'text-background');
-  content = content.replace(/bg-muted\/20/g, 'bg-muted');
-  fs.writeFileSync(file, content);
-  console.log(`Updated ${file}`);
+const replacements = {
+  'border-black': 'border-border',
+  'bg-white': 'bg-card',
+  'bg-black': 'bg-foreground',
+  'text-black': 'text-foreground',
+  'text-white': 'text-background',
+  'bg-muted/20': 'bg-muted'
+};
+
+// Escape regex characters and create a single unified pattern
+const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const pattern = new RegExp(Object.keys(replacements).map(escapeRegExp).join('|'), 'g');
+
+async function optimizeColors() {
+  try {
+    // Process all files concurrently
+    await Promise.all(files.map(async (file) => {
+      try {
+        const content = await fs.readFile(file, 'utf8');
+        
+        // Single pass replacement reduces memory allocations
+        const optimizedContent = content.replace(pattern, match => replacements[match]);
+        
+        // Only perform disk I/O if the file actually changed
+        if (content !== optimizedContent) {
+          await fs.writeFile(file, optimizedContent);
+          console.log(`Updated ${file}`);
+        } else {
+          console.log(`No changes needed in ${file}`);
+        }
+      } catch (err) {
+        console.error(`Failed to process ${file}:`, err.message);
+      }
+    }));
+  } catch (err) {
+    console.error('Fatal error during optimization:', err);
+  }
 }
+
+optimizeColors();
