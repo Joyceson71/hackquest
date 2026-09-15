@@ -59,22 +59,22 @@ export default function AdminTeamsPage() {
   return (
     <RoleGuard allowedRole="admin">
       <div className="container mx-auto px-6 py-12 max-w-6xl">
-        <header className="mb-10 border-b-4 border-border pb-6 flex flex-wrap gap-4 justify-between items-end">
+        <header className="mb-12 border-b border-white/10 pb-6 flex flex-wrap gap-4 justify-between items-end">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-2">
               Teams Management
             </h1>
-            <p className="text-xl font-bold uppercase text-muted-foreground">
+            <p className="text-lg font-medium text-muted-foreground">
               Create and assign leaders
             </p>
           </div>
         </header>
 
-        <div className="bg-card border-4 border-border shadow-brutal-lg p-6 mb-10 flex flex-wrap gap-4">
+        <div className="glass-card border-white/10 p-6 mb-12 flex flex-wrap gap-4 rounded-2xl">
           <input 
             type="text" 
             placeholder="New Team Name" 
-            className="flex-1 min-w-0 bg-background border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
+            className="flex-1 min-w-0 bg-foreground/20 border border-white/10 p-3 font-medium rounded-xl focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
             value={newTeamName}
             onChange={(e) => setNewTeamName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreateTeam()}
@@ -82,9 +82,9 @@ export default function AdminTeamsPage() {
           <button 
             onClick={handleCreateTeam}
             disabled={!newTeamName.trim()}
-            className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-border hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 shadow-brutal-sm flex items-center gap-2 whitespace-nowrap"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
           >
-            <Plus className="w-4 h-4 stroke-[3]" /> Create Team
+            <Plus className="w-4 h-4 stroke-2" /> Create Team
           </button>
         </div>
 
@@ -98,29 +98,31 @@ export default function AdminTeamsPage() {
               <a 
                 key={team.teamId} 
                 href={`/admin/teams/${team.teamId}`}
-                className="block bg-card border-4 border-white p-6 shadow-brutal hover:-translate-y-1 hover:shadow-brutal-lg transition-all cursor-pointer group"
+                className="block glass-card border-white/10 p-6 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 cursor-pointer group rounded-2xl"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-black uppercase truncate text-foreground">{team.name}</h2>
-                  <Users className="w-6 h-6 text-primary group-hover:animate-bounce" />
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-2xl font-heading font-semibold truncate text-foreground tracking-tight">{team.name}</h2>
+                  <div className="p-2.5 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                    <Users className="w-5 h-5" />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between border-b-2 border-white/20 pb-2">
-                    <span className="font-bold uppercase text-sm text-foreground">Leader</span>
-                    <span className="font-bold bg-primary/20 text-primary px-2 py-1 truncate max-w-[150px]">
-                      {team.leaderEmail || 'UNASSIGNED'}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <span className="font-medium text-sm text-muted-foreground tracking-wider uppercase">Leader</span>
+                    <span className="font-medium bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-md truncate max-w-[150px] text-sm">
+                      {team.leaderEmail || 'Unassigned'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between pb-2">
-                    <span className="font-bold uppercase text-sm text-foreground">Created</span>
-                    <span className="font-mono text-sm text-muted-foreground">{new Date(team.createdAt).toLocaleDateString()}</span>
+                    <span className="font-medium text-sm text-muted-foreground tracking-wider uppercase">Created</span>
+                    <span className="text-sm font-medium text-foreground">{new Date(team.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </a>
             ))}
             
             {teams.length === 0 && (
-              <div className="col-span-full text-center py-12 border-4 border-white/20 border-dashed font-black uppercase text-2xl text-muted-foreground">
+              <div className="col-span-full text-center py-20 border border-white/10 bg-card/30 rounded-3xl border-dashed font-heading font-medium text-xl text-muted-foreground">
                 No Teams Created Yet
               </div>
             )}

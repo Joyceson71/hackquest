@@ -1,41 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;900&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * Hackquest Vibrant Tech Theme
+ * Hackquest Minimalist Flat Design Theme
  */
 
 :root {
-  /* Vibrant Tech Colors */
-  --background: #060B19; /* Deep Space Blue */
-  --foreground: #E2E8F0; /* Soft White */
+  /* Flat Design Teal Colors */
+  --background: #F0FDFA; /* Teal 50 */
+  --foreground: #134E4A; /* Teal 900 */
   
-  --card: #0F172A; /* Slate 900 */
-  --card-foreground: #F8FAFC; 
+  --card: #FFFFFF;
+  --card-foreground: #134E4A; 
   
-  --popover: #0F172A;
-  --popover-foreground: #F8FAFC;
+  --popover: #FFFFFF;
+  --popover-foreground: #134E4A;
   
-  --primary: #8B5CF6; /* Vibrant Purple */
+  --primary: #0D9488; /* Teal 600 */
   --primary-foreground: #FFFFFF;
   
-  --secondary: #0EA5E9; /* Vibrant Blue */
-  --secondary-foreground: #FFFFFF;
+  --secondary: #14B8A6; /* Teal 500 */
+  --secondary-foreground: #0F172A;
   
-  --muted: #1E293B; /* Slate 800 */
-  --muted-foreground: #94A3B8; /* Slate 400 */
+  --muted: #E8F1F4; 
+  --muted-foreground: #475569; /* Slate 600 */
   
-  --accent: #38BDF8; /* Sky 400 */
-  --accent-foreground: #020617;
+  --accent: #EA580C; /* Action Orange */
+  --accent-foreground: #FFFFFF;
   
-  --destructive: #EF4444; 
+  --destructive: #DC2626; 
   --destructive-foreground: #FFFFFF;
   
-  --border: #1E293B; /* Subtle dark border */
-  --input: #1E293B;
-  --ring: #8B5CF6;
+  --border: #99F6E4; /* Teal 200 */
+  --input: #CCFBF1; /* Teal 100 */
+  --ring: #0D9488;
 
   /* Status / Confidence colors */
   --color-success: #10B981; /* Emerald */
@@ -43,20 +43,20 @@
   --color-decision: #0EA5E9; /* Sky Blue */
   --color-task: #8B5CF6; /* Purple */
 
-  /* Sleek Geometry */
-  --radius: 0.75rem; /* 12px rounded corners */
+  /* Clean Geometry */
+  --radius: 0.5rem; /* 8px rounded corners */
   
-  /* Soft, elegant shadows (mapped to previous brutalist variable names for compatibility) */
-  --shadow-brutal: 0 10px 25px -5px rgba(139, 92, 246, 0.15), 0 8px 10px -6px rgba(139, 92, 246, 0.1);
-  --shadow-brutal-sm: 0 4px 6px -1px rgba(14, 165, 233, 0.1), 0 2px 4px -2px rgba(14, 165, 233, 0.05);
-  --shadow-brutal-lg: 0 20px 25px -5px rgba(139, 92, 246, 0.25), 0 8px 10px -6px rgba(139, 92, 246, 0.15);
-  --shadow-brutal-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  /* Remove shadows for Flat Design - Keep variable names for compatibility but set to none or minimal */
+  --shadow-brutal: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-brutal-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-brutal-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-brutal-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
 }
 
 @theme inline {
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+  --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -89,7 +89,7 @@
   --radius-2xl: var(--radius);
   --radius-3xl: var(--radius);
   
-  --shadow-clay: var(--shadow-brutal); /* override old tokens for compat */
+  --shadow-clay: var(--shadow-brutal);
   --shadow-clay-sm: var(--shadow-brutal-sm);
   --shadow-brutal: var(--shadow-brutal);
   --shadow-brutal-lg: var(--shadow-brutal-lg);
@@ -102,12 +102,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    
-    /* Sleek Tech Background gradient */
-    background-image: 
-      radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-      radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08), transparent 25%);
-    background-attachment: fixed;
+    background-image: none; /* Flat design */
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -120,16 +115,12 @@
     outline-offset: 2px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-black tracking-tight;
+    @apply font-heading font-bold tracking-tight text-foreground;
   }
   
-  /* Smooth, modern hover effects globally */
-  button, .btn, a, .card-hover {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  button:not(:disabled):active, .btn:not(:disabled):active, .card-hover:active {
-    transform: scale(0.97);
+  /* Fast, clean transitions for flat design */
+  button, .btn, a, .card-hover, .glass-card {
+    transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
   }
 }
 
@@ -143,8 +134,8 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: rgba(14, 165, 233, 0.2); }
-  80% { background-color: rgba(14, 165, 233, 0.2); }
+  0% { background-color: rgba(13, 148, 136, 0.2); }
+  80% { background-color: rgba(13, 148, 136, 0.2); }
   100% { background-color: transparent; }
 }
 
@@ -153,26 +144,20 @@
   border-left: 4px solid var(--primary);
 }
 
-/* ─── Utility: glass-card ──────────────────────────────────────────────────
- * Elegant glassmorphism for cards
- */
+/* ─── Utility: glass-card (repurposed to clean flat card) ───────────────── */
 .glass-card {
-  background-color: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   color: var(--card-foreground);
   border-radius: var(--radius);
 }
 
-/* ─── Status badge utilities ───────────────────────────────────────────────
- * Vibrant, sleek badge colors.
- */
-.badge-pending    { background: rgba(245, 158, 11, 0.15); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
-.badge-acknowledged { background: rgba(139, 92, 246, 0.15); color: #DDD6FE; border: 1px solid rgba(139, 92, 246, 0.3); }
-.badge-inprogress { background: rgba(14, 165, 233, 0.15); color: #BAE6FD; border: 1px solid rgba(14, 165, 233, 0.3); }
-.badge-blocked    { background: rgba(239, 68, 68, 0.15); color: #FECACA; border: 1px solid rgba(239, 68, 68, 0.3); }
-.badge-completed  { background: rgba(16, 185, 129, 0.15); color: #A7F3D0; border: 1px solid rgba(16, 185, 129, 0.3); }
-.badge-reassigned { background: rgba(99, 102, 241, 0.15); color: #C7D2FE; border: 1px solid rgba(99, 102, 241, 0.3); }
-.badge-overdue    { background: rgba(225, 29, 72, 0.15); color: #FECDD3; border: 1px solid rgba(225, 29, 72, 0.3); }
+/* ─── Status badge utilities ─────────────────────────────────────────────── */
+.badge-pending    { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; } /* Amber */
+.badge-acknowledged { background: #E0E7FF; color: #4F46E5; border: 1px solid #C7D2FE; } /* Indigo */
+.badge-inprogress { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; } /* Sky */
+.badge-blocked    { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; } /* Red */
+.badge-completed  { background: #D1FAE5; color: #059669; border: 1px solid #A7F3D0; } /* Emerald */
+.badge-reassigned { background: #F3E8FF; color: #7E22CE; border: 1px solid #E9D5FF; } /* Purple */
+.badge-overdue    { background: #FFE4E6; color: #E11D48; border: 1px solid #FECDD3; } /* Rose */

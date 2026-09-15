@@ -90,7 +90,7 @@ export default function LoginPage() {
       >
         {/* Role Selector */}
         <div>
-          <p className="text-sm font-black uppercase text-foreground mb-3 px-1">SELECT YOUR ROLE</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Select your role</p>
           <div className="grid grid-cols-2 gap-4">
             {([
               { role: 'admin' as UserRole, label: 'ADMIN', desc: 'Manage meetings & assign tasks', Icon: ShieldCheck, accent: 'bg-primary' },
@@ -104,20 +104,20 @@ export default function LoginPage() {
                   onClick={() => handleRoleSelect(role)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98, x: 4, y: 4 }}
-                  className={`p-4 text-left border-4 transition-all ${
+                  className={`p-5 text-left border rounded-xl transition-all ${
                     isSelected
-                      ? `border-border shadow-brutal bg-card`
-                      : 'border-border/40 bg-card/50 hover:border-border hover:shadow-brutal-sm'
+                      ? `border-primary bg-primary/10 shadow-lg shadow-primary/5`
+                      : 'border-white/10 bg-card/50 hover:bg-card hover:border-white/20'
                   }`}
                 >
-                  <div className={`${accent} p-2 inline-flex mb-3 border-2 border-border`}>
-                    <Icon className="h-5 w-5 text-background stroke-[3]" />
+                  <div className={`${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'} p-2.5 rounded-lg inline-flex mb-4 transition-colors`}>
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <div className="text-sm font-black uppercase text-foreground">{label}</div>
-                  <div className="text-xs text-muted-foreground mt-1 font-bold">{desc}</div>
+                  <div className="text-sm font-semibold text-foreground">{label}</div>
+                  <div className="text-xs text-muted-foreground mt-1.5">{desc}</div>
                   {isSelected && (
-                    <div className="mt-2 text-xs font-black uppercase text-primary flex items-center gap-1">
-                      ✓ SELECTED
+                    <div className="mt-3 text-xs font-semibold text-primary flex items-center gap-1.5 bg-primary/10 w-fit px-2 py-0.5 rounded-full">
+                      ✓ Selected
                     </div>
                   )}
                 </motion.button>
@@ -127,12 +127,12 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Form */}
-        <Card className="border-4 border-border shadow-brutal bg-card">
-          <CardHeader>
-            <CardTitle className="text-2xl font-black uppercase">
-              {mode === 'LOGIN' ? `SIGN IN AS ${selectedRole?.toUpperCase()}` : mode === 'SIGNUP' ? 'CREATE ACCOUNT' : 'VERIFY EMAIL'}
+        <Card className="glass-card border-white/10 overflow-hidden">
+          <CardHeader className="space-y-1.5 border-b border-white/5 pb-6 bg-card/[0.02]">
+            <CardTitle className="text-2xl font-heading font-bold">
+              {mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create account' : 'Verify email'}
             </CardTitle>
-            <CardDescription className="font-bold uppercase text-xs">
+            <CardDescription className="text-sm">
               {mode === 'LOGIN'
                 ? 'Enter your credentials to continue'
                 : mode === 'SIGNUP'
@@ -140,7 +140,7 @@ export default function LoginPage() {
                 : 'Check your email for the verification code'}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <form onSubmit={handleAuth} className="space-y-4">
               <AnimatePresence>
                 {error && (
@@ -148,65 +148,65 @@ export default function LoginPage() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive border-2 border-destructive/40 text-sm font-bold"
+                    className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive border border-destructive/20 text-sm font-medium rounded-lg"
                   >
-                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 stroke-[3]" />
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                     <span>{error}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {mode === 'SIGNUP' && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="font-black uppercase text-xs">Full Name</Label>
-                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-2 border-border bg-input font-bold" />
+                <div className="space-y-2.5">
+                  <Label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Full Name</Label>
+                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
                 </div>
               )}
 
               {mode !== 'CONFIRM' && (
                 <>
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="font-black uppercase text-xs">Email Address</Label>
-                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-2 border-border bg-input font-bold" />
+                  <div className="space-y-2.5">
+                    <Label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email Address</Label>
+                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="font-black uppercase text-xs">Password</Label>
-                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-2 border-border bg-input font-bold" />
+                  <div className="space-y-2.5">
+                    <Label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</Label>
+                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
                   </div>
                 </>
               )}
 
               {mode === 'CONFIRM' && (
-                <div className="space-y-2">
-                  <Label htmlFor="code" className="font-black uppercase text-xs">Verification Code</Label>
-                  <Input id="code" required placeholder="123456" value={code} onChange={(e) => setCode(e.target.value)} className="border-2 border-border bg-input font-bold text-center text-xl tracking-widest font-mono" />
+                <div className="space-y-2.5">
+                  <Label htmlFor="code" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Verification Code</Label>
+                  <Input id="code" required placeholder="123456" value={code} onChange={(e) => setCode(e.target.value)} className="border-primary/50 bg-primary/5 focus-visible:ring-primary h-14 text-center text-2xl tracking-[0.5em] font-mono rounded-xl" />
                 </div>
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary text-background font-black uppercase text-base py-6 shadow-brutal border-4 border-border transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] mt-2"
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                {loading ? 'PROCESSING...' : mode === 'LOGIN' ? `SIGN IN AS ${selectedRole?.toUpperCase()}` : mode === 'SIGNUP' ? 'CREATE ACCOUNT' : 'VERIFY & SIGN IN'}
+                {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
+                {loading ? 'Processing...' : mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create Account' : 'Verify & Sign In'}
               </Button>
             </form>
 
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-6 text-center text-sm">
               {mode === 'LOGIN' && (
-                <span className="font-bold text-muted-foreground">
+                <span className="text-muted-foreground">
                   Don&apos;t have an account?{' '}
-                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-primary hover:underline font-black uppercase">
-                    SIGN UP
+                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-primary hover:text-primary/80 font-medium transition-colors">
+                    Sign up
                   </button>
                 </span>
               )}
               {mode === 'SIGNUP' && (
-                <span className="font-bold text-muted-foreground">
+                <span className="text-muted-foreground">
                   Already have an account?{' '}
-                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-primary hover:underline font-black uppercase">
-                    SIGN IN
+                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-primary hover:text-primary/80 font-medium transition-colors">
+                    Sign in
                   </button>
                 </span>
               )}

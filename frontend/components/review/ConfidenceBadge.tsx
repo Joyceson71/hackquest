@@ -11,10 +11,10 @@ export default function ConfidenceBadge({ score, reason }: ConfidenceBadgeProps)
   let className = '';
 
   if (score >= 80) {
-    className = 'bg-[var(--color-success)] text-white border-transparent';
+    className = 'bg-[var(--color-success)] text-background border-transparent';
     label = 'High confidence';
   } else if (score >= 50) {
-    className = 'bg-[var(--color-warning)] text-white border-transparent';
+    className = 'bg-[var(--color-warning)] text-background border-transparent';
     label = 'Medium confidence';
   } else {
     variant = 'destructive';

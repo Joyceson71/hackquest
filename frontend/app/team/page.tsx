@@ -137,7 +137,7 @@ export default function TeamDashboardPage() {
         </div>
         
         {isLeader && (
-          <Link href={`/team/new-task?teamId=${selectedTeam.teamId}`} className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-white hover:bg-white hover:text-black transition-colors flex items-center gap-2">
+          <Link href={`/team/new-task?teamId=${selectedTeam.teamId}`} className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-white hover:bg-card hover:text-foreground transition-colors flex items-center gap-2">
             <Plus className="w-5 h-5" /> Assign Task
           </Link>
         )}

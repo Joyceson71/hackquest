@@ -96,11 +96,11 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
   };
 
   return (
-    <div className={`rounded-none border-4 p-5 space-y-4 ${isDeclined ? 'border-yellow-500 bg-yellow-500/5' : 'border-destructive bg-destructive/5'}`}>
+    <div className={`rounded-xl border p-5 space-y-5 transition-all ${isDeclined ? 'border-amber-500/30 bg-amber-500/5' : 'border-destructive/30 bg-destructive/5'}`}>
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <AlertTriangle className={`h-5 w-5 shrink-0 ${isDeclined ? 'text-yellow-500' : 'text-destructive'}`} />
-        <h3 className="font-black uppercase text-sm text-foreground">
+      <div className="flex items-center gap-3 border-b border-white/5 pb-3">
+        <AlertTriangle className={`h-5 w-5 shrink-0 ${isDeclined ? 'text-amber-500' : 'text-destructive'}`} />
+        <h3 className="font-heading font-semibold text-foreground tracking-tight">
           {isDeclined
             ? 'Escalation Declined — Organizer Action Required'
             : isSuggestedReplacement
@@ -110,26 +110,26 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
       </div>
 
       {/* Escalation context */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <User className="h-4 w-4 shrink-0" />
-          <span>Original owner: <span className="font-bold text-foreground">{action.originalOwner || '—'}</span></span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-foreground/10 rounded-lg p-4">
+        <div className="flex items-center gap-2.5 text-muted-foreground">
+          <User className="h-4 w-4 shrink-0 text-foreground/50" />
+          <span>Original owner: <span className="font-semibold text-foreground">{action.originalOwner || '—'}</span></span>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Clock className="h-4 w-4 shrink-0" />
-          <span>Original deadline: <span className="font-bold text-destructive">{formatDate(action.originalDeadline)} (missed)</span></span>
+        <div className="flex items-center gap-2.5 text-muted-foreground">
+          <Clock className="h-4 w-4 shrink-0 text-foreground/50" />
+          <span>Original deadline: <span className="font-semibold text-destructive">{formatDate(action.originalDeadline)} (missed)</span></span>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground col-span-full">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
-          <span>Reason: <span className="font-bold text-foreground">{escalationReasonLabel(action.escalationReason)}</span></span>
+        <div className="flex items-center gap-2.5 text-muted-foreground col-span-full pt-2 border-t border-white/5 mt-1">
+          <AlertTriangle className="h-4 w-4 shrink-0 text-foreground/50" />
+          <span>Reason: <span className="font-semibold text-foreground">{escalationReasonLabel(action.escalationReason)}</span></span>
         </div>
       </div>
 
       {/* Evidence */}
       {action.evidenceTimestamp && (
-        <div className="flex items-start gap-2 text-xs text-muted-foreground border-l-4 border-primary/40 pl-3 py-1">
-          <FileText className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-          <span>
+        <div className="flex items-start gap-2.5 text-xs text-muted-foreground bg-primary/5 rounded-lg border border-primary/10 p-3">
+          <FileText className="h-4 w-4 shrink-0 mt-0.5 text-primary/70" />
+          <span className="leading-relaxed">
             Evidence: [{action.evidenceTimestamp}]{action.speakerContext ? ` ${action.speakerContext}:` : ''} &quot;{action.task}&quot;
           </span>
         </div>
@@ -137,25 +137,25 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
 
       {/* Suggested replacement + candidate ranking */}
       {action.replacementRankingSnapshot && action.replacementRankingSnapshot.length > 0 && !isDeclined && (
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
-            <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Suggested Replacement</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Suggested Replacement</p>
           </div>
           {/* Highlight rank 1 */}
-          <div className="border-2 border-primary/50 bg-primary/5 p-3 flex items-center justify-between">
-            <span className="font-black text-foreground text-sm">{action.suggestedReplacementOwner || action.replacementRankingSnapshot[0]?.name}</span>
-            <span className="text-xs text-muted-foreground">
+          <div className="border border-primary/30 bg-primary/10 rounded-lg p-3.5 flex items-center justify-between shadow-sm">
+            <span className="font-semibold text-foreground text-sm">{action.suggestedReplacementOwner || action.replacementRankingSnapshot[0]?.name}</span>
+            <span className="text-xs text-muted-foreground font-medium">
               {action.replacementRankingSnapshot[0]?.openActionCount} open actions · Rank #1
             </span>
           </div>
           {/* Full list */}
           {action.replacementRankingSnapshot.length > 1 && (
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground font-bold uppercase">All candidates:</p>
+            <div className="space-y-1.5 pt-1">
+              <p className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase px-1">All candidates:</p>
               {action.replacementRankingSnapshot.map((c) => (
-                <div key={c.name} className="flex items-center justify-between text-xs border-l-2 border-border pl-2 py-0.5">
-                  <span className="text-foreground">#{c.rank} {c.name}</span>
+                <div key={c.name} className="flex items-center justify-between text-xs border-l-2 border-white/10 pl-3 py-1">
+                  <span className="text-foreground font-medium">#{c.rank} {c.name}</span>
                   <span className="text-muted-foreground">{c.openActionCount} open actions</span>
                 </div>
               ))}
@@ -166,28 +166,28 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
 
       {/* Waiting message — not the suggested replacement */}
       {!isSuggestedReplacement && !isDeclined && action.suggestedReplacementOwner && (
-        <p className="text-sm text-muted-foreground italic border-l-4 border-border pl-3">
-          Waiting for <span className="font-bold text-foreground">{action.suggestedReplacementOwner}</span> to accept or decline.
+        <p className="text-sm text-muted-foreground italic border-l-2 border-white/20 pl-3 py-1">
+          Waiting for <span className="font-semibold text-foreground">{action.suggestedReplacementOwner}</span> to accept or decline.
         </p>
       )}
 
       {/* Accept form — only shown to the suggested replacement */}
       {isSuggestedReplacement && !isDeclined && (
-        <div className="space-y-3 pt-2 border-t-2 border-border">
+        <div className="space-y-4 pt-4 border-t border-white/10 mt-2">
           <p className="text-sm text-muted-foreground">
-            Your current open actions: <span className="font-bold text-foreground">
+            Your current open actions: <span className="font-semibold text-foreground">
               {action.replacementRankingSnapshot?.find(c => c.name.toLowerCase() === currentUserName?.toLowerCase())?.openActionCount ?? '—'}
             </span>
           </p>
 
           {error && (
-            <p className="text-xs text-destructive font-bold bg-destructive/10 border border-destructive/30 px-3 py-2">
+            <p className="text-xs text-destructive font-medium bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2.5">
               {error}
             </p>
           )}
 
-          <div className="space-y-1">
-            <Label htmlFor={`new-deadline-${action.actionId}`} className="text-xs font-black uppercase">
+          <div className="space-y-2">
+            <Label htmlFor={`new-deadline-${action.actionId}`} className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
               Set a new deadline (required to accept)
             </Label>
             <Input
@@ -196,16 +196,16 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
               value={newDeadline}
               onChange={(e) => setNewDeadline(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="border-2 border-border font-bold max-w-xs shadow-brutal-sm"
+              className="border-white/10 bg-foreground/20 rounded-xl font-medium max-w-xs focus-visible:border-primary h-11 transition-colors"
               required
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 pt-1">
             <Button
               onClick={handleAccept}
               disabled={accepting || declining || !newDeadline}
-              className="bg-primary text-background font-black uppercase border-2 border-border shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-pointer"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 rounded-xl shadow-lg shadow-primary/20 transition-all border-none"
             >
               {accepting ? 'Accepting…' : 'Accept Ownership'}
             </Button>
@@ -213,7 +213,7 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
               variant="outline"
               onClick={handleDecline}
               disabled={accepting || declining}
-              className="font-black uppercase border-2 border-border shadow-brutal bg-card text-foreground hover:bg-destructive hover:text-background hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-pointer"
+              className="font-semibold bg-transparent border border-white/10 text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 rounded-xl transition-all"
             >
               {declining ? 'Declining…' : 'Decline'}
             </Button>
@@ -223,7 +223,7 @@ export default function EscalationPanel({ action, meetingId, currentUserName, on
 
       {/* Declined state */}
       {isDeclined && (
-        <p className="text-sm font-bold text-yellow-600 dark:text-yellow-400 border-l-4 border-yellow-500 pl-3">
+        <p className="text-sm font-medium text-amber-500 border-l-2 border-amber-500/50 bg-amber-500/10 p-3 rounded-r-lg">
           Escalation was declined. Organizer must manually reassign this task to another participant.
         </p>
       )}

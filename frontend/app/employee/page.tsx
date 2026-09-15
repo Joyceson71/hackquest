@@ -107,7 +107,7 @@ function ActionCard({
             <p className="text-sm font-semibold text-foreground leading-snug">{action.task}</p>
           </div>
           {/* Status badge */}
-          <span className={`inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 border shrink-0 uppercase ${cfg.badgeClass}`}>
+          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 border shrink-0 rounded-full ${cfg.badgeClass}`}>
             <StatusIcon className="h-3 w-3" />
             {cfg.label}
           </span>
@@ -146,7 +146,7 @@ function ActionCard({
                   variant="outline"
                   disabled={isUpdating}
                   onClick={() => onStatusChange(action.actionId, s, action.meetingId || '')}
-                  className="text-xs h-8 px-3 font-black uppercase border-2 border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                  className="text-xs h-8 px-3 font-medium border-white/10 bg-transparent text-foreground hover:bg-card/5 rounded-lg transition-all"
                 >
                   {isUpdating ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
@@ -165,7 +165,7 @@ function ActionCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="mt-4 p-3 bg-muted border-2 border-border border-dashed"
+            className="mt-4 p-4 rounded-xl border border-white/10 bg-foreground/20"
           >
             <div className="flex items-start gap-2 text-xs text-muted-foreground">
               <FileText className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
@@ -279,12 +279,12 @@ function EmployeeDashboardInner() {
       <motion.div variants={itemVariants}>
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-foreground">
-              MY TASKS
+            <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-foreground">
+              My Tasks
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               Showing actions assigned to{' '}
-              <span className="text-primary font-semibold">{userName || userEmail || 'you'}</span>
+              <span className="text-primary font-medium">{userName || userEmail || 'you'}</span>
             </p>
           </div>
           <Button
@@ -292,7 +292,7 @@ function EmployeeDashboardInner() {
             size="sm"
             onClick={fetchMyActions}
             disabled={loading}
-            className="font-black uppercase border-2 border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-brutal-sm"
+            className="font-medium text-sm border-white/10 bg-transparent text-foreground hover:bg-card/5 rounded-lg transition-all"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -308,9 +308,9 @@ function EmployeeDashboardInner() {
           { label: 'In Progress', value: stats.inProgress, color: 'text-secondary',   border: 'border-secondary/50' },
           { label: 'Overdue',     value: stats.overdue,    color: 'text-destructive', border: 'border-destructive/50' },
         ].map(({ label, value, color, border }) => (
-          <div key={label} className={`glass-card p-4 border-2 ${border}`}>
-            <div className={`text-3xl font-black ${color}`}>{value}</div>
-            <div className="text-xs font-bold uppercase text-muted-foreground mt-1">{label}</div>
+          <div key={label} className={`glass-card p-5 border ${border} rounded-2xl`}>
+            <div className={`text-3xl font-heading font-bold ${color}`}>{value}</div>
+            <div className="text-xs font-medium text-muted-foreground mt-1">{label}</div>
           </div>
         ))}
       </motion.div>
@@ -324,10 +324,10 @@ function EmployeeDashboardInner() {
               key={s}
               type="button"
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 text-xs font-black uppercase border-2 transition-all ${
+              className={`px-4 py-1.5 text-xs font-semibold rounded-full border transition-all ${
                 filter === s
-                  ? 'bg-primary text-primary-foreground border-primary shadow-brutal-sm'
-                  : 'bg-card text-muted-foreground border-border hover:border-primary hover:text-foreground'
+                  ? 'bg-primary/20 text-primary border-primary/30 shadow-md'
+                  : 'bg-transparent text-muted-foreground border-white/10 hover:border-primary/50 hover:text-foreground'
               }`}
             >
               {s === 'ALL' ? 'All' : STATUS_CONFIG[s]?.label || s} ({count})
@@ -344,10 +344,10 @@ function EmployeeDashboardInner() {
         </div>
       ) : filtered.length === 0 ? (
         <motion.div variants={itemVariants} className="glass-card p-12 text-center">
-          <div className="bg-primary/10 p-4 rounded-full inline-block border border-primary/20 mb-6">
+          <div className="bg-primary/20 p-4 rounded-full inline-block mb-6">
             <CheckCircle className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-2xl font-black uppercase mb-2">
+          <h2 className="text-2xl font-heading font-bold mb-2">
             {filter === 'ALL' ? 'No tasks assigned to you yet' : `No ${filter.toLowerCase()} tasks`}
           </h2>
           <p className="text-muted-foreground text-sm">

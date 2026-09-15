@@ -122,41 +122,41 @@ export default function Dashboard() {
       animate="visible"
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex flex-col h-[calc(100vh-80px)] justify-center"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-4 border-border pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-6">
         <motion.div variants={itemVariants}>
-          <h1 className="text-4xl md:text-5xl font-black text-foreground uppercase tracking-tighter drop-shadow-[-4px_4px_0px_var(--primary)]">
-            YOUR MEETINGS
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-foreground tracking-tight drop-shadow-sm">
+            Your Meetings
           </h1>
-          <p className="text-sm font-bold mt-2 px-2 py-1 bg-foreground text-background inline-block">
-            REVIEW EXTRACTED ACTIONS &amp; BURN THE EVIDENCE
+          <p className="text-sm font-medium mt-2 px-3 py-1 bg-primary/10 text-primary rounded-full inline-flex items-center">
+            Review extracted actions and process tasks
           </p>
         </motion.div>
         <motion.div variants={itemVariants}>
           <Button 
             size="lg" 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-primary hover:bg-primary text-background text-base py-6 px-6 font-black uppercase shadow-brutal border-4 border-border transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground text-base py-6 px-6 font-semibold shadow-sm transition-all hover:scale-105 rounded-xl"
           >
-            <Plus className="mr-2 h-5 w-5 stroke-[3]" />
-            UPLOAD NEW TRANSCRIPT
+            <Plus className="mr-2 h-5 w-5 stroke-2" />
+            Upload Transcript
           </Button>
         </motion.div>
       </div>
 
       {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="bg-card border-8 border-border p-8 text-center shadow-brutal-lg max-w-2xl mx-auto mt-4">
-          <div className="bg-primary p-4 inline-flex border-4 border-border shadow-brutal mb-6">
-            <FileText className="h-10 w-10 text-background" />
+        <motion.div variants={itemVariants} className="glass-card p-10 text-center max-w-2xl mx-auto mt-4 flex flex-col items-center">
+          <div className="bg-primary/10 p-4 rounded-full mb-6 flex items-center justify-center">
+            <FileText className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-3xl font-black uppercase mb-3">NOTHING HERE YET!</h2>
-          <p className="text-base font-bold mb-6">
-            FEED THE MACHINE. UPLOAD A TRANSCRIPT TO EXTRACT ACTION ITEMS.
+          <h2 className="text-3xl font-heading font-bold mb-3 tracking-tight">No meetings found</h2>
+          <p className="text-muted-foreground text-base mb-8 max-w-md">
+            Upload your first meeting transcript to automatically extract action items and assign tasks.
           </p>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-secondary text-secondary-foreground hover:bg-foreground hover:text-background text-lg py-6 px-10 font-black uppercase shadow-brutal border-4 border-border"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground text-lg py-6 px-10 font-semibold shadow-sm rounded-xl transition-all hover:scale-105"
           >
-            GET STARTED
+            Get Started
           </Button>
         </motion.div>
       ) : (
@@ -171,34 +171,33 @@ export default function Dashboard() {
               <motion.div 
                 key={m.PK}
                 variants={itemVariants}
-                whileHover={{ scale: 1.03 }}
-                className="card-hover bg-card border-4 border-border p-6 shadow-brutal cursor-pointer flex flex-col justify-between h-[250px]"
+                className="glass-card p-6 cursor-pointer flex flex-col justify-between h-[240px] transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-primary/50"
                 onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4 border-b-4 border-border pb-4">
-                    <span className="text-sm font-black uppercase bg-accent text-background px-3 py-1 border-2 border-border">
+                  <div className="flex items-center justify-between mb-4 border-b border-border pb-4">
+                    <span className="text-xs font-semibold text-accent bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
                       {date}
                     </span>
                     <Button 
                       variant="ghost" 
-                      className="h-10 w-10 p-0 text-muted-foreground border-2 border-border hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-full transition-colors"
                       onClick={(e) => confirmDelete(e, m.PK)}
                     >
-                      <Trash2 className="h-5 w-5 stroke-[3]" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h3 className="text-2xl font-black uppercase line-clamp-2 leading-tight">
-                    {m.title || 'UNTITLED MEETING'}
+                  <h3 className="text-xl font-heading font-semibold line-clamp-2 leading-tight tracking-tight">
+                    {m.title || 'Untitled Meeting'}
                   </h3>
                 </div>
                 
                 <div className="mt-4 pt-4 flex items-center justify-between">
-                  <div className="text-sm font-black px-3 py-1 bg-secondary text-foreground border-2 border-border uppercase">
-                    {m.status || 'PROCESSED'}
+                  <div className="text-xs font-medium px-3 py-1 bg-secondary/10 text-secondary border border-secondary/20 rounded-full">
+                    {m.status || 'Processed'}
                   </div>
-                  <div className="text-primary font-black uppercase flex items-center group">
-                    OPEN <ArrowRight className="ml-2 h-5 w-5 stroke-[3] group-hover:translate-x-1 transition-transform" />
+                  <div className="text-primary font-semibold flex items-center group text-sm">
+                    View <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </motion.div>
@@ -208,30 +207,32 @@ export default function Dashboard() {
       )}
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="border-4 border-border shadow-brutal bg-card">
+        <DialogContent className="glass-card sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-3xl font-black uppercase text-foreground flex items-center gap-3">
-              <AlertTriangle className="h-8 w-8 text-destructive stroke-[3]" />
-              Nuke this meeting?
+            <DialogTitle className="text-2xl font-heading font-semibold text-foreground flex items-center gap-3">
+              <div className="p-2 bg-destructive/10 rounded-full text-destructive">
+                <AlertTriangle className="h-6 w-6 stroke-2" />
+              </div>
+              Delete Meeting?
             </DialogTitle>
-            <DialogDescription className="text-lg font-bold text-muted-foreground uppercase pt-2">
+            <DialogDescription className="text-base text-muted-foreground pt-3">
               This action cannot be undone. This will permanently delete the meeting transcript and all extracted actions.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-4 gap-4 sm:justify-start">
-            <Button 
-              variant="destructive" 
-              onClick={executeDelete}
-              className="text-lg font-black uppercase shadow-brutal border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-            >
-              NUKE IT
-            </Button>
+          <DialogFooter className="mt-6 gap-3 sm:justify-end">
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="text-lg font-black uppercase shadow-brutal border-2 border-border bg-card text-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-muted"
+              className="text-sm font-medium border-border bg-transparent text-foreground hover:bg-muted rounded-lg"
             >
-              CANCEL
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={executeDelete}
+              className="text-sm font-medium bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg shadow-sm"
+            >
+              Delete Meeting
             </Button>
           </DialogFooter>
         </DialogContent>
