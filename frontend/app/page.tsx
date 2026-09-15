@@ -122,41 +122,41 @@ export default function Dashboard() {
       animate="visible"
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex flex-col h-[calc(100vh-80px)] justify-center"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b-4 border-black pb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-primary/50 pb-6">
         <motion.div variants={itemVariants}>
-          <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tighter uppercase text-foreground">
-            Your Meetings
+          <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tighter uppercase text-primary drop-shadow-[0_0_8px_rgba(0,255,65,0.8)]">
+            > SYS.Meetings
           </h1>
-          <p className="text-sm font-bold mt-2 px-3 py-1 bg-primary text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-flex items-center uppercase tracking-widest">
-            Review actions & process tasks
+          <p className="text-sm font-mono mt-2 px-3 py-1 bg-primary/10 text-primary border border-primary/50 shadow-[0_0_5px_rgba(0,255,65,0.3)] inline-flex items-center uppercase tracking-widest">
+            $ execute action_extraction
           </p>
         </motion.div>
         <motion.div variants={itemVariants}>
           <Button 
             size="lg" 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-accent hover:bg-accent text-black text-base py-6 px-6 font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none"
+            className="bg-transparent hover:bg-primary/20 text-primary text-base py-6 px-6 font-bold uppercase tracking-widest border border-primary shadow-[0_0_10px_rgba(0,255,65,0.3)] hover:shadow-[0_0_20px_rgba(0,255,65,0.6)] transition-all rounded-sm"
           >
-            <Plus className="mr-2 h-5 w-5 stroke-[3px]" />
-            Upload Transcript
+            <Plus className="mr-2 h-5 w-5" />
+            Upload.Bin
           </Button>
         </motion.div>
       </div>
 
       {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="glass-card p-10 text-center max-w-2xl mx-auto mt-4 flex flex-col items-center">
-          <div className="bg-primary p-4 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] mb-6 flex items-center justify-center">
-            <FileText className="h-10 w-10 text-black stroke-[3px]" />
+        <motion.div variants={itemVariants} className="glass-card p-10 text-center max-w-2xl mx-auto mt-4 flex flex-col items-center border border-primary/50 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
+          <div className="bg-primary/10 p-4 border border-primary/50 shadow-[0_0_10px_rgba(0,255,65,0.2)] mb-6 flex items-center justify-center rounded-sm">
+            <FileText className="h-10 w-10 text-primary" />
           </div>
-          <h2 className="text-3xl font-heading font-black mb-3 uppercase tracking-tight">No meetings found</h2>
-          <p className="text-muted-foreground font-bold text-base mb-8 max-w-md">
-            Upload your first meeting transcript to automatically extract action items and assign tasks.
+          <h2 className="text-3xl font-heading font-bold mb-3 uppercase tracking-widest text-primary drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]">Data_Empty</h2>
+          <p className="text-muted-foreground font-mono text-base mb-8 max-w-md">
+            > Awaiting initial data stream. Upload transcript to initialize extraction subroutines.
           </p>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-secondary hover:bg-secondary text-black text-lg py-6 px-10 font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none"
+            className="bg-primary/10 hover:bg-primary/30 text-primary text-lg py-6 px-10 font-bold uppercase tracking-widest border border-primary shadow-[0_0_15px_rgba(0,255,65,0.4)] hover:shadow-[0_0_25px_rgba(0,255,65,0.7)] transition-all rounded-sm"
           >
-            Get Started
+            Initialize
           </Button>
         </motion.div>
       ) : (
@@ -175,29 +175,29 @@ export default function Dashboard() {
                 onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4 border-b-2 border-black pb-4">
-                    <span className="text-xs font-bold text-black uppercase tracking-widest bg-accent px-3 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="flex items-center justify-between mb-4 border-b border-primary/30 pb-4">
+                    <span className="text-xs font-mono font-bold text-secondary uppercase tracking-widest bg-secondary/10 px-2 py-1 border border-secondary/50 shadow-[0_0_5px_rgba(0,255,255,0.3)]">
                       {date}
                     </span>
                     <Button 
                       variant="ghost" 
-                      className="h-8 w-8 p-0 bg-destructive text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-destructive rounded-none"
+                      className="h-8 w-8 p-0 bg-transparent text-destructive border border-destructive shadow-[0_0_5px_rgba(255,0,0,0.3)] hover:bg-destructive/20 hover:shadow-[0_0_10px_rgba(255,0,0,0.6)] rounded-sm"
                       onClick={(e) => confirmDelete(e, m.PK)}
                     >
-                      <Trash2 className="h-4 w-4 stroke-[3px]" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h3 className="text-xl font-heading font-black line-clamp-2 leading-tight uppercase tracking-tight">
-                    {m.title || 'Untitled Meeting'}
+                  <h3 className="text-lg font-heading font-bold line-clamp-2 leading-tight uppercase tracking-widest text-primary drop-shadow-[0_0_4px_rgba(0,255,65,0.4)]">
+                    {m.title || 'UNKNOWN_PROCESS'}
                   </h3>
                 </div>
                 
                 <div className="mt-4 pt-4 flex items-center justify-between">
-                  <div className="text-xs font-black uppercase tracking-widest px-3 py-1 bg-secondary text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    {m.status || 'Processed'}
+                  <div className="text-xs font-mono font-bold uppercase tracking-widest px-2 py-1 bg-accent/10 text-accent border border-accent/50 shadow-[0_0_5px_rgba(255,0,255,0.3)]">
+                    {m.status || 'PARSED'}
                   </div>
-                  <div className="text-black font-black uppercase tracking-widest flex items-center group text-sm border-b-2 border-transparent hover:border-black transition-colors">
-                    View <ArrowRight className="ml-1.5 h-4 w-4 stroke-[3px] group-hover:translate-x-1 transition-transform" />
+                  <div className="text-primary font-mono font-bold uppercase tracking-widest flex items-center group text-sm drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]">
+                    ACCESS <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </motion.div>
@@ -207,32 +207,32 @@ export default function Dashboard() {
       )}
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="glass-card sm:max-w-md rounded-none">
+        <DialogContent className="bg-black/90 backdrop-blur-md border border-destructive shadow-[0_0_30px_rgba(255,0,0,0.3)] sm:max-w-md rounded-sm">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-heading font-black uppercase text-foreground flex items-center gap-3">
-              <div className="p-2 bg-destructive border-2 border-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                <AlertTriangle className="h-6 w-6 stroke-[3px]" />
+            <DialogTitle className="text-2xl font-heading font-bold uppercase text-destructive drop-shadow-[0_0_8px_rgba(255,0,0,0.8)] flex items-center gap-3">
+              <div className="p-2 bg-destructive/10 border border-destructive text-destructive shadow-[0_0_10px_rgba(255,0,0,0.4)]">
+                <AlertTriangle className="h-6 w-6" />
               </div>
-              Delete Meeting?
+              SYS.WARNING_PURGE
             </DialogTitle>
-            <DialogDescription className="text-base text-black font-bold pt-3">
-              THIS ACTION CANNOT BE UNDONE. THIS WILL PERMANENTLY DELETE THE MEETING TRANSCRIPT AND ALL EXTRACTED ACTIONS.
+            <DialogDescription className="text-sm text-destructive font-mono font-bold pt-3 leading-relaxed">
+              > CRITICAL: THIS ACTION WILL PERMANENTLY PURGE THE SELECTED RECORD AND ALL ASSOCIATED MEMORY BLOCKS. PROCEED?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 gap-3 sm:justify-end">
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="text-sm font-black uppercase tracking-widest border-2 border-black bg-white text-black hover:bg-muted shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none"
+              className="text-sm font-mono font-bold uppercase tracking-widest border border-primary/50 bg-transparent text-primary hover:bg-primary/20 shadow-[0_0_8px_rgba(0,255,65,0.2)] rounded-sm"
             >
-              Cancel
+              ABORT
             </Button>
             <Button 
               variant="destructive" 
               onClick={executeDelete}
-              className="text-sm font-black uppercase tracking-widest bg-destructive hover:bg-destructive text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none"
+              className="text-sm font-mono font-bold uppercase tracking-widest bg-destructive/20 hover:bg-destructive/40 text-destructive border border-destructive shadow-[0_0_15px_rgba(255,0,0,0.5)] rounded-sm"
             >
-              Delete
+              CONFIRM_PURGE
             </Button>
           </DialogFooter>
         </DialogContent>

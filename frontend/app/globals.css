@@ -1,62 +1,63 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * Hackquest Neo-Brutalist Theme
+ * Hackquest Cyberpunk Terminal Theme
  */
 
 :root {
-  /* Neo-Brutalist Colors */
-  --background: #FFF9E6; /* Pale Yellow/Cream */
-  --foreground: #000000; /* Pitch Black */
+  /* Cyberpunk Colors */
+  --background: #000000; /* Deepest Black */
+  --foreground: #00FF41; /* Terminal Green */
   
-  --card: #FFFFFF;
-  --card-foreground: #000000; 
+  --card: #001100; /* Very Dark Green Tint */
+  --card-foreground: #00FF41; 
   
-  --popover: #FFFFFF;
-  --popover-foreground: #000000;
+  --popover: #000000;
+  --popover-foreground: #00FF41;
   
-  --primary: #FF3366; /* Hot Pink */
-  --primary-foreground: #000000; /* Black text on primary for brutalism */
+  --primary: #00FF41; /* Neon Green */
+  --primary-foreground: #000000;
   
-  --secondary: #00E5FF; /* Cyan */
+  --secondary: #00FFFF; /* Electric Cyan */
   --secondary-foreground: #000000;
   
-  --muted: #E2E8F0; 
-  --muted-foreground: #475569;
+  --muted: #002200; 
+  --muted-foreground: #00AA22; /* Dimmer Green */
   
-  --accent: #FFDF00; /* Canary Yellow */
-  --accent-foreground: #000000;
+  --accent: #FF00FF; /* Cyberpunk Magenta */
+  --accent-foreground: #FFFFFF;
   
   --destructive: #FF0000; 
   --destructive-foreground: #FFFFFF;
   
-  --border: #000000; /* Pitch Black borders everywhere */
-  --input: #FFFFFF;
-  --ring: #000000;
+  --border: #00FF41; /* Neon borders */
+  --input: #001100;
+  --ring: #00FF41;
 
   /* Status / Confidence colors */
-  --color-success: #00FF41; /* Neon Green */
-  --color-warning: #FFDF00; /* Yellow */
-  --color-decision: #00E5FF; /* Cyan */
-  --color-task: #FF3366; /* Pink */
+  --color-success: #00FF41; 
+  --color-warning: #FFDF00; 
+  --color-decision: #00FFFF; 
+  --color-task: #FF00FF; 
 
-  /* Brutalist Geometry */
-  --radius: 0px; /* Sharp corners for brutalism */
+  /* Geometry */
+  --radius: 2px; /* Very slight rounding for digital edges */
   
-  /* Solid Offset Shadows */
-  --shadow-brutal: 4px 4px 0px 0px #000000;
-  --shadow-brutal-sm: 2px 2px 0px 0px #000000;
-  --shadow-brutal-lg: 8px 8px 0px 0px #000000;
-  --shadow-brutal-inset: inset 2px 2px 0px 0px #000000;
+  /* Cyberpunk Neon Glow */
+  --shadow-brutal: 0 0 10px rgba(0, 255, 65, 0.4), inset 0 0 10px rgba(0, 255, 65, 0.1);
+  --shadow-brutal-sm: 0 0 5px rgba(0, 255, 65, 0.3);
+  --shadow-brutal-lg: 0 0 20px rgba(0, 255, 65, 0.6), inset 0 0 15px rgba(0, 255, 65, 0.2);
+  --shadow-brutal-inset: inset 0 0 15px rgba(0, 255, 65, 0.3);
 }
 
 @theme inline {
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  /* Strictly Monospace */
+  --font-sans: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-heading: "Space Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -102,9 +103,13 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    background-image: radial-gradient(#000000 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-color: var(--background);
+    
+    /* Terminal Grid / Scanline effect */
+    background-color: #000000;
+    background-image: 
+      linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -113,21 +118,23 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 3px solid var(--ring);
-    outline-offset: 2px;
+    outline: 1px solid var(--ring);
+    outline-offset: 4px;
+    box-shadow: 0 0 15px var(--ring);
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-black tracking-tight text-foreground uppercase;
+    @apply font-heading font-bold tracking-tight text-foreground uppercase;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
   }
   
-  /* Neo-Brutalist active states */
+  /* Cyberpunk active states */
   button, .btn, a, .card-hover, .glass-card {
-    transition: transform 100ms ease, box-shadow 100ms ease;
+    transition: all 150ms ease-out;
   }
   
-  button:not(:disabled):active, .btn:not(:disabled):active, .glass-card:active {
-    transform: translate(2px, 2px);
-    box-shadow: 0px 0px 0px 0px #000000 !important;
+  button:not(:disabled):hover, .btn:not(:disabled):hover {
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    box-shadow: 0 0 15px var(--primary), inset 0 0 10px rgba(0,0,0,0.2) !important;
   }
 }
 
@@ -141,35 +148,36 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: var(--accent); }
-  80% { background-color: var(--accent); }
-  100% { background-color: transparent; }
+  0% { background-color: var(--secondary); box-shadow: 0 0 20px var(--secondary); }
+  80% { background-color: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
+  100% { background-color: transparent; box-shadow: none; }
 }
 
 .evidence-highlight {
   animation: evidence-fade 3s ease-out forwards;
-  border-left: 4px solid var(--primary);
+  border-left: 2px solid var(--secondary);
 }
 
-/* ─── Utility: glass-card (Repurposed to Brutalist Card) ───────────────── */
+/* ─── Utility: glass-card (Repurposed to Cyberpunk Hologram Card) ──────── */
 .glass-card {
-  background-color: var(--card);
-  border: 3px solid #000000;
+  background-color: rgba(0, 17, 0, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-brutal);
   color: var(--card-foreground);
   border-radius: var(--radius);
 }
 
 .glass-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #000000;
+  box-shadow: var(--shadow-brutal-lg);
+  border-color: var(--secondary);
 }
 
-/* ─── Status badge utilities (Brutalist style) ──────────────────────────────── */
-.badge-pending    { background: var(--accent); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-acknowledged { background: var(--secondary); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-inprogress { background: var(--primary); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-blocked    { background: #FF0000; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-completed  { background: #00FF41; color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-reassigned { background: #9D00FF; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
-.badge-overdue    { background: #000000; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+/* ─── Status badge utilities (Cyberpunk style) ──────────────────────────────── */
+.badge-pending    { background: transparent; color: var(--warning); border: 1px solid var(--warning); box-shadow: 0 0 5px var(--warning); font-weight: bold; text-transform: uppercase; }
+.badge-acknowledged { background: transparent; color: var(--secondary); border: 1px solid var(--secondary); box-shadow: 0 0 5px var(--secondary); font-weight: bold; text-transform: uppercase; }
+.badge-inprogress { background: transparent; color: var(--primary); border: 1px solid var(--primary); box-shadow: 0 0 5px var(--primary); font-weight: bold; text-transform: uppercase; }
+.badge-blocked    { background: transparent; color: var(--destructive); border: 1px solid var(--destructive); box-shadow: 0 0 5px var(--destructive); font-weight: bold; text-transform: uppercase; }
+.badge-completed  { background: var(--primary); color: #000000; border: 1px solid var(--primary); box-shadow: 0 0 10px var(--primary); font-weight: bold; text-transform: uppercase; }
+.badge-reassigned { background: transparent; color: var(--accent); border: 1px solid var(--accent); box-shadow: 0 0 5px var(--accent); font-weight: bold; text-transform: uppercase; }
+.badge-overdue    { background: var(--destructive); color: #000000; border: 1px solid var(--destructive); box-shadow: 0 0 10px var(--destructive); font-weight: bold; text-transform: uppercase; }
