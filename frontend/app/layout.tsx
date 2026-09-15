@@ -19,24 +19,25 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased font-sans min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden">
         <RoleProvider>
-          {/* Bento Floating Navigation */}
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl">
-            <header className="glass-card px-4 sm:px-6 py-3 flex items-center justify-between rounded-full bg-white/80 backdrop-blur-xl border border-gray-200/50 shadow-sm">
-              <Link href="/" className="flex items-center gap-3 group shrink-0">
-                <div className="flex items-center justify-center p-2 bg-primary/10 text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-colors">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          {/* Hardware Control Bar */}
+          <div className="fixed top-0 left-0 w-full z-50 p-4">
+            <header className="obj-raised max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-4 group shrink-0">
+                <div className="flex items-center justify-center p-2 rounded-lg bg-background shadow-3d-inset border border-black/50 text-primary group-hover:text-accent transition-colors">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <span className="text-lg font-heading font-extrabold tracking-tight text-foreground">
+                <span className="text-xl font-heading font-black tracking-widest text-foreground uppercase group-hover:text-primary transition-colors">
                   MeetingCompiler
                 </span>
               </Link>
-              <div className="flex items-center gap-4 shrink-0">
-                <span className="hidden sm:inline-flex items-center text-xs font-semibold bg-gray-100 text-gray-500 px-3 py-1 rounded-full">
-                  v5.0 Bento
-                </span>
-                <div className="bg-white rounded-full">
+              <div className="flex items-center gap-6 shrink-0">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 obj-inset">
+                  <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_var(--primary)] animate-pulse" />
+                  <span className="text-[10px] font-bold text-primary tracking-widest uppercase">SYS_ONLINE</span>
+                </div>
+                <div className="obj-raised p-1 rounded-full">
                   <UserMenu />
                 </div>
               </div>

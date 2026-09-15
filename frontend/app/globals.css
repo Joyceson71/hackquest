@@ -1,62 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * Hackquest Bento Box / Spatial UI Theme
+ * Hackquest 3D Dark Architectural (Neumorphic) Theme
  */
 
 :root {
-  /* Ultra-clean Light Mode */
-  --background: #F3F4F6; /* Gray 100 - Acts as the 'grout' for the bento tiles */
-  --foreground: #09090B; /* Zinc 950 */
+  /* Matte Dark Surface */
+  --background: #1A1A1F; 
+  --foreground: #E2E8F0; 
   
-  --card: #FFFFFF; /* Pure White Tiles */
-  --card-foreground: #09090B; 
+  --card: #1A1A1F; 
+  --card-foreground: #E2E8F0; 
   
-  --popover: #FFFFFF;
-  --popover-foreground: #09090B;
+  --popover: #1A1A1F;
+  --popover-foreground: #E2E8F0;
   
-  --primary: #2563EB; /* Royal Blue */
-  --primary-foreground: #FFFFFF;
+  --primary: #00F0FF; /* Neon LED Cyan */
+  --primary-foreground: #000000;
   
-  --secondary: #F1F5F9; /* Slate 100 */
-  --secondary-foreground: #0F172A;
+  --secondary: #2C2C35; /* Slightly lighter surface for raised elements */
+  --secondary-foreground: #FFFFFF;
   
-  --muted: #F8FAFC; /* Slate 50 */
+  --muted: #131317; /* Darker inset surface */
   --muted-foreground: #64748B;
   
-  --accent: #E0E7FF; /* Indigo 100 */
-  --accent-foreground: #3730A3; /* Indigo 800 */
+  --accent: #FF3366; /* LED Pink/Red */
+  --accent-foreground: #FFFFFF;
   
-  --destructive: #EF4444; 
+  --destructive: #FF3333; 
   --destructive-foreground: #FFFFFF;
   
-  --border: #E2E8F0; /* Subtle Borders */
-  --input: #F1F5F9;
-  --ring: #2563EB;
+  --border: #2C2C35;
+  --input: #131317;
+  --ring: #00F0FF;
 
   /* Status / Confidence colors */
-  --color-success: #10B981; 
-  --color-warning: #F59E0B; 
-  --color-decision: #3B82F6; 
-  --color-task: #8B5CF6; 
+  --color-success: #00FF88; 
+  --color-warning: #FFBB00; 
+  --color-decision: #00F0FF; 
+  --color-task: #FF3366; 
 
-  /* Bento Geometry */
-  --radius: 1.5rem; /* Massive 24px rounding for Bento tiles */
+  /* 3D Geometry */
+  --radius: 1rem;
   
-  /* Soft, spatial shadows */
-  --shadow-brutal: 0 4px 20px -2px rgba(0, 0, 0, 0.05); /* Default Bento Shadow */
-  --shadow-brutal-sm: 0 2px 10px -1px rgba(0, 0, 0, 0.03);
-  --shadow-brutal-lg: 0 10px 40px -4px rgba(0, 0, 0, 0.08);
-  --shadow-brutal-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  /* 3D Neumorphic Lighting */
+  /* Raised objects catch light on top-left, drop shadow on bottom-right */
+  --shadow-3d-raised: 8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.03);
+  --shadow-3d-raised-sm: 4px 4px 8px rgba(0, 0, 0, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.03);
+  --shadow-3d-raised-hover: 12px 12px 24px rgba(0, 0, 0, 0.7), -12px -12px 24px rgba(255, 255, 255, 0.04);
+  
+  /* Inset objects (screens) cast shadow inside top-left, catch light inside bottom-right */
+  --shadow-3d-inset: inset 6px 6px 12px rgba(0, 0, 0, 0.6), inset -6px -6px 12px rgba(255, 255, 255, 0.03);
+  
+  /* Buttons being pressed */
+  --shadow-3d-pressed: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -4px -4px 8px rgba(255, 255, 255, 0.02);
 }
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -86,13 +91,12 @@
   --radius-md: var(--radius);
   --radius-lg: var(--radius);
   --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
   
-  --shadow-clay: var(--shadow-brutal);
-  --shadow-clay-sm: var(--shadow-brutal-sm);
-  --shadow-brutal: var(--shadow-brutal);
-  --shadow-brutal-lg: var(--shadow-brutal-lg);
+  --shadow-3d: var(--shadow-3d-raised);
+  --shadow-3d-sm: var(--shadow-3d-raised-sm);
+  --shadow-3d-hover: var(--shadow-3d-raised-hover);
+  --shadow-inset: var(--shadow-3d-inset);
+  --shadow-pressed: var(--shadow-3d-pressed);
 }
 
 @layer base {
@@ -102,7 +106,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    background-image: none; /* Solid, clean background */
+    background-image: none; 
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -111,16 +115,16 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold tracking-tight text-foreground;
+    @apply font-heading font-black tracking-tight text-foreground uppercase;
   }
   
-  /* Smooth spatial transitions */
-  button, .btn, a, .card-hover, .glass-card {
-    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Smooth hardware transitions */
+  button, .btn, a, .card-hover, .glass-card, .btn-3d {
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -133,37 +137,79 @@
   }
 }
 
-@keyframes evidence-fade {
-  0% { background-color: var(--accent); }
-  80% { background-color: var(--accent); }
-  100% { background-color: transparent; }
+@keyframes led-pulse {
+  0% { box-shadow: 0 0 5px var(--primary); }
+  50% { box-shadow: 0 0 15px var(--primary); }
+  100% { box-shadow: 0 0 5px var(--primary); }
 }
 
 .evidence-highlight {
-  animation: evidence-fade 3s ease-out forwards;
   border-left: 4px solid var(--primary);
+  animation: led-pulse 2s infinite;
 }
 
-/* ─── Utility: glass-card (Repurposed to pure Bento Tile) ───────────────── */
-.glass-card {
-  background-color: var(--card);
-  border: 1px solid rgba(226, 232, 240, 0.8); /* Highly subtle border */
-  box-shadow: var(--shadow-brutal);
-  color: var(--card-foreground);
+/* ─── 3D Architecture Utilities ───────────────── */
+
+/* Physical raised object */
+.obj-raised {
+  background-color: var(--background);
+  box-shadow: var(--shadow-3d-raised);
   border-radius: var(--radius);
-  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
-.glass-card:hover {
-  box-shadow: var(--shadow-brutal-lg);
-  transform: translateY(-2px) scale(1.005);
+.obj-raised:hover {
+  box-shadow: var(--shadow-3d-raised-hover);
+  transform: translateY(-2px);
 }
 
-/* ─── Status badge utilities (Soft pill style) ──────────────────────────────── */
-.badge-pending    { background: #FEF3C7; color: #D97706; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-acknowledged { background: #DBEAFE; color: #2563EB; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-inprogress { background: #E0E7FF; color: #4338CA; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-blocked    { background: #FEE2E2; color: #DC2626; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-completed  { background: #D1FAE5; color: #059669; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-reassigned { background: #F3E8FF; color: #7E22CE; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
-.badge-overdue    { background: #FFE4E6; color: #E11D48; border-radius: 9999px; padding: 0.25rem 0.75rem; font-weight: 600; font-size: 0.75rem; }
+/* Physical inset screen */
+.obj-inset {
+  background-color: var(--muted);
+  box-shadow: var(--shadow-3d-inset);
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* 3D Button */
+.btn-3d {
+  background-color: var(--background);
+  box-shadow: var(--shadow-3d-raised-sm);
+  color: var(--primary);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: var(--radius);
+}
+
+.btn-3d:active, .btn-3d.active {
+  box-shadow: var(--shadow-3d-pressed);
+  transform: translateY(2px);
+  color: var(--primary);
+  text-shadow: 0 0 8px var(--primary);
+}
+
+.btn-3d-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), var(--shadow-3d-raised-sm);
+}
+
+.btn-3d-primary:active {
+  box-shadow: var(--shadow-3d-pressed);
+  transform: translateY(2px);
+}
+
+/* Overriding old glass-card to be obj-raised for backward compat where needed */
+.glass-card {
+  @apply obj-raised;
+}
+
+/* ─── Status badge utilities (LED Indicators) ──────────────────────────────── */
+.badge-pending    { background: transparent; color: var(--warning); border: 1px solid var(--warning); box-shadow: inset 0 0 8px rgba(255, 187, 0, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-acknowledged { background: transparent; color: #00F0FF; border: 1px solid #00F0FF; box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-inprogress { background: transparent; color: #FF3366; border: 1px solid #FF3366; box-shadow: inset 0 0 8px rgba(255, 51, 102, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-blocked    { background: var(--destructive); color: #000; box-shadow: 0 0 10px var(--destructive); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-completed  { background: var(--color-success); color: #000; box-shadow: 0 0 10px var(--color-success); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-reassigned { background: transparent; color: #A855F7; border: 1px solid #A855F7; box-shadow: inset 0 0 8px rgba(168, 85, 247, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge-overdue    { background: transparent; color: var(--destructive); border: 1px solid var(--destructive); box-shadow: inset 0 0 8px rgba(255, 51, 51, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }

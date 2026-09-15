@@ -120,133 +120,148 @@ export default function Dashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 min-h-screen"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 min-h-screen"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-min">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Bento Hero Tile: Title & CTA */}
-        <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3 glass-card p-8 md:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-gradient-to-br from-white to-gray-50 border-none shadow-sm relative overflow-hidden">
-          {/* Subtle gradient blob behind text */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50" />
-          
-          <div className="relative z-10">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-2">
-              Your Meetings
-            </h1>
-            <p className="text-gray-500 font-medium">
-              Review extracted action items and tasks.
-            </p>
-          </div>
-          
-          <Button 
-            size="lg" 
-            onClick={() => router.push('/meetings/new')} 
-            className="relative z-10 bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            Upload Transcript
-          </Button>
-        </motion.div>
-
-        {/* Bento Summary Tile */}
-        <motion.div variants={itemVariants} className="glass-card p-8 flex flex-col justify-center items-center text-center bg-gray-900 text-white border-none shadow-sm">
-          <div className="bg-white/10 p-4 rounded-2xl mb-4">
-            <FileText className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="text-4xl font-extrabold mb-1">{meetings.length}</h2>
-          <p className="text-gray-400 font-medium text-sm">Total Uploads</p>
-        </motion.div>
-
-        {/* Empty State or Meetings Grid */}
-        {meetings.length === 0 ? (
-          <motion.div variants={itemVariants} className="col-span-full glass-card p-12 text-center flex flex-col items-center justify-center min-h-[300px] border-none shadow-sm">
-            <div className="bg-primary/10 p-6 rounded-full mb-6">
-              <FileText className="h-12 w-12 text-primary" />
+        {/* Hardware Control Panel (Left Column on large screens) */}
+        <motion.div variants={itemVariants} className="lg:col-span-4 space-y-6">
+          <div className="obj-raised p-6 md:p-8 flex flex-col justify-center min-h-[250px] relative overflow-hidden">
+            <div className="absolute top-4 right-4 flex gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">No meetings yet</h2>
-            <p className="text-gray-500 font-medium max-w-md">
-              Upload your first meeting transcript to automatically extract action items and assign tasks to your team.
+            <h1 className="text-3xl md:text-4xl font-heading font-black tracking-widest text-primary mb-2 uppercase drop-shadow-[0_0_10px_rgba(0,240,255,0.3)]">
+              Meetings
+            </h1>
+            <p className="text-muted-foreground font-semibold text-sm uppercase tracking-widest mb-8">
+              Data Extraction Module
             </p>
-          </motion.div>
-        ) : (
-          meetings.map((m, index) => {
-            const dateStr = m.createdAt || new Date().toISOString();
-            const date = new Date(dateStr).toLocaleDateString('en-US', {
-              month: 'short', day: 'numeric', year: 'numeric'
-            });
+            <Button 
+              size="lg" 
+              onClick={() => router.push('/meetings/new')} 
+              className="btn-3d-primary w-full py-6 flex items-center justify-center gap-3 text-sm"
+            >
+              <Plus className="h-5 w-5" />
+              UPLOAD_TRANSCRIPT
+            </Button>
+          </div>
 
-            // Alternate sizes for the bento grid effect
-            const isWide = index % 5 === 0 && index !== 0;
+          <div className="obj-raised p-6 flex flex-row items-center justify-between border-l-4 border-l-primary">
+            <div className="flex items-center gap-4">
+              <div className="p-3 obj-inset rounded-lg">
+                <FileText className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total Uploads</span>
+                <span className="text-3xl font-black text-foreground">{meetings.length}</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-            return (
-              <motion.div 
-                key={m.PK}
-                variants={itemVariants}
-                className={`glass-card p-6 md:p-8 cursor-pointer flex flex-col justify-between hover:border-primary/30 border-transparent transition-all group ${isWide ? 'md:col-span-2' : 'col-span-1'}`}
-                onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                      {date}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="h-8 w-8 p-0 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
-                      onClick={(e) => confirmDelete(e, m.PK)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2 group-hover:text-primary transition-colors">
-                    {m.title || 'Untitled Meeting'}
-                  </h3>
-                </div>
-                
-                <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <div className="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full capitalize">
-                    {m.status?.toLowerCase() || 'Processed'}
-                  </div>
-                  <div className="text-primary font-semibold text-sm flex items-center group-hover:translate-x-1 transition-transform">
-                    View <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })
-        )}
+        {/* Display Screen (Right Column) */}
+        <motion.div variants={itemVariants} className="lg:col-span-8 obj-inset p-6 md:p-8 min-h-[500px] flex flex-col relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          
+          <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+            <h2 className="text-lg font-black text-foreground uppercase tracking-widest flex items-center gap-3">
+              <div className="w-2 h-2 bg-primary rounded-sm shadow-[0_0_8px_var(--primary)] animate-pulse" />
+              Active Memory Blocks
+            </h2>
+          </div>
+
+          {meetings.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+              <div className="p-6 obj-raised rounded-full mb-6 text-primary/40">
+                <FileText className="h-12 w-12" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground mb-2 uppercase tracking-widest">Memory Empty</h2>
+              <p className="text-muted-foreground font-semibold text-sm max-w-md uppercase">
+                Initialize extraction by uploading a new audio transcript via the control panel.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-max">
+              {meetings.map((m) => {
+                const dateStr = m.createdAt || new Date().toISOString();
+                const date = new Date(dateStr).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric'
+                });
+
+                return (
+                  <motion.div 
+                    key={m.PK}
+                    variants={itemVariants}
+                    className="obj-raised p-5 cursor-pointer flex flex-col justify-between h-[200px] group hover:border-primary/50"
+                    onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-3">
+                        <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-1 rounded shadow-[inset_0_0_5px_rgba(0,240,255,0.2)]">
+                          {date}
+                        </span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="h-7 w-7 p-0 rounded-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          onClick={(e) => confirmDelete(e, m.PK)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <h3 className="text-lg font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                        {m.title || 'UNKNOWN_RECORD'}
+                      </h3>
+                    </div>
+                    
+                    <div className="mt-4 pt-3 flex items-center justify-between border-t border-white/5">
+                      <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest bg-muted px-2 py-1 rounded shadow-3d-inset">
+                        {m.status?.toLowerCase() || 'Processed'}
+                      </div>
+                      <div className="text-primary font-black text-[10px] uppercase tracking-widest flex items-center group-hover:drop-shadow-[0_0_5px_var(--primary)] transition-all">
+                        ACCESS <ArrowRight className="ml-1.5 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </motion.div>
       </div>
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="border-none shadow-2xl rounded-3xl p-6 sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
-              <div className="p-2.5 bg-red-100 text-red-600 rounded-xl">
-                <AlertTriangle className="h-6 w-6" />
-              </div>
-              Delete Meeting
+        <DialogContent className="obj-raised border-none p-0 sm:max-w-md overflow-hidden bg-background">
+          <div className="bg-destructive/10 p-6 border-b border-destructive/20 flex items-center gap-4">
+            <div className="p-3 obj-inset rounded-lg text-destructive">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <DialogTitle className="text-xl font-black text-destructive uppercase tracking-widest drop-shadow-[0_0_8px_var(--destructive)]">
+              Confirm Purge
             </DialogTitle>
-            <DialogDescription className="text-base text-gray-600 pt-3">
-              Are you sure? This action cannot be undone and will permanently delete the transcript and associated tasks.
+          </div>
+          <div className="p-6">
+            <DialogDescription className="text-sm font-semibold text-muted-foreground uppercase tracking-widest leading-relaxed mb-8">
+              Are you sure? This action will permanently erase the memory block and associated extraction data.
             </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-6 gap-3 sm:justify-end">
-            <Button 
-              variant="outline" 
-              onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="rounded-full px-6 font-semibold border-gray-200 text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive" 
-              onClick={executeDelete}
-              className="rounded-full px-6 font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/20"
-            >
-              Delete
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="gap-4 sm:justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
+                className="btn-3d w-full sm:w-auto text-foreground hover:text-foreground"
+              >
+                ABORT
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={executeDelete}
+                className="btn-3d w-full sm:w-auto bg-destructive text-destructive-foreground shadow-[0_0_15px_rgba(255,51,51,0.4),var(--shadow-3d-raised-sm)] hover:bg-destructive/90"
+              >
+                PURGE_RECORD
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </motion.div>
