@@ -1,62 +1,62 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * Hackquest Minimalist Flat Design Theme
+ * Hackquest Neo-Brutalist Theme
  */
 
 :root {
-  /* Flat Design Teal Colors */
-  --background: #F0FDFA; /* Teal 50 */
-  --foreground: #134E4A; /* Teal 900 */
+  /* Neo-Brutalist Colors */
+  --background: #FFF9E6; /* Pale Yellow/Cream */
+  --foreground: #000000; /* Pitch Black */
   
   --card: #FFFFFF;
-  --card-foreground: #134E4A; 
+  --card-foreground: #000000; 
   
   --popover: #FFFFFF;
-  --popover-foreground: #134E4A;
+  --popover-foreground: #000000;
   
-  --primary: #0D9488; /* Teal 600 */
-  --primary-foreground: #FFFFFF;
+  --primary: #FF3366; /* Hot Pink */
+  --primary-foreground: #000000; /* Black text on primary for brutalism */
   
-  --secondary: #14B8A6; /* Teal 500 */
-  --secondary-foreground: #0F172A;
+  --secondary: #00E5FF; /* Cyan */
+  --secondary-foreground: #000000;
   
-  --muted: #E8F1F4; 
-  --muted-foreground: #475569; /* Slate 600 */
+  --muted: #E2E8F0; 
+  --muted-foreground: #475569;
   
-  --accent: #EA580C; /* Action Orange */
-  --accent-foreground: #FFFFFF;
+  --accent: #FFDF00; /* Canary Yellow */
+  --accent-foreground: #000000;
   
-  --destructive: #DC2626; 
+  --destructive: #FF0000; 
   --destructive-foreground: #FFFFFF;
   
-  --border: #99F6E4; /* Teal 200 */
-  --input: #CCFBF1; /* Teal 100 */
-  --ring: #0D9488;
+  --border: #000000; /* Pitch Black borders everywhere */
+  --input: #FFFFFF;
+  --ring: #000000;
 
   /* Status / Confidence colors */
-  --color-success: #10B981; /* Emerald */
-  --color-warning: #F59E0B; /* Amber */
-  --color-decision: #0EA5E9; /* Sky Blue */
-  --color-task: #8B5CF6; /* Purple */
+  --color-success: #00FF41; /* Neon Green */
+  --color-warning: #FFDF00; /* Yellow */
+  --color-decision: #00E5FF; /* Cyan */
+  --color-task: #FF3366; /* Pink */
 
-  /* Clean Geometry */
-  --radius: 0.5rem; /* 8px rounded corners */
+  /* Brutalist Geometry */
+  --radius: 0px; /* Sharp corners for brutalism */
   
-  /* Remove shadows for Flat Design - Keep variable names for compatibility but set to none or minimal */
-  --shadow-brutal: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-brutal-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-brutal-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-brutal-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  /* Solid Offset Shadows */
+  --shadow-brutal: 4px 4px 0px 0px #000000;
+  --shadow-brutal-sm: 2px 2px 0px 0px #000000;
+  --shadow-brutal-lg: 8px 8px 0px 0px #000000;
+  --shadow-brutal-inset: inset 2px 2px 0px 0px #000000;
 }
 
 @theme inline {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, monospace;
-  --font-heading: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -102,7 +102,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    background-image: none; /* Flat design */
+    background-image: radial-gradient(#000000 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: var(--background);
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -111,16 +113,21 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
+    outline: 3px solid var(--ring);
     outline-offset: 2px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold tracking-tight text-foreground;
+    @apply font-heading font-black tracking-tight text-foreground uppercase;
   }
   
-  /* Fast, clean transitions for flat design */
+  /* Neo-Brutalist active states */
   button, .btn, a, .card-hover, .glass-card {
-    transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+    transition: transform 100ms ease, box-shadow 100ms ease;
+  }
+  
+  button:not(:disabled):active, .btn:not(:disabled):active, .glass-card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px 0px #000000 !important;
   }
 }
 
@@ -134,8 +141,8 @@
 }
 
 @keyframes evidence-fade {
-  0% { background-color: rgba(13, 148, 136, 0.2); }
-  80% { background-color: rgba(13, 148, 136, 0.2); }
+  0% { background-color: var(--accent); }
+  80% { background-color: var(--accent); }
   100% { background-color: transparent; }
 }
 
@@ -144,20 +151,25 @@
   border-left: 4px solid var(--primary);
 }
 
-/* ─── Utility: glass-card (repurposed to clean flat card) ───────────────── */
+/* ─── Utility: glass-card (Repurposed to Brutalist Card) ───────────────── */
 .glass-card {
   background-color: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border: 3px solid #000000;
+  box-shadow: var(--shadow-brutal);
   color: var(--card-foreground);
   border-radius: var(--radius);
 }
 
-/* ─── Status badge utilities ─────────────────────────────────────────────── */
-.badge-pending    { background: #FEF3C7; color: #D97706; border: 1px solid #FDE68A; } /* Amber */
-.badge-acknowledged { background: #E0E7FF; color: #4F46E5; border: 1px solid #C7D2FE; } /* Indigo */
-.badge-inprogress { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; } /* Sky */
-.badge-blocked    { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; } /* Red */
-.badge-completed  { background: #D1FAE5; color: #059669; border: 1px solid #A7F3D0; } /* Emerald */
-.badge-reassigned { background: #F3E8FF; color: #7E22CE; border: 1px solid #E9D5FF; } /* Purple */
-.badge-overdue    { background: #FFE4E6; color: #E11D48; border: 1px solid #FECDD3; } /* Rose */
+.glass-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
+}
+
+/* ─── Status badge utilities (Brutalist style) ──────────────────────────────── */
+.badge-pending    { background: var(--accent); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-acknowledged { background: var(--secondary); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-inprogress { background: var(--primary); color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-blocked    { background: #FF0000; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-completed  { background: #00FF41; color: #000000; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-reassigned { background: #9D00FF; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }
+.badge-overdue    { background: #000000; color: #FFFFFF; border: 2px solid #000000; font-weight: bold; text-transform: uppercase; }

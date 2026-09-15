@@ -90,11 +90,11 @@ export default function LoginPage() {
       >
         {/* Role Selector */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 px-1">Select your role</p>
+          <p className="text-sm font-black uppercase tracking-widest text-black mb-3 px-1">Select your role</p>
           <div className="grid grid-cols-2 gap-4">
             {([
-              { role: 'admin' as UserRole, label: 'ADMIN', desc: 'Manage meetings & assign tasks', Icon: ShieldCheck, accent: 'bg-primary' },
-              { role: 'employee' as UserRole, label: 'EMPLOYEE', desc: 'View your assigned tasks', Icon: User, accent: 'bg-secondary' },
+              { role: 'admin' as UserRole, label: 'ADMIN', desc: 'Manage meetings', Icon: ShieldCheck, accent: 'bg-primary' },
+              { role: 'employee' as UserRole, label: 'EMPLOYEE', desc: 'View tasks', Icon: User, accent: 'bg-secondary' },
             ]).map(({ role, label, desc, Icon, accent }) => {
               const isSelected = selectedRole === role;
               return (
@@ -104,19 +104,19 @@ export default function LoginPage() {
                   onClick={() => handleRoleSelect(role)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98, x: 4, y: 4 }}
-                  className={`p-5 text-left border rounded-xl transition-all ${
+                  className={`p-5 text-left border-4 border-black transition-all ${
                     isSelected
-                      ? `border-primary bg-primary/5 shadow-sm`
-                      : 'border-border bg-card hover:bg-muted/50 hover:border-primary/50'
+                      ? `${accent} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`
+                      : 'bg-white hover:bg-muted shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
                   }`}
                 >
-                  <div className={`${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'} p-2.5 rounded-lg inline-flex mb-4 transition-colors`}>
-                    <Icon className="h-5 w-5" />
+                  <div className={`p-2.5 inline-flex mb-4 border-2 border-black ${isSelected ? 'bg-white text-black' : 'bg-black text-white'}`}>
+                    <Icon className="h-6 w-6 stroke-[3px]" />
                   </div>
-                  <div className="text-sm font-semibold text-foreground">{label}</div>
-                  <div className="text-xs text-muted-foreground mt-1.5">{desc}</div>
+                  <div className={`text-base font-black uppercase tracking-widest ${isSelected ? 'text-black' : 'text-black'}`}>{label}</div>
+                  <div className={`text-xs font-bold mt-1.5 ${isSelected ? 'text-black' : 'text-muted-foreground'}`}>{desc}</div>
                   {isSelected && (
-                    <div className="mt-3 text-xs font-semibold text-primary flex items-center gap-1.5 bg-primary/10 w-fit px-2 py-0.5 rounded-full">
+                    <div className="mt-3 text-xs font-black uppercase text-black flex items-center gap-1.5 bg-white border-2 border-black w-fit px-2 py-0.5">
                       ✓ Selected
                     </div>
                   )}
@@ -127,30 +127,30 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Form */}
-        <Card className="glass-card overflow-hidden">
-          <CardHeader className="space-y-1.5 border-b border-border/50 pb-6 bg-muted/20">
-            <CardTitle className="text-2xl font-heading font-bold text-foreground">
+        <Card className="glass-card overflow-hidden rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <CardHeader className="space-y-1.5 border-b-4 border-black pb-6 bg-accent">
+            <CardTitle className="text-2xl font-heading font-black text-black uppercase tracking-tighter">
               {mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create account' : 'Verify email'}
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-sm font-bold text-black uppercase tracking-widest">
               {mode === 'LOGIN'
                 ? 'Enter your credentials to continue'
                 : mode === 'SIGNUP'
                 ? 'Fill in your details to get started'
-                : 'Check your email for the verification code'}
+                : 'Check your email for the code'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 bg-card">
-            <form onSubmit={handleAuth} className="space-y-4">
+          <CardContent className="pt-6 bg-white">
+            <form onSubmit={handleAuth} className="space-y-6">
               <AnimatePresence>
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive border border-destructive/20 text-sm font-medium rounded-lg"
+                    className="flex items-start gap-2 p-3 bg-destructive text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-sm font-black uppercase tracking-widest"
                   >
-                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                    <AlertCircle className="h-5 w-5 mt-0.5 shrink-0 stroke-[3px]" />
                     <span>{error}</span>
                   </motion.div>
                 )}
@@ -158,54 +158,54 @@ export default function LoginPage() {
 
               {mode === 'SIGNUP' && (
                 <div className="space-y-2.5">
-                  <Label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Full Name</Label>
-                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
+                  <Label htmlFor="name" className="text-sm font-black text-black uppercase tracking-widest">Full Name</Label>
+                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-2 border-black bg-white focus-visible:ring-black h-12 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-lg font-bold" />
                 </div>
               )}
 
               {mode !== 'CONFIRM' && (
                 <>
                   <div className="space-y-2.5">
-                    <Label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email Address</Label>
-                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
+                    <Label htmlFor="email" className="text-sm font-black text-black uppercase tracking-widest">Email Address</Label>
+                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-2 border-black bg-white focus-visible:ring-black h-12 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-lg font-bold" />
                   </div>
                   <div className="space-y-2.5">
-                    <Label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</Label>
-                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
+                    <Label htmlFor="password" className="text-sm font-black text-black uppercase tracking-widest">Password</Label>
+                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-2 border-black bg-white focus-visible:ring-black h-12 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] text-lg font-bold" />
                   </div>
                 </>
               )}
 
               {mode === 'CONFIRM' && (
                 <div className="space-y-2.5">
-                  <Label htmlFor="code" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Verification Code</Label>
-                  <Input id="code" required placeholder="123456" value={code} onChange={(e) => setCode(e.target.value)} className="border-primary/50 bg-primary/5 focus-visible:ring-primary h-14 text-center text-2xl tracking-[0.5em] font-mono rounded-xl" />
+                  <Label htmlFor="code" className="text-sm font-black text-black uppercase tracking-widest">Verification Code</Label>
+                  <Input id="code" required placeholder="123456" value={code} onChange={(e) => setCode(e.target.value)} className="border-4 border-black bg-secondary focus-visible:ring-black h-16 text-center text-3xl tracking-[0.5em] font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none" />
                 </div>
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 rounded-xl shadow-sm transition-all hover:scale-[1.02] mt-2"
+                className="w-full bg-primary hover:bg-primary text-black font-black uppercase tracking-widest text-lg py-7 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:scale-[1.01] rounded-none mt-4"
               >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
+                {loading ? <Loader2 className="h-6 w-6 animate-spin mr-2 stroke-[3px]" /> : null}
                 {loading ? 'Processing...' : mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create Account' : 'Verify & Sign In'}
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-8 text-center text-sm font-bold uppercase tracking-widest">
               {mode === 'LOGIN' && (
-                <span className="text-muted-foreground">
+                <span className="text-black">
                   Don&apos;t have an account?{' '}
-                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-primary hover:text-primary/80 font-medium transition-colors">
+                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-primary hover:text-primary underline decoration-2 underline-offset-4">
                     Sign up
                   </button>
                 </span>
               )}
               {mode === 'SIGNUP' && (
-                <span className="text-muted-foreground">
+                <span className="text-black">
                   Already have an account?{' '}
-                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-primary hover:text-primary/80 font-medium transition-colors">
+                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-primary hover:text-primary underline decoration-2 underline-offset-4">
                     Sign in
                   </button>
                 </span>
