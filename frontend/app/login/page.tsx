@@ -106,8 +106,8 @@ export default function LoginPage() {
                   whileTap={{ scale: 0.98, x: 4, y: 4 }}
                   className={`p-5 text-left border rounded-xl transition-all ${
                     isSelected
-                      ? `border-primary bg-primary/10 shadow-lg shadow-primary/5`
-                      : 'border-white/10 bg-card/50 hover:bg-card hover:border-white/20'
+                      ? `border-primary bg-primary/5 shadow-sm`
+                      : 'border-border bg-card hover:bg-muted/50 hover:border-primary/50'
                   }`}
                 >
                   <div className={`${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'} p-2.5 rounded-lg inline-flex mb-4 transition-colors`}>
@@ -127,12 +127,12 @@ export default function LoginPage() {
         </div>
 
         {/* Auth Form */}
-        <Card className="glass-card border-white/10 overflow-hidden">
-          <CardHeader className="space-y-1.5 border-b border-white/5 pb-6 bg-card/[0.02]">
-            <CardTitle className="text-2xl font-heading font-bold">
+        <Card className="glass-card overflow-hidden">
+          <CardHeader className="space-y-1.5 border-b border-border/50 pb-6 bg-muted/20">
+            <CardTitle className="text-2xl font-heading font-bold text-foreground">
               {mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create account' : 'Verify email'}
             </CardTitle>
-            <CardDescription className="text-sm">
+            <CardDescription className="text-sm text-muted-foreground">
               {mode === 'LOGIN'
                 ? 'Enter your credentials to continue'
                 : mode === 'SIGNUP'
@@ -140,7 +140,7 @@ export default function LoginPage() {
                 : 'Check your email for the verification code'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 bg-card">
             <form onSubmit={handleAuth} className="space-y-4">
               <AnimatePresence>
                 {error && (
@@ -159,7 +159,7 @@ export default function LoginPage() {
               {mode === 'SIGNUP' && (
                 <div className="space-y-2.5">
                   <Label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Full Name</Label>
-                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
+                  <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
                 </div>
               )}
 
@@ -167,11 +167,11 @@ export default function LoginPage() {
                 <>
                   <div className="space-y-2.5">
                     <Label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email Address</Label>
-                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
+                    <Input id="email" type="email" required placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
                   </div>
                   <div className="space-y-2.5">
                     <Label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</Label>
-                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-white/10 bg-foreground/20 focus-visible:ring-primary h-11" />
+                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-border bg-transparent focus-visible:ring-primary h-11" />
                   </div>
                 </>
               )}
@@ -186,7 +186,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] mt-2"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 rounded-xl shadow-sm transition-all hover:scale-[1.02] mt-2"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
                 {loading ? 'Processing...' : mode === 'LOGIN' ? `Sign in as ${selectedRole}` : mode === 'SIGNUP' ? 'Create Account' : 'Verify & Sign In'}
