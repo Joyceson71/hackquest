@@ -112,93 +112,97 @@ export default function NewMeetingPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
-      
-      <Card className="border-primary/30 bg-primary/5">
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
-            <div>
-              <h3 className="font-semibold text-foreground">Try the Demo</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Load a pre-configured meeting transcript to see how the AI extracts decisions and tasks.
-              </p>
-            </div>
-            <Button onClick={handleLoadDemo} disabled={demoLoading || loading} className="shrink-0">
-              <FileText className="h-4 w-4 mr-2" />
-              {demoLoading ? 'Loading…' : 'Load Demo'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="flex-1 w-full p-6 md:p-8 max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <header className="border-b border-border pb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          New Meeting
+        </h1>
+        <p className="text-muted-foreground mt-1">Upload a transcript to automatically extract tasks and decisions.</p>
+      </header>
 
-      <div className="relative">
+      <div className="premium-card p-6 bg-primary/5 border border-primary/20">
+        <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
+          <div>
+            <h3 className="font-semibold text-primary">Try the Demo</h3>
+            <p className="text-sm text-primary/70 mt-1 max-w-md">
+              Load a pre-configured meeting transcript to see how the AI extracts decisions and tasks.
+            </p>
+          </div>
+          <button onClick={handleLoadDemo} disabled={demoLoading || loading} className="shrink-0 btn-primary flex items-center px-4 py-2">
+            <FileText className="h-4 w-4 mr-2" />
+            {demoLoading ? 'Loading…' : 'Load Demo'}
+          </button>
+        </div>
+      </div>
+
+      <div className="relative py-4">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground font-semibold">Or Upload Custom</span>
+          <span className="bg-background px-4 text-muted-foreground font-medium tracking-wider">Or Upload Custom</span>
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Upload Transcript</CardTitle>
-          <CardDescription>
-            Upload a meeting transcript to extract action items. Accepted formats: .txt, .vtt, .srt
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="p-3 bg-destructive/10 text-destructive border border-destructive/20 rounded-md text-sm">
-                {error}
-              </div>
-            )}
+      <div className="premium-card p-6 sm:p-8 space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold">Upload Transcript</h2>
+          <p className="text-sm text-muted-foreground mt-1">Accepted formats: .txt, .vtt, .srt</p>
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="meeting-title">Meeting Title</Label>
-              <Input
-                id="meeting-title"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Weekly Sprint Planning"
-              />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="p-4 bg-destructive/10 text-destructive border border-destructive/20 rounded-md text-sm font-medium">
+              {error}
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label htmlFor="participants">Participant Directory</Label>
-              <Textarea
-                id="participants"
-                required
-                value={participants}
-                onChange={(e) => setParticipants(e.target.value)}
-                placeholder="Alice (Engineering Manager)&#10;Bob (Backend Developer)&#10;Charlie (Designer)"
-                className="min-h-[100px]"
-              />
-              <p className="text-xs text-muted-foreground">One participant per line. Name and role. Max 20 participants.</p>
-            </div>
+          <div className="space-y-2">
+            <label htmlFor="meeting-title" className="block text-sm font-medium text-foreground">Meeting Title</label>
+            <input
+              id="meeting-title"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g., Weekly Sprint Planning"
+              className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground transition-all"
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="transcript-file">Transcript File</Label>
-              <Input
-                id="transcript-file"
-                type="file"
-                accept=".txt,.vtt,.srt"
-                required
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                className="file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-              />
-              <p className="text-xs text-muted-foreground">Max 500 KB</p>
-            </div>
+          <div className="space-y-2">
+            <label htmlFor="participants" className="block text-sm font-medium text-foreground">Participant Directory</label>
+            <textarea
+              id="participants"
+              required
+              value={participants}
+              onChange={(e) => setParticipants(e.target.value)}
+              placeholder="Alice (Engineering Manager)&#10;Bob (Backend Developer)&#10;Charlie (Designer)"
+              className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground transition-all min-h-[120px] resize-y"
+            />
+            <p className="text-xs text-muted-foreground mt-1">One participant per line (Name and Role). Max 20 participants.</p>
+          </div>
 
-            <Button type="submit" className="w-full" disabled={loading || demoLoading}>
+          <div className="space-y-2">
+            <label htmlFor="transcript-file" className="block text-sm font-medium text-foreground">Transcript File</label>
+            <input
+              id="transcript-file"
+              type="file"
+              accept=".txt,.vtt,.srt"
+              required
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              className="w-full file:mr-4 file:px-4 file:py-2 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer border border-border bg-muted/20 rounded-md"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Max 500 KB</p>
+          </div>
+
+          <div className="pt-4 border-t border-border mt-6">
+            <button type="submit" className="w-full btn-primary py-3 flex justify-center items-center" disabled={loading || demoLoading}>
               <Upload className="h-4 w-4 mr-2" />
               {loading ? 'Uploading…' : 'Upload & Extract Actions'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -140,29 +140,29 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h2 className="text-2xl font-heading font-bold text-foreground tracking-tight flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
-            <User className="h-5 w-5" />
-          </div>
-          Participant Directory
-        </h2>
-        <p className="text-sm text-muted-foreground mt-3 font-medium">
-          Mark a participant unavailable to immediately escalate their open actions.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            Participant Directory
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Mark a participant unavailable to immediately escalate their open actions.
+          </p>
+        </div>
       </div>
 
       {error && (
-        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive font-medium text-sm">
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm font-medium">
           {error}
         </div>
       )}
 
       {participants.length === 0 && !error && (
-        <div className="flex flex-col items-center justify-center py-20 glass-card border-white/10 rounded-3xl text-center border-dashed">
-          <User className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-xl font-heading font-semibold text-foreground">No participants listed</h3>
-          <p className="text-sm text-muted-foreground font-medium mt-2">
+        <div className="flex flex-col items-center justify-center py-16 premium-card border-dashed text-center">
+          <User className="h-10 w-10 text-muted-foreground mb-3" />
+          <h3 className="text-lg font-semibold text-foreground">No participants listed</h3>
+          <p className="text-sm text-muted-foreground mt-1">
             Add participant names when creating or editing the meeting.
           </p>
         </div>
@@ -170,30 +170,30 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
 
       {/* Participant cards */}
       {participants.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {participants.map((p) => (
             <div
               key={p.name}
-              className="glass-card border-white/10 p-6 flex flex-col gap-4 rounded-2xl hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300"
+              className="premium-card p-5 flex flex-col justify-between group"
             >
               {/* Name + role */}
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 p-3 shrink-0 rounded-xl text-primary">
-                  <User className="h-5 w-5" />
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-10 h-10 bg-muted flex items-center justify-center shrink-0 rounded-full text-muted-foreground">
+                  {p.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-heading font-semibold text-foreground tracking-tight text-lg leading-tight">{p.name}</p>
+                  <p className="font-semibold text-foreground tracking-tight text-lg leading-tight group-hover:text-primary transition-colors">{p.name}</p>
                   {p.role && (
-                    <p className="text-xs text-muted-foreground font-medium mt-1">{p.role}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{p.role}</p>
                   )}
                 </div>
               </div>
 
               {/* Open action count */}
-              <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-2">
+              <div className="flex items-center justify-between border-t border-border pt-4">
                 <div>
                   <span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">Open Actions</span>
-                  <p className={`text-2xl font-heading font-bold mt-1 ${p.openActionCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  <p className={`text-xl font-bold mt-0.5 ${p.openActionCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {p.openActionCount}
                   </p>
                 </div>
@@ -204,15 +204,15 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                   onClick={() => openConfirmModal(p.name)}
                   disabled={p.openActionCount === 0}
                   className={`
-                    font-semibold text-xs rounded-xl shadow-sm transition-all h-9 px-4
+                    font-medium text-xs h-8 px-3 transition-colors
                     ${p.openActionCount > 0
-                      ? 'border-destructive/30 text-destructive hover:bg-destructive hover:text-background hover:border-destructive shadow-destructive/10 hover:shadow-md'
-                      : 'border-white/5 bg-card/5 text-muted-foreground opacity-50 cursor-not-allowed'
+                      ? 'border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive'
+                      : 'border-border text-muted-foreground opacity-50 cursor-not-allowed'
                     }
                   `}
                   title={p.openActionCount === 0 ? 'No open actions to escalate' : `Mark ${p.name} unavailable`}
                 >
-                  <UserX className="h-4 w-4 mr-2" />
+                  <UserX className="h-3.5 w-3.5 mr-1.5" />
                   Mark Unavailable
                 </Button>
               </div>
@@ -222,20 +222,20 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
       )}
 
       {/* How it works explanation */}
-      <div className="glass-card border-white/10 p-6 space-y-4 rounded-2xl">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">How This Works</p>
-        <div className="space-y-3 text-sm text-muted-foreground">
+      <div className="premium-card p-6 space-y-4">
+        <p className="text-sm font-semibold text-foreground border-b border-border pb-3">How Escalation Works</p>
+        <div className="space-y-4 text-sm text-muted-foreground">
           {[
             { icon: '1', text: 'Marking a participant unavailable immediately triggers the escalation engine for all their open actions.' },
             { icon: '2', text: 'The system ranks all other available participants by ascending open-action count (fewest = rank #1).' },
             { icon: '3', text: 'The suggested replacement receives a notification in the Escalation Inbox and must explicitly accept ownership (with a new deadline) or decline.' },
-            { icon: '4', text: 'The original owner and missed deadline are permanently preserved in the action\'s immutable history — they cannot be erased.' },
+            { icon: '4', text: 'The original owner and missed deadline are permanently preserved in the action\'s immutable history.' },
           ].map((step) => (
             <div key={step.icon} className="flex items-start gap-3">
-              <span className="bg-primary/20 text-primary text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+              <span className="bg-muted text-foreground text-xs font-semibold w-6 h-6 rounded-md flex items-center justify-center shrink-0">
                 {step.icon}
               </span>
-              <p className="pt-1">{step.text}</p>
+              <p className="pt-0.5 leading-relaxed">{step.text}</p>
             </div>
           ))}
         </div>
@@ -249,23 +249,21 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
           fetchData(); // Refresh counts after escalation
         }
       }}>
-        <DialogContent className="glass-card border-white/10 max-w-md rounded-2xl">
+        <DialogContent className="premium-card border-none max-w-md bg-card">
           {!result ? (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-heading font-semibold text-foreground flex items-center gap-3">
-                  <div className="p-2 bg-destructive/10 rounded-full text-destructive">
-                    <AlertTriangle className="h-6 w-6 stroke-2" />
-                  </div>
+                <DialogTitle className="text-xl font-semibold text-foreground flex items-center gap-2 border-b border-border pb-4">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
                   Mark {targetName} Unavailable?
                 </DialogTitle>
-                <DialogDescription className="text-sm font-medium text-muted-foreground pt-4 space-y-3">
+                <DialogDescription className="text-sm text-muted-foreground pt-4 space-y-3">
                   <span className="block">
                     This will immediately escalate all open actions owned by{' '}
-                    <span className="font-bold text-foreground">{targetName}</span>{' '}
+                    <span className="font-medium text-foreground">{targetName}</span>{' '}
                     and suggest a replacement owner for each.
                   </span>
-                  <span className="block text-xs opacity-80">
+                  <span className="block text-xs">
                     The original owner and missed-deadline history will be permanently retained in each action&apos;s audit trail.
                   </span>
                 </DialogDescription>
@@ -273,7 +271,7 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
 
               {/* Affected actions preview */}
               {(participants.find(p => p.name === targetName)?.openActionCount ?? 0) > 0 && (
-                <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-xl p-4 mt-2">
+                <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-md p-4 mt-2">
                   <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
                   <span className="text-sm font-medium text-foreground">
                     {participants.find(p => p.name === targetName)?.openActionCount} open action{participants.find(p => p.name === targetName)?.openActionCount !== 1 ? 's' : ''} will be escalated
@@ -281,19 +279,19 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                 </div>
               )}
 
-              <DialogFooter className="mt-6 gap-3 flex-col sm:flex-row sm:justify-end">
+              <DialogFooter className="mt-6 gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setConfirmOpen(false)}
                   disabled={marking}
-                  className="font-medium bg-transparent text-foreground border-white/10 hover:bg-card/5 rounded-lg h-10 px-5"
+                  className="font-medium bg-transparent border-border hover:bg-muted"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleMarkUnavailable}
                   disabled={marking}
-                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-semibold rounded-lg shadow-lg shadow-destructive/20 transition-all border-none h-10 px-5"
+                  className="bg-destructive hover:bg-destructive/90 text-white font-medium border-none"
                 >
                   {marking ? (
                     <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Escalating…</>
@@ -307,28 +305,26 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
             /* Success state */
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl font-heading font-semibold text-foreground flex items-center gap-3">
-                  <div className="p-2 bg-emerald-500/10 rounded-full text-emerald-500">
-                    <CheckCircle className="h-6 w-6 stroke-2" />
-                  </div>
+                <DialogTitle className="text-xl font-semibold text-foreground flex items-center gap-2 border-b border-border pb-4">
+                  <CheckCircle className="h-5 w-5 text-emerald-500" />
                   Escalations Triggered
                 </DialogTitle>
-                <DialogDescription className="pt-4 text-sm font-medium text-muted-foreground space-y-3">
+                <DialogDescription className="pt-4 text-sm text-muted-foreground space-y-3">
                   <span className="block">
-                    <span className="font-bold text-foreground">{result.escalatedActions} action{result.escalatedActions !== 1 ? 's' : ''}</span>{' '}
-                    owned by <span className="font-bold text-foreground">{targetName}</span> have been escalated.
+                    <span className="font-medium text-foreground">{result.escalatedActions} action{result.escalatedActions !== 1 ? 's' : ''}</span>{' '}
+                    owned by <span className="font-medium text-foreground">{targetName}</span> have been escalated.
                   </span>
-                  <span className="block text-xs opacity-80">
+                  <span className="block text-xs">
                     Each suggested replacement owner will see the escalation in the Escalation Inbox and must explicitly accept or decline ownership.
                   </span>
                 </DialogDescription>
               </DialogHeader>
 
               {result.escalatedActions > 0 && (
-                <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 mt-2">
+                <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-md p-4 mt-2">
                   <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0" />
                   <span className="text-sm font-medium text-foreground">
-                    Original owner & missed-deadline history preserved in each action&apos;s audit trail.
+                    Original owner & missed-deadline history preserved.
                   </span>
                 </div>
               )}
@@ -337,7 +333,7 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                 <Button
                   variant="outline"
                   onClick={() => { setConfirmOpen(false); fetchData(); }}
-                  className="font-medium bg-transparent text-foreground border-white/10 hover:bg-card/5 rounded-lg h-10 px-5"
+                  className="font-medium bg-transparent border-border hover:bg-muted"
                 >
                   Close
                 </Button>
@@ -346,7 +342,7 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
                     setConfirmOpen(false);
                     router.push(`/meetings/${id}/escalations`);
                   }}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg shadow-lg shadow-primary/20 transition-all border-none h-10 px-5"
+                  className="btn-primary"
                 >
                   View Escalations <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
@@ -356,5 +352,4 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
         </DialogContent>
       </Dialog>
     </div>
-  );
 }

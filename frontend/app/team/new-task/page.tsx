@@ -66,46 +66,49 @@ export default function NewTaskPage() {
 
   if (!teamId) return (
     <div className="flex flex-col items-center justify-center min-h-[40vh] gap-4">
-      <h2 className="text-3xl font-black uppercase text-destructive">Missing Team ID</h2>
-      <p className="text-muted-foreground font-bold uppercase text-sm">Navigate here from the Team Dashboard.</p>
-      <a href="/team" className="inline-flex items-center gap-2 font-black uppercase text-sm border-2 border-border px-4 py-2 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-brutal-sm">
-        <ArrowLeft className="w-4 h-4 stroke-[3]" /> Go to Team Dashboard
-      </a>
+      <h2 className="text-2xl font-bold text-destructive">Missing Team ID</h2>
+      <p className="text-muted-foreground text-sm">Navigate here from the Team Dashboard.</p>
+      <Link href="/team" className="btn-secondary flex items-center gap-2 mt-2">
+        <ArrowLeft className="w-4 h-4" /> Go to Team Dashboard
+      </Link>
     </div>
   );
 
   return (
-    <div className="container mx-auto px-6 py-12 max-w-3xl">
+    <div className="flex-1 w-full p-6 md:p-8 max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
       <Link
         href="/team"
-        className="inline-flex items-center gap-2 font-black uppercase text-sm border-2 border-border px-4 py-2 bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors shadow-brutal-sm mb-8"
+        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-2"
       >
-        <ArrowLeft className="w-4 h-4 stroke-[3]" /> Back to Dashboard
+        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </Link>
 
-      <header className="mb-12 border-b-4 border-white pb-6">
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2 text-foreground">
+      <header className="border-b border-border pb-6">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Create New Task
         </h1>
+        <p className="text-muted-foreground mt-1">Assign a new task to a team member manually.</p>
       </header>
 
-      <form onSubmit={handleSubmit} className="bg-card border-4 border-white p-8 shadow-brutal-lg space-y-6">
+      <form onSubmit={handleSubmit} className="premium-card p-6 sm:p-8 space-y-6">
         <div>
-          <label className="block text-sm font-black uppercase mb-2 text-foreground">Task Title</label>
+          <label className="block text-sm font-medium mb-2 text-foreground">Task Title</label>
           <input 
             type="text" 
             required
-            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold focus:outline-none focus:border-primary placeholder:text-muted-foreground"
+            placeholder="e.g. Update API Documentation"
+            className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground transition-all"
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-black uppercase mb-2 text-foreground">Description</label>
+          <label className="block text-sm font-medium mb-2 text-foreground">Description</label>
           <textarea 
             rows={4}
-            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold focus:outline-none focus:border-primary"
+            placeholder="Provide details about the task..."
+            className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-muted-foreground transition-all resize-y"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -113,9 +116,9 @@ export default function NewTaskPage() {
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-black uppercase mb-2 text-foreground">Priority</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Priority</label>
             <select 
-              className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
+              className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
             >
@@ -127,10 +130,10 @@ export default function NewTaskPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-black uppercase mb-2 text-foreground">Assignee</label>
+            <label className="block text-sm font-medium mb-2 text-foreground">Assignee</label>
             <select 
               required
-              className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
+              className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
             >
@@ -143,23 +146,25 @@ export default function NewTaskPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-black uppercase mb-2 text-foreground">Deadline</label>
+          <label className="block text-sm font-medium mb-2 text-foreground">Deadline</label>
           <input 
             type="datetime-local" 
             required
-            className="w-full bg-background text-foreground border-4 border-border p-3 font-bold uppercase focus:outline-none focus:border-primary"
+            className="w-full bg-muted/50 text-foreground border border-border p-3 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
         </div>
 
-        <button 
-          type="submit"
-          disabled={loading || !task || !assignee}
-          className="w-full bg-primary text-primary-foreground font-black uppercase p-4 mt-4 border-4 border-border hover:bg-foreground hover:text-background transition-colors disabled:opacity-50 flex justify-center items-center gap-2 shadow-brutal-sm"
-        >
-          {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Create and Assign'}
-        </button>
+        <div className="pt-4 border-t border-border mt-6">
+          <button 
+            type="submit"
+            disabled={loading || !task || !assignee}
+            className="w-full btn-primary py-3 flex justify-center items-center gap-2"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create and Assign'}
+          </button>
+        </div>
       </form>
     </div>
   );

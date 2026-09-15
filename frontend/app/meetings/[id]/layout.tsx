@@ -47,7 +47,7 @@ export default function MeetingLayout({
 
   return (
     <div className="space-y-6">
-      <nav className="flex gap-1 border-b-4 border-border overflow-x-auto" aria-label="Meeting screens">
+      <nav className="flex gap-6 border-b border-border overflow-x-auto px-1" aria-label="Meeting screens">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
           return (
@@ -55,22 +55,24 @@ export default function MeetingLayout({
               key={tab.href}
               href={tab.href}
               className={`
-                relative px-4 py-2.5 text-sm font-black uppercase tracking-wide transition-colors duration-200 whitespace-nowrap
-                border-b-4 -mb-[4px]
+                relative py-3 text-sm font-medium transition-colors duration-200 whitespace-nowrap
+                border-b-2 -mb-[1px]
                 ${isActive
-                  ? 'border-primary text-primary bg-primary/5'
+                  ? 'border-primary text-primary'
                   : tab.alert
-                  ? 'border-destructive text-destructive hover:bg-destructive/5'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  ? 'border-transparent text-destructive hover:text-destructive/80'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
                 }
               `}
             >
-              {tab.label}
-              {tab.alert && (
-                <span className="absolute -top-1 -right-1 bg-destructive text-background text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-border">
-                  {escalationCount}
-                </span>
-              )}
+              <div className="flex items-center gap-1.5">
+                {tab.label}
+                {tab.alert && (
+                  <span className="bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                    {escalationCount}
+                  </span>
+                )}
+              </div>
             </a>
           );
         })}

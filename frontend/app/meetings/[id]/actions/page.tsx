@@ -106,9 +106,9 @@ export default function ActionsPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-black text-foreground uppercase">Action Board</h2>
-        <p className="text-sm text-muted-foreground mt-1 font-bold uppercase">
+      <div className="border-b border-border pb-4 mb-6">
+        <h2 className="text-2xl font-bold text-foreground">Action Board</h2>
+        <p className="text-sm text-muted-foreground mt-1">
           Canonical record of all confirmed commitments from the meeting transcript.
         </p>
       </div>

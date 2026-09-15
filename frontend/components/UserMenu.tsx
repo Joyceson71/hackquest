@@ -31,10 +31,10 @@ export default function UserMenu() {
           variant="outline"
           size="sm"
           onClick={() => router.push('/admin/teams')}
-          className="hidden md:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-primary hover:text-primary bg-card"
+          className="hidden md:flex font-medium text-xs h-8 px-3 transition-colors border border-border bg-card hover:bg-muted text-primary"
         >
-          <Users className="h-4 w-4 mr-2 stroke-[3]" />
-          ADMIN TEAMS
+          <Users className="h-4 w-4 mr-2" />
+          Admin Teams
         </Button>
       )}
 
@@ -42,34 +42,34 @@ export default function UserMenu() {
         variant="outline"
         size="sm"
         onClick={() => router.push('/team')}
-        className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card"
+        className="hidden sm:flex font-medium text-xs h-8 px-3 transition-colors border border-border bg-card hover:bg-muted"
       >
-        <Users className="h-4 w-4 mr-2 stroke-[3]" />
-        MY TEAM
+        <Users className="h-4 w-4 mr-2" />
+        My Team
       </Button>
 
       <Button
         variant="outline"
         size="sm"
         onClick={() => router.push('/tasks')}
-        className="hidden sm:flex font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card"
+        className="hidden sm:flex font-medium text-xs h-8 px-3 transition-colors border border-border bg-card hover:bg-muted"
       >
-        MY TASKS
+        My Tasks
       </Button>
 
       {/* Role badge */}
       <div
-        className={`hidden sm:flex items-center gap-1.5 px-2 py-1 border-2 text-xs font-black uppercase shadow-brutal-sm ${
+        className={`hidden sm:flex items-center gap-1.5 px-2 py-1 border text-[10px] font-semibold uppercase tracking-wider rounded-md ${
           isAdmin
-            ? 'text-background bg-primary border-border'
-            : 'text-background bg-secondary border-border'
+            ? 'text-primary bg-primary/10 border-primary/20'
+            : 'text-muted-foreground bg-muted border-border'
         }`}
       >
-        {isAdmin ? <ShieldCheck className="h-3 w-3 stroke-[3]" /> : <User className="h-3 w-3 stroke-[3]" />}
-        {isAdmin ? 'ADMIN' : 'EMPLOYEE'}
+        {isAdmin ? <ShieldCheck className="h-3 w-3" /> : <User className="h-3 w-3" />}
+        {isAdmin ? 'Admin' : 'Employee'}
       </div>
 
-      <span className="text-sm text-muted-foreground hidden sm:inline-block max-w-[140px] truncate">
+      <span className="text-sm text-muted-foreground hidden sm:inline-block max-w-[140px] truncate font-medium">
         {userEmail}
       </span>
 
@@ -77,10 +77,10 @@ export default function UserMenu() {
         variant="outline"
         size="sm"
         onClick={handleSignOut}
-        className="font-black uppercase shadow-brutal-sm border-2 border-border hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+        className="font-medium text-xs h-8 px-3 transition-colors border border-border bg-card hover:bg-muted"
       >
-        <LogOut className="h-4 w-4 mr-2 stroke-[3]" />
-        SIGN OUT
+        <LogOut className="h-4 w-4 mr-2" />
+        Sign Out
       </Button>
     </div>
   );

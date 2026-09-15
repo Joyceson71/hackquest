@@ -1,67 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 /*
- * Hackquest 3D Dark Architectural (Neumorphic) Theme
+ * HackQuest Premium Enterprise Theme
  */
 
 :root {
-  /* Matte Dark Surface */
-  --background: #1A1A1F; 
-  --foreground: #E2E8F0; 
+  /* Deep Dark Background (Zinc 950) */
+  --background: #09090B; 
+  --foreground: #FAFAFA; 
   
-  --card: #1A1A1F; 
-  --card-foreground: #E2E8F0; 
+  /* Slightly lighter surfaces (Zinc 900) */
+  --card: #18181B; 
+  --card-foreground: #FAFAFA; 
   
-  --popover: #1A1A1F;
-  --popover-foreground: #E2E8F0;
+  --popover: #18181B;
+  --popover-foreground: #FAFAFA;
   
-  --primary: #00F0FF; /* Neon LED Cyan */
-  --primary-foreground: #000000;
+  /* Primary Accent (Indigo 500) */
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
   
-  --secondary: #2C2C35; /* Slightly lighter surface for raised elements */
-  --secondary-foreground: #FFFFFF;
+  /* Muted surfaces (Zinc 800/900 mix) */
+  --secondary: #27272A; 
+  --secondary-foreground: #FAFAFA;
   
-  --muted: #131317; /* Darker inset surface */
-  --muted-foreground: #64748B;
+  /* Subtle backgrounds */
+  --muted: #27272A; 
+  --muted-foreground: #A1A1AA; /* Zinc 400 */
   
-  --accent: #FF3366; /* LED Pink/Red */
-  --accent-foreground: #FFFFFF;
+  /* Accents */
+  --accent: #27272A; 
+  --accent-foreground: #FAFAFA;
   
-  --destructive: #FF3333; 
-  --destructive-foreground: #FFFFFF;
+  /* Status Colors */
+  --destructive: #EF4444; /* Red 500 */
+  --destructive-foreground: #FAFAFA;
   
-  --border: #2C2C35;
-  --input: #131317;
-  --ring: #00F0FF;
+  --color-success: #22C55E; /* Green 500 */
+  --color-warning: #F59E0B; /* Amber 500 */
+  --color-info: #3B82F6; /* Blue 500 */
+  
+  /* Borders (Zinc 800) */
+  --border: #27272A;
+  --input: #27272A;
+  --ring: #6366F1;
 
-  /* Status / Confidence colors */
-  --color-success: #00FF88; 
-  --color-warning: #FFBB00; 
-  --color-decision: #00F0FF; 
-  --color-task: #FF3366; 
-
-  /* 3D Geometry */
-  --radius: 1rem;
-  
-  /* 3D Neumorphic Lighting */
-  /* Raised objects catch light on top-left, drop shadow on bottom-right */
-  --shadow-3d-raised: 8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.03);
-  --shadow-3d-raised-sm: 4px 4px 8px rgba(0, 0, 0, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.03);
-  --shadow-3d-raised-hover: 12px 12px 24px rgba(0, 0, 0, 0.7), -12px -12px 24px rgba(255, 255, 255, 0.04);
-  
-  /* Inset objects (screens) cast shadow inside top-left, catch light inside bottom-right */
-  --shadow-3d-inset: inset 6px 6px 12px rgba(0, 0, 0, 0.6), inset -6px -6px 12px rgba(255, 255, 255, 0.03);
-  
-  /* Buttons being pressed */
-  --shadow-3d-pressed: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -4px -4px 8px rgba(255, 255, 255, 0.02);
+  /* Clean Geometry */
+  --radius: 0.5rem; /* 8px */
 }
 
 @theme inline {
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -84,19 +77,12 @@
   
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
-  --color-decision: var(--color-decision);
-  --color-task: var(--color-task);
+  --color-info: var(--color-info);
 
-  --radius-sm: var(--radius);
+  --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
-  --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  
-  --shadow-3d: var(--shadow-3d-raised);
-  --shadow-3d-sm: var(--shadow-3d-raised-sm);
-  --shadow-3d-hover: var(--shadow-3d-raised-hover);
-  --shadow-inset: var(--shadow-3d-inset);
-  --shadow-pressed: var(--shadow-3d-pressed);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 @layer base {
@@ -106,7 +92,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
-    background-image: none; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -119,12 +106,12 @@
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-black tracking-tight text-foreground uppercase;
+    @apply font-heading font-semibold tracking-tight text-foreground;
   }
   
-  /* Smooth hardware transitions */
-  button, .btn, a, .card-hover, .glass-card, .btn-3d {
-    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Smooth UI transitions */
+  button, a, .glass-card, .premium-card {
+    transition: all 150ms ease-in-out;
   }
 }
 
@@ -137,82 +124,70 @@
   }
 }
 
-@keyframes led-pulse {
-  0% { box-shadow: 0 0 5px var(--primary); }
-  50% { box-shadow: 0 0 15px var(--primary); }
-  100% { box-shadow: 0 0 5px var(--primary); }
-}
+/* ─── Base Card System ───────────────── */
 
-.evidence-highlight {
-  border-left: 4px solid var(--primary);
-  animation: led-pulse 2s infinite;
-}
-
-/* ─── 3D Architecture Utilities ───────────────── */
-
-/* Physical raised object */
-.obj-raised {
-  background-color: var(--background);
-  box-shadow: var(--shadow-3d-raised);
+.premium-card, .glass-card, .obj-raised, .obj-inset {
+  background-color: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.obj-raised:hover {
-  box-shadow: var(--shadow-3d-raised-hover);
-  transform: translateY(-2px);
+.premium-card:hover, .glass-card:hover, .obj-raised:hover, .obj-inset:hover {
+  border-color: rgba(161, 161, 170, 0.3); /* Zinc 400 with opacity */
 }
 
-/* Physical inset screen */
-.obj-inset {
-  background-color: var(--muted);
-  box-shadow: var(--shadow-3d-inset);
-  border-radius: var(--radius);
-  border: 1px solid rgba(0, 0, 0, 0.5);
+/* ─── Base Button System ───────────────── */
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground font-medium rounded-md px-4 py-2 hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
-/* 3D Button */
-.btn-3d {
-  background-color: var(--background);
-  box-shadow: var(--shadow-3d-raised-sm);
-  color: var(--primary);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border-radius: var(--radius);
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground font-medium rounded-md px-4 py-2 hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
-.btn-3d:active, .btn-3d.active {
-  box-shadow: var(--shadow-3d-pressed);
-  transform: translateY(2px);
-  color: var(--primary);
-  text-shadow: 0 0 8px var(--primary);
+.btn-ghost {
+  @apply bg-transparent text-muted-foreground font-medium rounded-md px-4 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
-.btn-3d-primary {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), var(--shadow-3d-raised-sm);
+/* Backward compatibility for old 3d buttons */
+.btn-3d, .btn-3d-primary {
+  @apply btn-primary;
 }
 
-.btn-3d-primary:active {
-  box-shadow: var(--shadow-3d-pressed);
-  transform: translateY(2px);
+/* ─── Status Badges ──────────────────────────────── */
+.badge {
+  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
 }
 
-/* Overriding old glass-card to be obj-raised for backward compat where needed */
-.glass-card {
-  background-color: var(--background);
-  box-shadow: var(--shadow-3d-raised);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.02);
+.badge-pending { 
+  @apply badge border-amber-500/20 bg-amber-500/10 text-amber-500;
+}
+.badge-acknowledged { 
+  @apply badge border-blue-500/20 bg-blue-500/10 text-blue-500;
+}
+.badge-inprogress { 
+  @apply badge border-indigo-500/20 bg-indigo-500/10 text-indigo-500;
+}
+.badge-blocked { 
+  @apply badge border-red-500/20 bg-red-500/10 text-red-500;
+}
+.badge-completed { 
+  @apply badge border-green-500/20 bg-green-500/10 text-green-500;
+}
+.badge-reassigned { 
+  @apply badge border-purple-500/20 bg-purple-500/10 text-purple-500;
+}
+.badge-overdue { 
+  @apply badge border-red-500/40 bg-red-500/20 text-red-500;
 }
 
-/* ─── Status badge utilities (LED Indicators) ──────────────────────────────── */
-.badge-pending    { background: transparent; color: var(--warning); border: 1px solid var(--warning); box-shadow: inset 0 0 8px rgba(255, 187, 0, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-acknowledged { background: transparent; color: #00F0FF; border: 1px solid #00F0FF; box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-inprogress { background: transparent; color: #FF3366; border: 1px solid #FF3366; box-shadow: inset 0 0 8px rgba(255, 51, 102, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-blocked    { background: var(--destructive); color: #000; box-shadow: 0 0 10px var(--destructive); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-completed  { background: var(--color-success); color: #000; box-shadow: 0 0 10px var(--color-success); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-reassigned { background: transparent; color: #A855F7; border: 1px solid #A855F7; box-shadow: inset 0 0 8px rgba(168, 85, 247, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.badge-overdue    { background: transparent; color: var(--destructive); border: 1px solid var(--destructive); box-shadow: inset 0 0 8px rgba(255, 51, 51, 0.2); border-radius: 4px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+/* Sidebar scrollbar hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

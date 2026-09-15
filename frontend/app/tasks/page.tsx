@@ -75,14 +75,16 @@ export default function MyTasksPage() {
   const now = new Date();
 
   return (
-    <div className="container mx-auto px-6 py-12 max-w-6xl">
-      <header className="mb-12 border-b border-white/10 pb-6">
-        <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-2">
-          My Tasks
-        </h1>
-        <p className="text-lg font-medium text-muted-foreground">
-          Your active workload and assignments
-        </p>
+    <div className="flex-1 w-full p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            My Tasks
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Your active workload and assignments.
+          </p>
+        </div>
       </header>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -96,44 +98,44 @@ export default function MyTasksPage() {
           if (isReassigned) return null; // Don't show reassigned tasks in the active inbox
 
           return (
-            <div key={task.actionId} className={`glass-card ${isOverdue && !isCompleted ? 'border-destructive/50 bg-destructive/5' : 'border-white/10'} p-6 flex flex-col justify-between hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 rounded-2xl`}>
+            <div key={task.actionId} className={`premium-card p-6 flex flex-col justify-between group ${isOverdue && !isCompleted ? 'border-l-4 border-l-destructive' : ''}`}>
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${
-                    isPending ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                    isInProgress ? 'bg-secondary/10 text-secondary border-secondary/20' :
-                    isCompleted ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                    'bg-primary/10 text-primary border-primary/20'
+                  <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
+                    isPending ? 'bg-amber-500/10 text-amber-500' :
+                    isInProgress ? 'bg-secondary/10 text-secondary' :
+                    isCompleted ? 'bg-emerald-500/10 text-emerald-500' :
+                    'bg-primary/10 text-primary'
                   }`}>
                     {task.status}
                   </span>
-                  {isOverdue && !isCompleted && <span className="bg-destructive/10 text-destructive px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 border border-destructive/20"><AlertTriangle className="w-3.5 h-3.5"/> Overdue</span>}
+                  {isOverdue && !isCompleted && <span className="bg-destructive/10 text-destructive px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1.5"><AlertTriangle className="w-3 h-3"/> Overdue</span>}
                 </div>
                 
-                <h3 className="font-heading font-semibold text-xl mb-2 line-clamp-2 text-foreground tracking-tight" title={task.task}>{task.task}</h3>
+                <h3 className="font-semibold text-lg mb-2 leading-snug text-foreground tracking-tight group-hover:text-primary transition-colors" title={task.task}>{task.task}</h3>
                 <p className="text-sm text-muted-foreground mb-6 line-clamp-3">{task.description}</p>
               </div>
               
-              <div className="space-y-5">
-                <div className="pt-5 border-t border-white/10 text-xs font-medium text-muted-foreground">
-                  <div className="flex justify-between mb-2">
-                    <span className="uppercase tracking-wider">Priority</span>
-                    <span className={`px-2 py-0.5 rounded-md ${task.priority === 'HIGH' || task.priority === 'CRITICAL' ? 'bg-destructive/10 text-destructive' : 'bg-card/5'}`}>{task.priority || 'NORMAL'}</span>
+              <div className="space-y-5 mt-auto">
+                <div className="pt-4 border-t border-border text-xs text-muted-foreground">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Priority</span>
+                    <span className={`px-2 py-0.5 rounded-md font-medium ${task.priority === 'HIGH' || task.priority === 'CRITICAL' ? 'bg-destructive/10 text-destructive' : 'bg-muted'}`}>{task.priority || 'NORMAL'}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="uppercase tracking-wider">Deadline</span>
-                    <span className={isOverdue && !isCompleted ? 'text-destructive font-semibold' : ''}>
-                      {task.deadline ? new Date(task.deadline).toLocaleString() : 'None'}
+                    <span className="font-medium">Deadline</span>
+                    <span className={isOverdue && !isCompleted ? 'text-destructive font-medium' : 'text-foreground'}>
+                      {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'None'}
                     </span>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-2 gap-2 pt-2">
                   {isPending && (
                     <button 
                       onClick={() => updateTaskStatus(task, 'ACKNOWLEDGED')}
-                      className="col-span-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-xl flex justify-center items-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-primary/20"
+                      className="col-span-2 btn-primary py-2.5 flex justify-center items-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" /> Acknowledge
                     </button>
@@ -142,7 +144,7 @@ export default function MyTasksPage() {
                   {(task.status === 'ACKNOWLEDGED' || task.status === 'BLOCKED') && (
                     <button 
                       onClick={() => updateTaskStatus(task, 'IN_PROGRESS')}
-                      className="col-span-2 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold py-2.5 rounded-xl flex justify-center items-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-secondary/20"
+                      className="col-span-2 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-medium py-2.5 rounded-md flex justify-center items-center gap-2 transition-all shadow-sm"
                     >
                       <Play className="w-4 h-4 fill-current" /> Start Working
                     </button>
@@ -152,13 +154,13 @@ export default function MyTasksPage() {
                     <>
                       <button 
                         onClick={() => updateTaskStatus(task, 'COMPLETED')}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-background font-semibold py-2.5 rounded-xl flex justify-center items-center gap-2 transition-all hover:scale-[1.02] shadow-lg shadow-emerald-500/20"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-md flex justify-center items-center gap-2 transition-all shadow-sm"
                       >
                         <CheckCircle className="w-4 h-4" /> Complete
                       </button>
                       <button 
                         onClick={() => updateTaskStatus(task, 'BLOCKED')}
-                        className="bg-transparent border border-destructive text-destructive hover:bg-destructive/10 font-semibold py-2.5 rounded-xl flex justify-center items-center gap-2 transition-all"
+                        className="bg-transparent border border-destructive text-destructive hover:bg-destructive/10 font-medium py-2.5 rounded-md flex justify-center items-center gap-2 transition-all"
                       >
                         <AlertCircle className="w-4 h-4" /> Blocked
                       </button>
@@ -170,8 +172,16 @@ export default function MyTasksPage() {
           );
         })}
         {tasks.length === 0 && (
-          <div className="col-span-full text-center py-20 border border-white/10 bg-card/30 rounded-3xl border-dashed font-heading font-medium text-xl text-muted-foreground">
-            You have no assigned tasks.
+          <div className="col-span-full premium-card border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <CheckCircle className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-foreground">You have no assigned tasks.</h3>
+              <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+                Tasks assigned to you will appear here.
+              </p>
+            </div>
           </div>
         )}
       </div>

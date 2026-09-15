@@ -87,53 +87,48 @@ function ActionCard({
   else if (status === 'COMPLETED' || status === 'DONE') nextStatuses = ['IN_PROGRESS'];
 
   return (
-    <motion.div variants={itemVariants} className="glass-card overflow-hidden group">
-      {/* Overdue top-bar indicator */}
-      {isOverdue && (
-        <div className="h-1.5 w-full bg-destructive" />
-      )}
-
+    <motion.div variants={itemVariants} className={`premium-card overflow-hidden group ${isOverdue ? 'border-l-4 border-l-destructive' : ''}`}>
       <div className="p-5">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             {/* Meeting badge */}
             {action.meetingTitle && (
               <div className="flex items-center gap-1.5 mb-2">
-                <Briefcase className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground truncate">{action.meetingTitle}</span>
+                <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground font-medium truncate">{action.meetingTitle}</span>
               </div>
             )}
             {/* Task */}
-            <p className="text-sm font-semibold text-foreground leading-snug">{action.task}</p>
+            <p className="text-base font-semibold text-foreground leading-snug">{action.task}</p>
           </div>
           {/* Status badge */}
-          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 border shrink-0 rounded-full ${cfg.badgeClass}`}>
-            <StatusIcon className="h-3 w-3" />
+          <span className={`shrink-0 ${cfg.badgeClass}`}>
+            <StatusIcon className="h-3 w-3 mr-1" />
             {cfg.label}
           </span>
         </div>
 
         {/* Meta row */}
-        <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <User className="h-3 w-3" />
-            {action.currentOwner || action.owner || '—'}
+        <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <User className="h-4 w-4" />
+            {action.currentOwner || action.owner || 'Unassigned'}
           </span>
-          <span className={`flex items-center gap-1 ${isOverdue ? 'text-red-400 font-bold' : ''}`}>
-            <Calendar className="h-3 w-3" />
-            {isOverdue ? '⚠ Overdue — ' : ''}{formatDate(action.deadline)}
+          <span className={`flex items-center gap-1.5 ${isOverdue ? 'text-destructive font-medium' : ''}`}>
+            <Calendar className="h-4 w-4" />
+            {isOverdue ? 'Overdue — ' : ''}{formatDate(action.deadline)}
           </span>
         </div>
 
         {/* Actions row */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+        <div className="flex items-center justify-between mt-5 pt-4 border-t border-border">
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-            {expanded ? 'Hide' : 'View'} evidence
+            {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            {expanded ? 'Hide evidence' : 'View evidence'}
           </button>
 
           <div className="flex items-center gap-2">
@@ -146,12 +141,12 @@ function ActionCard({
                   variant="outline"
                   disabled={isUpdating}
                   onClick={() => onStatusChange(action.actionId, s, action.meetingId || '')}
-                  className="text-xs h-8 px-3 font-medium border-white/10 bg-transparent text-foreground hover:bg-card/5 rounded-lg transition-all"
+                  className="h-8 px-3 text-xs"
                 >
                   {isUpdating ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
-                    `→ ${c.label}`
+                    `Mark as ${c.label}`
                   )}
                 </Button>
               );
@@ -165,17 +160,19 @@ function ActionCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="mt-4 p-4 rounded-xl border border-white/10 bg-foreground/20"
+            className="mt-4 p-4 rounded-md border border-border bg-muted/30"
           >
-            <div className="flex items-start gap-2 text-xs text-muted-foreground">
-              <FileText className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
+            <div className="flex items-start gap-3 text-sm text-muted-foreground">
+              <FileText className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
               <div>
                 {action.speakerContext && (
-                  <span className="font-bold text-foreground mr-1">{action.speakerContext}:</span>
+                  <span className="font-semibold text-foreground mr-2">{action.speakerContext}:</span>
                 )}
-                <span className="italic">&quot;{action.task}&quot;</span>
+                <span className="italic">"{action.task}"</span>
                 {action.evidenceTimestamp && (
-                  <span className="ml-2 text-muted-foreground">@ {action.evidenceTimestamp}</span>
+                  <span className="ml-2 text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    {action.evidenceTimestamp}
+                  </span>
                 )}
               </div>
             </div>
@@ -269,95 +266,92 @@ function EmployeeDashboardInner() {
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
-    >
+    <div className="flex-1 w-full p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <motion.div variants={itemVariants}>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tight text-foreground">
-              My Tasks
-            </h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              Showing actions assigned to{' '}
-              <span className="text-primary font-medium">{userName || userEmail || 'you'}</span>
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchMyActions}
-            disabled={loading}
-            className="font-medium text-sm border-white/10 bg-transparent text-foreground hover:bg-card/5 rounded-lg transition-all"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            My Tasks
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Showing actions assigned to{' '}
+            <span className="text-foreground font-medium">{userName || userEmail || 'you'}</span>
+          </p>
         </div>
-      </motion.div>
+        <Button
+          variant="outline"
+          onClick={fetchMyActions}
+          disabled={loading}
+          className="bg-card hover:bg-muted/50"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          Refresh Data
+        </Button>
+      </div>
 
       {/* Stats row */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Total',       value: stats.total,      color: 'text-foreground',  border: 'border-border' },
-          { label: 'Pending',     value: stats.pending,    color: 'text-amber-400',   border: 'border-amber-400/50' },
-          { label: 'In Progress', value: stats.inProgress, color: 'text-secondary',   border: 'border-secondary/50' },
-          { label: 'Overdue',     value: stats.overdue,    color: 'text-destructive', border: 'border-destructive/50' },
-        ].map(({ label, value, color, border }) => (
-          <div key={label} className={`glass-card p-5 border ${border} rounded-2xl`}>
-            <div className={`text-3xl font-heading font-bold ${color}`}>{value}</div>
-            <div className="text-xs font-medium text-muted-foreground mt-1">{label}</div>
+          { label: 'Total Tasks', value: stats.total, icon: Briefcase },
+          { label: 'Pending', value: stats.pending, icon: Clock },
+          { label: 'In Progress', value: stats.inProgress, icon: RefreshCw },
+          { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: 'text-destructive' },
+        ].map(({ label, value, icon: Icon, color }) => (
+          <div key={label} className="premium-card p-6 flex flex-col gap-2">
+            <div className={`flex items-center gap-2 text-muted-foreground mb-2 ${color || ''}`}>
+              <Icon className="h-4 w-4" />
+              <span className="text-sm font-medium">{label}</span>
+            </div>
+            <span className={`text-3xl font-bold ${color || 'text-foreground'}`}>{value}</span>
           </div>
         ))}
-      </motion.div>
+      </div>
 
       {/* Filter tabs */}
-      <motion.div variants={itemVariants} className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-4">
         {statuses.map((s) => {
           const count = s === 'ALL' ? actions.length : actions.filter((a) => a.status === s).length;
+          const isActive = filter === s;
           return (
             <button
               key={s}
               type="button"
               onClick={() => setFilter(s)}
-              className={`px-4 py-1.5 text-xs font-semibold rounded-full border transition-all ${
-                filter === s
-                  ? 'bg-primary/20 text-primary border-primary/30 shadow-md'
-                  : 'bg-transparent text-muted-foreground border-white/10 hover:border-primary/50 hover:text-foreground'
+              className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
+                isActive
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
               }`}
             >
-              {s === 'ALL' ? 'All' : STATUS_CONFIG[s]?.label || s} ({count})
+              {s === 'ALL' ? 'All Tasks' : STATUS_CONFIG[s]?.label || s} <span className="ml-1 opacity-70">({count})</span>
             </button>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-20 gap-3 text-muted-foreground">
-          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          <span className="text-sm font-medium">Loading your tasks…</span>
+        <div className="flex h-[30vh] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : filtered.length === 0 ? (
-        <motion.div variants={itemVariants} className="glass-card p-12 text-center">
-          <div className="bg-primary/20 p-4 rounded-full inline-block mb-6">
-            <CheckCircle className="h-10 w-10 text-primary" />
+        <div className="premium-card border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+            <CheckCircle className="h-6 w-6" />
           </div>
-          <h2 className="text-2xl font-heading font-bold mb-2">
-            {filter === 'ALL' ? 'No tasks assigned to you yet' : `No ${filter.toLowerCase()} tasks`}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {filter === 'ALL'
-              ? 'Your admin will assign actions from meeting transcripts here.'
-              : 'Try switching the filter above.'}
-          </p>
-        </motion.div>
+          <div>
+            <h3 className="text-lg font-medium text-foreground">
+              {filter === 'ALL' ? 'No tasks assigned to you' : `No ${filter.toLowerCase()} tasks found`}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+              {filter === 'ALL'
+                ? 'Your active tasks will appear here once assigned.'
+                : 'Try selecting a different status filter.'}
+            </p>
+          </div>
+        </div>
       ) : (
-        <motion.div variants={containerVariants} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((action) => (
             <ActionCard
               key={action.actionId}
@@ -366,9 +360,9 @@ function EmployeeDashboardInner() {
               updating={updating}
             />
           ))}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

@@ -125,31 +125,40 @@ export default function TeamDashboardPage() {
   });
 
   return (
-    <div className="container mx-auto px-6 py-12 max-w-7xl">
-      <header className="mb-12 border-b-4 border-white pb-6 flex justify-between items-end">
+    <div className="flex-1 w-full p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
-            {selectedTeam.name}
-          </h1>
-          <p className="text-xl font-bold uppercase text-primary">
-            {isLeader ? 'Team Leader Dashboard' : 'Team Member View'}
-          </p>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              {selectedTeam.name}
+            </h1>
+            <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full font-medium border border-primary/20">
+              {isLeader ? 'Leader View' : 'Member View'}
+            </span>
+          </div>
+          <p className="text-muted-foreground mt-1">Manage team workload and track active tasks.</p>
         </div>
         
         {isLeader && (
-          <Link href={`/team/new-task?teamId=${selectedTeam.teamId}`} className="bg-primary text-primary-foreground font-black uppercase px-6 py-3 border-4 border-white hover:bg-card hover:text-foreground transition-colors flex items-center gap-2">
-            <Plus className="w-5 h-5" /> Assign Task
+          <Link 
+            href={`/team/new-task?teamId=${selectedTeam.teamId}`} 
+            className="btn-primary flex items-center justify-center gap-2 w-full md:w-auto"
+          >
+            <Plus className="w-4 h-4" /> 
+            Assign Task
           </Link>
         )}
-      </header>
+      </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-12 gap-8">
         
         {/* Workload Dashboard - ONLY FOR LEADERS */}
         {isLeader && (
-          <div className="lg:col-span-1 space-y-6">
-            <h2 className="text-3xl font-black uppercase tracking-tight flex items-center gap-2">
-              <BarChart className="w-8 h-8 text-primary" /> Workload
+          <div className="lg:col-span-4 space-y-6">
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <BarChart className="w-5 h-5 text-primary" /> Workload
             </h2>
             
             <div className="space-y-4">
@@ -157,16 +166,34 @@ export default function TeamDashboardPage() {
                 const w = workloads[member.email];
                 if (!w) return null;
                 return (
-                  <div key={member.email} className="bg-card border-4 border-white p-4 shadow-brutal flex flex-col justify-between">
-                    <h3 className="font-black uppercase truncate text-foreground" title={member.email}>{member.email}</h3>
-                    <div className="flex flex-wrap gap-2 mt-2 text-xs font-black uppercase">
-                      <span className="badge-inprogress px-2 py-1">Act: {w.active}</span>
-                      <span className="badge-pending px-2 py-1">Pnd: {w.pending}</span>
-                      <span className="badge-overdue px-2 py-1">Ovd: {w.overdue}</span>
+                  <div key={member.email} className="premium-card p-5 flex flex-col justify-between group">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-foreground font-medium shrink-0">
+                        {member.email.charAt(0).toUpperCase()}
+                      </div>
+                      <h3 className="font-medium text-sm text-foreground truncate" title={member.email}>
+                        {member.email}
+                      </h3>
                     </div>
-                    <div className="mt-4 pt-4 border-t-2 border-white/20 flex justify-between">
-                      <span className="font-bold uppercase text-xs text-foreground">Workload Score</span>
-                      <span className="font-black text-primary text-lg leading-none">{w.score}</span>
+                    
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="flex flex-col gap-1 p-2 bg-muted/30 rounded-md text-center">
+                        <span className="text-xs text-muted-foreground font-medium">Active</span>
+                        <span className="text-foreground font-bold">{w.active}</span>
+                      </div>
+                      <div className="flex flex-col gap-1 p-2 bg-amber-500/10 rounded-md text-center">
+                        <span className="text-xs text-amber-500 font-medium">Pending</span>
+                        <span className="text-amber-500 font-bold">{w.pending}</span>
+                      </div>
+                      <div className="flex flex-col gap-1 p-2 bg-destructive/10 rounded-md text-center">
+                        <span className="text-xs text-destructive font-medium">Overdue</span>
+                        <span className="text-destructive font-bold">{w.overdue}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-border flex justify-between items-center">
+                      <span className="font-medium text-xs text-muted-foreground">Workload Score</span>
+                      <span className="font-bold text-foreground bg-muted px-2 py-0.5 rounded-md text-xs">{w.score}</span>
                     </div>
                   </div>
                 );
@@ -176,41 +203,60 @@ export default function TeamDashboardPage() {
         )}
 
         {/* Tasks List */}
-        <div className={isLeader ? "lg:col-span-2 space-y-6" : "lg:col-span-3 space-y-6"}>
-          <h2 className="text-3xl font-black uppercase tracking-tight flex items-center gap-2">
-            <Users className="w-8 h-8 text-primary" /> Active Tasks
-          </h2>
+        <div className={isLeader ? "lg:col-span-8 space-y-6" : "lg:col-span-12 space-y-6"}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" /> Active Tasks
+            </h2>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4">
             {tasks.map(task => {
               const isOverdue = task.deadline && new Date(task.deadline) < now;
               return (
-                <div key={task.actionId} className={`bg-card border-4 ${isOverdue ? 'border-destructive shadow-[6px_6px_0px_0px_theme(colors.destructive.DEFAULT)]' : 'border-white shadow-brutal'} p-5 flex flex-col justify-between`}>
+                <div key={task.actionId} className={`premium-card p-5 flex flex-col justify-between ${isOverdue ? 'border-l-4 border-l-destructive' : ''}`}>
                   <div>
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="bg-primary text-primary-foreground px-2 py-1 text-xs font-black uppercase border-2 border-primary">{task.status}</span>
-                      {isOverdue && <span className="bg-destructive text-destructive-foreground px-2 py-1 text-xs font-black uppercase flex items-center gap-1 border-2 border-destructive"><AlertTriangle className="w-3 h-3"/> Overdue</span>}
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="badge-inprogress">
+                        {task.status}
+                      </span>
+                      {isOverdue && (
+                        <span className="text-xs font-medium text-destructive flex items-center gap-1 bg-destructive/10 px-2 py-0.5 rounded-full">
+                          <AlertTriangle className="w-3 h-3"/> Overdue
+                        </span>
+                      )}
                     </div>
-                    <h3 className="font-black text-xl uppercase mb-1 text-foreground">{task.task}</h3>
-                    <p className="text-sm font-bold text-muted-foreground mb-4 line-clamp-2">{task.description}</p>
+                    <h3 className="font-semibold text-base text-foreground mb-1 leading-snug">{task.task}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{task.description}</p>
                   </div>
                   
-                  <div className="pt-4 border-t-2 border-white/20">
-                    <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground mb-1">
-                      <span>Assignee</span>
-                      <span>{task.currentOwner || 'Unassigned'}</span>
+                  <div className="pt-4 border-t border-border mt-auto">
+                    <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
+                      <span className="font-medium">Assignee</span>
+                      <span className="text-foreground">{task.currentOwner || 'Unassigned'}</span>
                     </div>
-                    <div className="flex justify-between text-xs font-bold uppercase text-muted-foreground">
-                      <span>Deadline</span>
-                      <span>{task.deadline ? new Date(task.deadline).toLocaleDateString() : 'None'}</span>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <span className="font-medium">Deadline</span>
+                      <span className={`${isOverdue ? 'text-destructive font-medium' : 'text-foreground'}`}>
+                        {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'None'}
+                      </span>
                     </div>
                   </div>
                 </div>
               );
             })}
+            
             {tasks.length === 0 && (
-              <div className="col-span-full text-center py-12 border-4 border-white/20 border-dashed font-black uppercase text-2xl text-muted-foreground">
-                No active tasks in this team.
+              <div className="col-span-full premium-card border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-foreground">No active tasks</h3>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+                    This team currently has no active tasks.
+                  </p>
+                </div>
               </div>
             )}
           </div>

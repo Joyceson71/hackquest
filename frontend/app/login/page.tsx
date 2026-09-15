@@ -81,136 +81,161 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="w-full max-w-md space-y-8"
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="w-full max-w-[420px] relative z-10"
       >
-        {/* Hardware Status Header */}
-        <div className="flex flex-col items-center justify-center gap-3 mb-4">
-          <div className="p-3 obj-raised rounded-full text-primary shadow-[inset_0_0_10px_rgba(0,240,255,0.1)]">
-            <Lock className="h-6 w-6" />
+        <div className="text-center mb-8">
+          <div className="mx-auto w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 border border-primary/20">
+            <Lock className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-heading font-black tracking-widest text-foreground uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
-            Security Access
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {mode === 'LOGIN' ? 'Welcome back' : mode === 'SIGNUP' ? 'Create an account' : 'Verify your email'}
           </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {mode === 'LOGIN' ? 'Enter your credentials to access your workspace' : mode === 'SIGNUP' ? 'Get started with HackQuest' : 'Enter the code sent to your inbox'}
+          </p>
         </div>
 
-        {/* Auth Form Terminal (Inset Screen) */}
-        <Card className="obj-raised overflow-hidden border-none p-2 bg-background">
-          <div className="obj-inset p-8 rounded-lg relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-            
-            <CardHeader className="space-y-2 p-0 mb-6 text-center">
-              <CardTitle className="text-xl font-black text-primary uppercase tracking-widest drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]">
-                {mode === 'LOGIN' ? `Authenticate: ${selectedRole}` : mode === 'SIGNUP' ? 'Initialize User' : 'Enter Token'}
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="p-0">
-              <form onSubmit={handleAuth} className="space-y-6">
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="flex items-start gap-3 p-4 obj-raised bg-background text-destructive text-[10px] font-black uppercase tracking-widest border-l-2 border-l-destructive shadow-[inset_0_0_10px_rgba(255,51,51,0.1)]"
-                    >
-                      <AlertCircle className="h-4 w-4 shrink-0 drop-shadow-[0_0_5px_var(--destructive)]" />
-                      <span>{error}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {mode === 'SIGNUP' && (
-                  <div className="space-y-3">
-                    <Label htmlFor="name" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Full Name</Label>
-                    <Input id="name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} className="obj-inset bg-transparent border-none text-primary focus-visible:ring-primary h-12 px-4 shadow-[inset_0_0_5px_rgba(0,240,255,0.1)] text-sm font-bold uppercase tracking-widest placeholder:text-muted-foreground/50" />
-                  </div>
-                )}
-
-                {mode !== 'CONFIRM' && (
-                  <>
-                    <div className="space-y-3">
-                      <Label htmlFor="email" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Email Address</Label>
-                      <Input id="email" type="email" required placeholder="user@node.net" value={email} onChange={(e) => setEmail(e.target.value)} className="obj-inset bg-transparent border-none text-primary focus-visible:ring-primary h-12 px-4 shadow-[inset_0_0_5px_rgba(0,240,255,0.1)] text-sm font-bold uppercase tracking-widest placeholder:text-muted-foreground/50" />
-                    </div>
-                    <div className="space-y-3">
-                      <Label htmlFor="password" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Security Key</Label>
-                      <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="obj-inset bg-transparent border-none text-primary focus-visible:ring-primary h-12 px-4 shadow-[inset_0_0_5px_rgba(0,240,255,0.1)] text-sm font-bold tracking-widest placeholder:text-muted-foreground/50" />
-                    </div>
-                  </>
-                )}
-
-                {mode === 'CONFIRM' && (
-                  <div className="space-y-3">
-                    <Label htmlFor="code" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">6-Digit Code</Label>
-                    <Input id="code" required placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} className="obj-inset bg-transparent border border-accent/20 text-accent focus-visible:ring-accent h-16 text-center text-3xl tracking-[0.5em] font-black shadow-[inset_0_0_15px_rgba(255,51,102,0.1)] placeholder:text-accent/20" />
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-3d-primary w-full py-7 mt-8 text-sm"
+        <Card className="premium-card p-6 shadow-2xl">
+          <form onSubmit={handleAuth} className="space-y-5">
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
                 >
-                  {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : null}
-                  {loading ? 'PROCESSING...' : mode === 'LOGIN' ? `ACCESS [${selectedRole}]` : mode === 'SIGNUP' ? 'REGISTER' : 'VERIFY_TOKEN'}
-                </Button>
-              </form>
-            </CardContent>
-          </div>
+                  <div className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium border border-destructive/20 mb-4">
+                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {mode === 'SIGNUP' && (
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</Label>
+                <Input 
+                  id="name" 
+                  type="text" 
+                  placeholder="John Doe" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                />
+              </div>
+            )}
+
+            {mode !== 'CONFIRM' && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    required 
+                    placeholder="you@example.com" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
+                  </div>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    required 
+                    placeholder="••••••••" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                  />
+                </div>
+              </>
+            )}
+
+            {mode === 'CONFIRM' && (
+              <div className="space-y-2">
+                <Label htmlFor="code" className="text-sm font-medium text-foreground">Verification Code</Label>
+                <Input 
+                  id="code" 
+                  required 
+                  placeholder="000000" 
+                  value={code} 
+                  onChange={(e) => setCode(e.target.value)} 
+                  className="bg-muted/50 border-border h-14 text-center text-3xl tracking-widest font-mono text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                />
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full h-11 mt-6"
+            >
+              {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
+              {loading ? 'Processing...' : mode === 'LOGIN' ? 'Sign In' : mode === 'SIGNUP' ? 'Create Account' : 'Verify'}
+            </Button>
+          </form>
         </Card>
 
-        {/* Role Selector Hardware Switches */}
-        <div className="pt-2">
-          <p className="text-[10px] font-black text-muted-foreground mb-4 uppercase tracking-widest text-center">Toggle Authorization Level</p>
-          <div className="flex gap-4 justify-center">
-            {([
-              { role: 'admin' as UserRole, label: 'ADMIN', Icon: ShieldCheck },
-              { role: 'employee' as UserRole, label: 'USER', Icon: User },
-            ]).map(({ role, label, Icon }) => {
-              const isSelected = selectedRole === role;
-              return (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => handleRoleSelect(role)}
-                  className={`relative flex items-center justify-center gap-3 px-6 py-4 rounded-xl transition-all ${
-                    isSelected
-                      ? 'btn-3d text-primary shadow-3d-pressed drop-shadow-[0_0_5px_var(--primary)]'
-                      : 'obj-raised text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="font-black text-[10px] uppercase tracking-widest">{label}</span>
-                  {isSelected && (
-                     <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
-                  )}
-                </button>
-              );
-            })}
+        {/* Role Selector (Compact) */}
+        {mode !== 'CONFIRM' && (
+          <div className="mt-8">
+            <p className="text-xs font-medium text-muted-foreground mb-3 text-center uppercase tracking-wider">Account Type</p>
+            <div className="flex gap-3 justify-center">
+              {([
+                { role: 'admin' as UserRole, label: 'Admin', Icon: ShieldCheck },
+                { role: 'employee' as UserRole, label: 'User', Icon: User },
+              ]).map(({ role, label, Icon }) => {
+                const isSelected = selectedRole === role;
+                return (
+                  <button
+                    key={role}
+                    type="button"
+                    onClick={() => handleRoleSelect(role)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all border ${
+                      isSelected
+                        ? 'bg-primary/10 text-primary border-primary/30'
+                        : 'bg-transparent text-muted-foreground border-border hover:bg-muted'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Mode Toggle */}
-        <div className="mt-8 text-center text-[10px] font-black uppercase tracking-widest">
+        <div className="mt-8 text-center text-sm font-medium">
           {mode === 'LOGIN' && (
             <span className="text-muted-foreground">
-              UNREGISTERED?{' '}
-              <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-accent hover:text-white drop-shadow-[0_0_5px_var(--accent)] ml-2 transition-all">
-                ALLOCATE NEW
+              Don't have an account?{' '}
+              <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-foreground hover:text-primary transition-colors underline underline-offset-4">
+                Sign up
               </button>
             </span>
           )}
           {mode === 'SIGNUP' && (
             <span className="text-muted-foreground">
-              REGISTERED?{' '}
-              <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-accent hover:text-white drop-shadow-[0_0_5px_var(--accent)] ml-2 transition-all">
-                AUTHENTICATE
+              Already have an account?{' '}
+              <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-foreground hover:text-primary transition-colors underline underline-offset-4">
+                Sign in
               </button>
             </span>
           )}
