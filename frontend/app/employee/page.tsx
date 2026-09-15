@@ -94,26 +94,28 @@ function ActionCard({
           {/* Meeting badge */}
           {action.meetingTitle && (
             <div className="mb-3">
-              <span className="meta-text text-muted-foreground">{action.meetingTitle}</span>
+              <span className="meta-label text-muted-foreground border border-border px-2 py-1">{action.meetingTitle.toUpperCase()}</span>
             </div>
           )}
           {/* Task */}
-          <p className="editorial-heading text-2xl text-foreground mb-4">{action.task}</p>
+          <p className="manga-header text-3xl text-foreground mb-4">{action.task}</p>
           
-          <div className="flex flex-wrap items-center gap-6 meta-text text-muted-foreground">
-            <span>
+          <div className="flex flex-wrap items-center gap-6 meta-label text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-foreground rounded-full"></div>
               ASSIGNED TO: {action.currentOwner || action.owner || 'UNASSIGNED'}
             </span>
-            <span className={isOverdue ? 'text-destructive font-bold' : ''}>
-              DUE: {formatDate(action.deadline)}
+            <span className={`flex items-center gap-2 ${isOverdue ? 'text-destructive font-bold' : ''}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${isOverdue ? 'bg-destructive' : 'bg-muted-foreground'}`}></div>
+              DUE: {formatDate(action.deadline).toUpperCase()}
             </span>
           </div>
         </div>
 
         {/* Controls */}
         <div className="flex flex-col items-end gap-6 border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-8">
-          <span className={`meta-text ${isOverdue ? 'text-destructive' : 'text-foreground'}`}>
-            {status === 'IN_PROGRESS' ? '● IN PROGRESS' : status === 'COMPLETED' ? '✓ COMPLETED' : status === 'BLOCKED' ? '! BLOCKED' : `○ ${status}`}
+          <span className={`meta-label font-bold tracking-widest ${isOverdue ? 'text-destructive' : 'text-foreground'}`}>
+            {status === 'IN_PROGRESS' ? '[ IN PROGRESS ]' : status === 'COMPLETED' ? '[ COMPLETED ]' : status === 'BLOCKED' ? '[ BLOCKED ]' : `[ ${status.replace('_', ' ')} ]`}
           </span>
           
           <div className="flex flex-col gap-2 w-full md:w-auto">
@@ -124,7 +126,7 @@ function ActionCard({
                 variant="outline"
                 disabled={isUpdating}
                 onClick={() => onStatusChange(action.actionId, s, action.meetingId || '')}
-                className="btn-secondary meta-text w-full justify-start md:justify-center"
+                className="btn-secondary meta-label w-full justify-start md:justify-center"
               >
                 {isUpdating ? 'PROCESSING...' : `MARK ${s}`}
               </Button>
@@ -132,9 +134,9 @@ function ActionCard({
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="meta-text text-muted-foreground hover:text-foreground text-right w-full mt-2"
+              className="meta-label text-muted-foreground hover:text-foreground text-right w-full mt-2 font-bold"
             >
-              {expanded ? 'HIDE EVIDENCE' : 'VIEW EVIDENCE'}
+              {expanded ? 'HIDE LOG' : 'VIEW LOG'}
             </button>
           </div>
         </div>
@@ -143,16 +145,16 @@ function ActionCard({
 
       {/* Evidence panel */}
       {expanded && (
-        <div className="p-6 md:p-8 bg-muted/20 border-t border-border">
-          <div className="flex items-start gap-4 meta-text">
-            <span className="text-primary mt-1">LOG:</span>
+        <div className="p-6 md:p-8 bg-muted/10 border-t border-border border-l-4 border-l-primary">
+          <div className="flex items-start gap-4 meta-label">
+            <span className="text-primary mt-1 font-bold">LOG_DATA:</span>
             <div>
               {action.speakerContext && (
                 <span className="font-bold text-foreground mr-3">{action.speakerContext}</span>
               )}
-              <span className="text-muted-foreground lowercase leading-relaxed">"{action.task}"</span>
+              <span className="text-muted-foreground lowercase leading-relaxed font-mono">"{action.task}"</span>
               {action.evidenceTimestamp && (
-                <span className="ml-4 text-primary">
+                <span className="ml-4 text-primary font-bold">
                   [{action.evidenceTimestamp}]
                 </span>
               )}
@@ -249,17 +251,20 @@ function EmployeeDashboardInner() {
   return (
     <div className="flex-1 w-full p-8 md:p-12 max-w-7xl mx-auto space-y-12">
       {/* Header */}
-      <div className="border-b border-border pb-8">
-        <p className="meta-text text-muted-foreground mb-4">MEMBER OVERVIEW</p>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <h1 className="editorial-heading text-5xl md:text-6xl text-foreground">
+      <div className="manga-panel p-8 pb-10 border-b-2">
+        <div className="absolute top-0 right-0 p-4 text-border opacity-20 manga-header text-6xl leading-none">
+          // TEAM
+        </div>
+        <p className="meta-label text-primary font-bold tracking-widest mb-4">MEMBER OVERVIEW</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-10">
+          <h1 className="manga-header text-5xl md:text-6xl text-foreground">
             GOOD MORNING,<br />{userName ? userName.toUpperCase() : 'MEMBER'}.
           </h1>
           <Button
             variant="outline"
             onClick={fetchMyActions}
             disabled={loading}
-            className="btn-secondary h-12 px-6 meta-text border-border"
+            className="btn-secondary h-12 px-6 meta-label"
           >
             {loading ? 'SYNCING...' : 'REFRESH DATA'}
           </Button>
@@ -267,24 +272,24 @@ function EmployeeDashboardInner() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 border-y border-border">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
         {[
           { label: '01 / TOTAL', value: stats.total },
           { label: '02 / PENDING', value: stats.pending },
           { label: '03 / IN PROGRESS', value: stats.inProgress },
-          { label: '04 / OVERDUE', value: stats.overdue, color: 'text-destructive' },
-        ].map(({ label, value, color }, i) => (
-          <div key={label} className={`p-8 flex flex-col justify-center border-b sm:border-b-0 ${i < 3 ? 'sm:border-r' : ''} border-border ${i % 2 === 0 ? 'border-r sm:border-r' : ''}`}>
-            <div className={`meta-text mb-4 ${color || 'text-muted-foreground'}`}>
+          { label: '04 / OVERDUE', value: stats.overdue, color: 'text-destructive', border: 'border-l-destructive' },
+        ].map(({ label, value, color, border }, i) => (
+          <div key={label} className={`manga-panel p-8 flex flex-col justify-center border-l-4 ${border || 'border-l-border'}`}>
+            <div className={`meta-label mb-4 ${color || 'text-muted-foreground'}`}>
               {label}
             </div>
-            <span className={`editorial-heading text-6xl ${color || 'text-foreground'}`}>{value}</span>
+            <span className={`manga-header text-6xl ${color || 'text-foreground'}`}>{value}</span>
           </div>
         ))}
       </div>
 
       {/* Filter tabs */}
-      <div className="flex flex-wrap items-center gap-0 border border-border">
+      <div className="flex flex-wrap items-center gap-0 border border-border bg-card shadow-[4px_4px_0px_0px_rgba(26,26,26,1)]">
         {statuses.map((s) => {
           const count = s === 'ALL' ? actions.length : actions.filter((a) => a.status === s).length;
           const isActive = filter === s;
@@ -293,13 +298,13 @@ function EmployeeDashboardInner() {
               key={s}
               type="button"
               onClick={() => setFilter(s)}
-              className={`px-6 py-4 meta-text transition-colors border-r last:border-r-0 border-border ${
+              className={`px-6 py-4 meta-label font-bold transition-colors border-r last:border-r-0 border-border ${
                 isActive
-                  ? 'bg-foreground text-background font-bold'
+                  ? 'bg-foreground text-background'
                   : 'bg-transparent text-muted-foreground hover:bg-muted'
               }`}
             >
-              {s === 'ALL' ? 'ALL' : s} <span className="opacity-50">[{count}]</span>
+              {s === 'ALL' ? 'ALL' : s} <span className={isActive ? 'text-background opacity-70' : 'opacity-50'}>[{count}]</span>
             </button>
           );
         })}
@@ -308,19 +313,19 @@ function EmployeeDashboardInner() {
       {/* Content */}
       {loading ? (
         <div className="flex h-[30vh] items-center justify-center">
-          <span className="meta-text text-muted-foreground">SYNCING LOGS...</span>
+          <span className="meta-label text-muted-foreground">SYNCING LOGS...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="border border-border p-16 flex flex-col items-center justify-center text-center space-y-6">
-          <h3 className="editorial-heading text-3xl text-foreground">
+        <div className="manga-panel p-16 flex flex-col items-center justify-center text-center space-y-6">
+          <h3 className="manga-header text-3xl text-foreground">
             {filter === 'ALL' ? 'NO TASKS ASSIGNED' : `NO ${filter} TASKS`}
           </h3>
-          <p className="meta-text text-muted-foreground mt-2 max-w-sm mx-auto">
+          <p className="meta-label text-muted-foreground mt-2 max-w-sm mx-auto">
             ALL OPERATIONS ARE CURRENTLY NOMINAL.
           </p>
         </div>
       ) : (
-        <div className="flex flex-col border-t border-border mt-8">
+        <div className="flex flex-col border-t border-border mt-8 manga-panel">
           {filtered.map((action) => (
             <ActionCard
               key={action.actionId}

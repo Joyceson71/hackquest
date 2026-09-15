@@ -119,15 +119,18 @@ export default function Dashboard() {
     <div className="flex-1 w-full p-8 md:p-12 max-w-7xl mx-auto space-y-12">
       
       {/* Header section */}
-      <div className="border-b border-border pb-8">
-        <p className="meta-text text-muted-foreground mb-4">SYSTEM OVERVIEW</p>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <h1 className="editorial-heading text-5xl md:text-6xl text-foreground">
+      <div className="manga-panel p-8 pb-10 border-b-2">
+        <div className="absolute top-0 right-0 p-4 text-border opacity-20 manga-header text-6xl leading-none">
+          // ADMIN
+        </div>
+        <p className="meta-label text-primary font-bold tracking-widest mb-4">SYSTEM OVERVIEW</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-10">
+          <h1 className="manga-header text-5xl md:text-6xl text-foreground">
             GOOD MORNING,<br />LEAD.
           </h1>
           <Button 
             onClick={() => router.push('/meetings/new')} 
-            className="btn-primary flex items-center gap-2 h-12 px-6 meta-text w-full md:w-auto"
+            className="btn-primary flex items-center gap-2 h-12 px-6 meta-label w-full md:w-auto"
           >
             <Plus className="h-4 w-4" />
             UPLOAD TRANSCRIPT
@@ -136,57 +139,57 @@ export default function Dashboard() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-y border-border">
-        <div className="p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="manga-panel p-8 flex flex-col justify-center border-l-4 border-l-border">
           <div className="flex items-center gap-2 text-muted-foreground mb-4">
-            <span className="meta-text">01 // TOTAL MEETINGS</span>
+            <span className="meta-label">01 // TOTAL MEETINGS</span>
           </div>
-          <span className="editorial-heading text-6xl">{meetings.length}</span>
+          <span className="manga-header text-6xl">{meetings.length}</span>
         </div>
         
-        <div className="p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
-          <div className="flex items-center gap-2 text-muted-foreground mb-4">
-            <span className="meta-text text-primary">02 // PROCESSED</span>
+        <div className="manga-panel p-8 flex flex-col justify-center border-l-4 border-l-primary">
+          <div className="flex items-center gap-2 text-primary mb-4">
+            <span className="meta-label text-primary">02 // PROCESSED</span>
           </div>
-          <span className="editorial-heading text-6xl text-primary">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
+          <span className="manga-header text-6xl text-primary">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
         </div>
         
-        <div className="p-8 flex flex-col justify-center opacity-50">
+        <div className="manga-panel p-8 flex flex-col justify-center opacity-50 border-l-4 border-l-border">
           <div className="flex items-center gap-2 text-muted-foreground mb-4">
-            <span className="meta-text">03 // PENDING REVIEW</span>
+            <span className="meta-label">03 // PENDING REVIEW</span>
           </div>
-          <span className="editorial-heading text-6xl">0</span>
+          <span className="manga-header text-6xl">0</span>
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-border pb-2">
-          <h2 className="meta-text text-foreground">RECENT ACTIVITY</h2>
+        <div className="flex items-center justify-between border-b-2 border-border pb-2">
+          <h2 className="meta-label text-foreground font-bold">RECENT ACTIVITY</h2>
         </div>
 
         {meetings.length === 0 ? (
-          <div className="border border-border p-12 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="manga-panel p-12 flex flex-col items-center justify-center text-center space-y-6">
             <div>
-              <h3 className="editorial-heading text-2xl text-foreground">NO LOGS DETECTED</h3>
-              <p className="meta-text text-muted-foreground mt-4 max-w-sm mx-auto">
+              <h3 className="manga-header text-2xl text-foreground">NO LOGS DETECTED</h3>
+              <p className="meta-label text-muted-foreground mt-4 max-w-sm mx-auto">
                 INITIALIZE THE SYSTEM BY UPLOADING AN AUDIO TRANSCRIPT.
               </p>
             </div>
-            <Button onClick={() => router.push('/meetings/new')} className="btn-secondary meta-text h-12 px-8">
+            <Button onClick={() => router.push('/meetings/new')} className="btn-secondary meta-label h-12 px-8">
               UPLOAD TRANSCRIPT
             </Button>
           </div>
         ) : (
-          <div className="border-t border-border">
+          <div className="manga-panel">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
-                <thead className="meta-text text-muted-foreground border-b border-border">
+                <thead className="meta-label border-b border-border bg-muted/20">
                   <tr>
-                    <th className="px-4 py-4 font-normal">IDENTIFIER</th>
-                    <th className="px-4 py-4 font-normal">TIMESTAMP</th>
-                    <th className="px-4 py-4 font-normal">STATUS</th>
-                    <th className="px-4 py-4 text-right font-normal">OPERATIONS</th>
+                    <th className="px-6 py-4 font-bold">IDENTIFIER</th>
+                    <th className="px-6 py-4 font-bold">TIMESTAMP</th>
+                    <th className="px-6 py-4 font-bold">STATUS</th>
+                    <th className="px-6 py-4 text-right font-bold">OPERATIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -197,35 +200,35 @@ export default function Dashboard() {
                     }).toUpperCase();
 
                     return (
-                      <tr key={m.PK} className="hover:bg-muted/50 transition-colors group">
-                        <td className="px-4 py-6">
+                      <tr key={m.PK} className="hover:bg-muted/30 transition-colors group">
+                        <td className="px-6 py-6">
                           <button 
                             onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
-                            className="editorial-heading text-lg text-foreground hover:text-primary transition-colors text-left"
+                            className="manga-header text-lg text-foreground hover:text-primary transition-colors text-left border-b-2 border-transparent hover:border-primary pb-1"
                           >
                             {m.title || 'UNTITLED LOG'}
                           </button>
                         </td>
-                        <td className="px-4 py-6 meta-text text-muted-foreground">
+                        <td className="px-6 py-6 meta-label text-muted-foreground">
                           {date}
                         </td>
-                        <td className="px-4 py-6">
-                          <span className="meta-text text-foreground">
-                            ✓ {m.status?.toUpperCase() || 'PROCESSED'}
+                        <td className="px-6 py-6">
+                          <span className="meta-label text-foreground font-bold flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-success inline-block"></span> {m.status?.toUpperCase() || 'PROCESSED'}
                           </span>
                         </td>
-                        <td className="px-4 py-6 text-right">
+                        <td className="px-6 py-6 text-right">
                           <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button 
                               variant="ghost" 
-                              className="meta-text h-8 px-2 text-foreground hover:text-primary rounded-none"
+                              className="meta-label h-8 px-2 text-foreground hover:text-primary rounded-none"
                               onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
                             >
                               VIEW &gt;
                             </Button>
                             <Button 
                               variant="ghost" 
-                              className="meta-text h-8 px-2 text-muted-foreground hover:text-destructive rounded-none"
+                              className="meta-label h-8 px-2 text-muted-foreground hover:text-destructive rounded-none"
                               onClick={(e) => confirmDelete(e, m.PK)}
                             >
                               [DELETE]
@@ -243,27 +246,30 @@ export default function Dashboard() {
       </div>
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="border border-border bg-background rounded-none p-8">
+        <DialogContent className="manga-panel p-8 max-w-md">
+          <div className="absolute top-0 right-0 p-2 text-border opacity-20 manga-header text-6xl leading-none -mt-4 -mr-4">
+            !
+          </div>
           <DialogHeader>
-            <DialogTitle className="editorial-heading text-2xl text-foreground">
+            <DialogTitle className="manga-header text-3xl text-foreground">
               CONFIRM DELETION
             </DialogTitle>
-            <DialogDescription className="meta-text text-muted-foreground pt-4">
+            <DialogDescription className="meta-label text-muted-foreground pt-4">
               THIS ACTION WILL PERMANENTLY ERASE THE LOG AND ALL ASSOCIATED TASKS. THIS CANNOT BE UNDONE.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-4 sm:justify-end mt-8 border-t border-border pt-6">
+          <DialogFooter className="gap-4 sm:justify-end mt-8 border-t-2 border-border pt-6">
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="btn-ghost meta-text rounded-none"
+              className="btn-ghost meta-label"
             >
               CANCEL
             </Button>
             <Button 
               variant="destructive" 
               onClick={executeDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-none px-6 py-2 meta-text"
+              className="btn-primary bg-destructive border-destructive-foreground hover:bg-destructive/90 meta-label text-white"
             >
               PURGE LOG
             </Button>

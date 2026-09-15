@@ -75,12 +75,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md bg-background border border-border p-10">
+      <div className="w-full max-w-md manga-panel p-10 shadow-[8px_8px_0px_0px_rgba(26,26,26,1)]">
         
         {/* Header */}
-        <div className="mb-12 border-b border-border pb-6">
-          <p className="meta-text text-muted-foreground mb-4">SYSTEM AUTHENTICATION</p>
-          <h1 className="editorial-heading text-4xl text-foreground">
+        <div className="mb-10 border-b-2 border-border pb-6 relative">
+          <div className="absolute top-0 right-0 p-2 text-border opacity-20 manga-header text-6xl leading-none -mt-4 -mr-4">
+            01
+          </div>
+          <p className="meta-label mb-2 tracking-widest text-primary font-bold">HQ // AUTHENTICATION</p>
+          <h1 className="manga-header text-5xl text-foreground tracking-tight">
             {mode === 'LOGIN' ? 'ACCESS' : mode === 'SIGNUP' ? 'INITIALIZE' : 'VERIFY'}
           </h1>
         </div>
@@ -95,14 +98,14 @@ export default function LoginPage() {
 
           {mode === 'SIGNUP' && (
             <div className="space-y-2">
-              <Label htmlFor="name" className="meta-text text-muted-foreground">FULL NAME</Label>
+              <Label htmlFor="name" className="meta-label">FULL NAME</Label>
               <Input 
                 id="name" 
                 type="text" 
                 placeholder="JOHN DOE" 
                 value={name} 
                 onChange={(e) => setName(e.target.value)} 
-                className="w-full rounded-none border-t-0 border-x-0 border-b border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground" 
+                className="w-full rounded-none border-t-0 border-x-0 border-b-2 border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary transition-colors" 
               />
             </div>
           )}
@@ -110,7 +113,7 @@ export default function LoginPage() {
           {mode !== 'CONFIRM' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="email" className="meta-text text-muted-foreground">EMAIL IDENTIFIER</Label>
+                <Label htmlFor="email" className="meta-label">EMAIL IDENTIFIER</Label>
                 <Input 
                   id="email" 
                   type="email" 
@@ -118,12 +121,12 @@ export default function LoginPage() {
                   placeholder="USER@DOMAIN.COM" 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
-                  className="w-full rounded-none border-t-0 border-x-0 border-b border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground uppercase font-mono" 
+                  className="w-full rounded-none border-t-0 border-x-0 border-b-2 border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary transition-colors font-mono uppercase" 
                 />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="meta-text text-muted-foreground">CREDENTIAL</Label>
+                  <Label htmlFor="password" className="meta-label">CREDENTIAL</Label>
                 </div>
                 <Input 
                   id="password" 
@@ -132,7 +135,7 @@ export default function LoginPage() {
                   placeholder="••••••••" 
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)} 
-                  className="w-full rounded-none border-t-0 border-x-0 border-b border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-foreground font-mono tracking-widest" 
+                  className="w-full rounded-none border-t-0 border-x-0 border-b-2 border-border bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary transition-colors font-mono tracking-widest" 
                 />
               </div>
             </>
@@ -140,14 +143,14 @@ export default function LoginPage() {
 
           {mode === 'CONFIRM' && (
             <div className="space-y-2">
-              <Label htmlFor="code" className="meta-text text-muted-foreground">VERIFICATION SEQUENCE</Label>
+              <Label htmlFor="code" className="meta-label">VERIFICATION SEQUENCE</Label>
               <Input 
                 id="code" 
                 required 
                 placeholder="000000" 
                 value={code} 
                 onChange={(e) => setCode(e.target.value)} 
-                className="w-full rounded-none border-border bg-transparent text-center text-2xl tracking-[0.5em] font-mono h-16 focus-visible:ring-0 focus-visible:border-foreground" 
+                className="w-full rounded-none border-border bg-transparent text-center text-2xl tracking-[0.5em] font-mono h-16 focus-visible:ring-0 focus-visible:border-primary" 
               />
             </div>
           )}
@@ -155,21 +158,21 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full mt-8 btn-primary h-12 meta-text"
+            className="w-full mt-8 btn-primary h-12 meta-label tracking-widest text-sm"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-            {loading ? 'Processing...' : mode === 'LOGIN' ? 'Sign In' : mode === 'SIGNUP' ? 'Create Account' : 'Verify'}
+            {loading ? 'PROCESSING...' : mode === 'LOGIN' ? 'SIGN IN' : mode === 'SIGNUP' ? 'CREATE ACCOUNT' : 'VERIFY'}
           </Button>
         </form>
 
         {/* Role Selector */}
         {mode !== 'CONFIRM' && (
           <div className="mt-8 pt-8 border-t border-border">
-            <p className="meta-text text-muted-foreground mb-4">ACCESS LEVEL</p>
+            <p className="meta-label mb-4">ACCESS LEVEL</p>
             <div className="grid grid-cols-2 gap-0 border border-border">
               {([
-                { role: 'admin' as UserRole, label: '01 ADMIN' },
-                { role: 'employee' as UserRole, label: '02 USER' },
+                { role: 'admin' as UserRole, label: 'SYSTEM LEAD' },
+                { role: 'employee' as UserRole, label: 'OPERATIVE' },
               ]).map(({ role, label }) => {
                 const isSelected = selectedRole === role;
                 return (
@@ -177,9 +180,9 @@ export default function LoginPage() {
                     key={role}
                     type="button"
                     onClick={() => handleRoleSelect(role)}
-                    className={`flex items-center justify-center px-4 py-3 meta-text transition-colors border-r last:border-r-0 border-border ${
+                    className={`flex items-center justify-center px-4 py-3 meta-label font-bold tracking-widest transition-colors border-r last:border-r-0 border-border ${
                       isSelected
-                        ? 'bg-foreground text-background font-bold'
+                        ? 'bg-primary text-primary-foreground'
                         : 'bg-transparent text-muted-foreground hover:bg-muted'
                     }`}
                   >
@@ -194,12 +197,12 @@ export default function LoginPage() {
         {/* Mode Toggle */}
         <div className="mt-8 text-left">
           {mode === 'LOGIN' && (
-            <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="meta-text text-primary hover:underline underline-offset-4">
+            <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="meta-label text-primary hover:underline underline-offset-4 font-bold tracking-widest">
               &gt; INITIALIZE NEW SESSION
             </button>
           )}
           {mode === 'SIGNUP' && (
-            <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="meta-text text-primary hover:underline underline-offset-4">
+            <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="meta-label text-primary hover:underline underline-offset-4 font-bold tracking-widest">
               &gt; RETURN TO ACCESS
             </button>
           )}

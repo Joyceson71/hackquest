@@ -83,9 +83,9 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-muted-foreground gap-2">
+      <div className="flex items-center justify-center py-16 text-muted-foreground gap-2 meta-label font-bold">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Loading proposed items…</span>
+        <span>LOADING PROPOSED ITEMS...</span>
       </div>
     );
   }
@@ -93,20 +93,20 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   // Extraction still in progress
   if (['PENDING', 'EXTRACTING', 'UPLOADING'].includes(extractionStatus)) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <h3 className="text-lg font-semibold text-foreground">Extraction in progress</h3>
-        <p className="text-sm text-muted-foreground mt-1">Proposed items will appear here when ready.</p>
+      <div className="manga-panel flex flex-col items-center justify-center py-16 text-center space-y-6 max-w-2xl mx-auto mt-12">
+        <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+        <h3 className="manga-header text-3xl text-foreground tracking-widest">EXTRACTION IN PROGRESS</h3>
+        <p className="meta-label text-muted-foreground mt-1">PROPOSED ITEMS WILL APPEAR HERE WHEN READY.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-foreground">Review Proposed Actions</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Every commitment needs human confirmation before entering the action board.
+      <div className="border-b-2 border-border pb-4">
+        <h2 className="manga-header text-3xl text-foreground">REVIEW PROPOSED ACTIONS</h2>
+        <p className="meta-label text-muted-foreground mt-2 opacity-70 font-bold">
+          EVERY COMMITMENT NEEDS HUMAN CONFIRMATION BEFORE ENTERING THE ACTION BOARD.
         </p>
       </div>
 
@@ -117,18 +117,18 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
 
       {/* Proposed items */}
       {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 bg-card rounded-xl border border-border text-center">
-          <CheckCircle2 className="h-12 w-12 text-muted-foreground/50 mb-4" />
+        <div className="flex flex-col items-center justify-center py-16 manga-panel text-center max-w-3xl mx-auto mt-8">
+          <CheckCircle2 className="h-12 w-12 text-primary mb-4" />
           {stats.confirmed > 0 || stats.rejected > 0 ? (
             <>
-              <h3 className="text-lg font-semibold text-foreground">All caught up!</h3>
-              <p className="text-sm text-muted-foreground mt-1">All proposed items have been reviewed.</p>
+              <h3 className="manga-header text-3xl text-foreground">ALL CAUGHT UP!</h3>
+              <p className="meta-label text-muted-foreground mt-2">ALL PROPOSED ITEMS HAVE BEEN REVIEWED.</p>
             </>
           ) : (
             <>
-              <h3 className="text-lg font-semibold text-foreground">No action items identified</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                No action items were identified in this transcript. You can still create actions manually from the Action Board.
+              <h3 className="manga-header text-3xl text-foreground">NO ACTION ITEMS IDENTIFIED</h3>
+              <p className="meta-label text-muted-foreground mt-2 max-w-sm mx-auto">
+                NO ACTION ITEMS WERE IDENTIFIED IN THIS TRANSCRIPT. YOU CAN STILL CREATE ACTIONS MANUALLY FROM THE ACTION BOARD.
               </p>
             </>
           )}

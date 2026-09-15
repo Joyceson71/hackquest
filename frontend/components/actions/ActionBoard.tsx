@@ -107,13 +107,13 @@ export default function ActionBoard({
 
   if (actions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 border border-border">
-        <h3 className="editorial-heading text-2xl text-foreground">NO ACTIONS EXTRACTED</h3>
-        <p className="meta-text text-muted-foreground mt-2 mb-8">
-          AWAITING REVIEW OF PROPOSED ITEMS.
+      <div className="manga-panel flex flex-col items-center justify-center py-20 text-center space-y-6">
+        <h3 className="manga-header text-3xl text-foreground">NO ACTIONS DETECTED</h3>
+        <p className="meta-label text-muted-foreground mt-2 mb-8 max-w-sm mx-auto">
+          AWAITING REVIEW OF PROPOSED ITEMS. INTEL IS CURRENTLY MISSING.
         </p>
         <Button
-          className="btn-primary meta-text h-12 px-8"
+          className="btn-primary meta-label h-12 px-8 font-bold tracking-widest"
           onClick={() => router.push(`/meetings/${meetingId}/review`)}
         >
           REVIEW PROPOSED ITEMS &gt;
@@ -126,17 +126,17 @@ export default function ActionBoard({
     <div className="space-y-4">
       {/* Escalation alert banner */}
       {escalatedCount > 0 && (
-        <div className="flex items-center gap-4 bg-destructive/10 border-l-4 border-destructive p-4">
-          <span className="editorial-heading text-destructive shrink-0 tracking-widest">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 bg-destructive/10 border-l-4 border-destructive p-4">
+          <span className="manga-header text-destructive shrink-0 tracking-widest text-xl">
             ATTENTION REQUIRED
           </span>
-          <span className="meta-text text-foreground">
+          <span className="meta-label text-foreground font-bold">
             {escalatedCount} ESCALATED ACTIONS PENDING
           </span>
           <Button
             size="sm"
             variant="outline"
-            className="ml-auto text-destructive border-destructive/30 hover:bg-destructive/10 rounded-none meta-text"
+            className="md:ml-auto text-destructive border-destructive/30 hover:bg-destructive/10 rounded-none meta-label"
             onClick={() => setFilterEscalated(!filterEscalated)}
           >
             {filterEscalated ? 'SHOW ALL' : 'FILTER ESCALATED'}
@@ -145,13 +145,13 @@ export default function ActionBoard({
       )}
 
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-border pb-4">
         <div className="flex flex-wrap gap-4">
           <Select value={filterOwner} onValueChange={(val) => setFilterOwner(val || '__all__')}>
-            <SelectTrigger className="w-[200px] h-10 meta-text rounded-none border-t-0 border-x-0 bg-transparent px-0 focus:ring-0">
+            <SelectTrigger className="w-[200px] h-10 meta-label font-bold rounded-none border-t-0 border-x-0 border-b-2 bg-transparent px-0 focus:ring-0 focus:border-primary">
               <SelectValue placeholder="OWNER: ALL" />
             </SelectTrigger>
-            <SelectContent className="rounded-none meta-text">
+            <SelectContent className="rounded-none meta-label">
               <SelectItem value="all">OWNER: ALL</SelectItem>
               {owners.map((o) => (
                 <SelectItem key={o} value={o}>{o.toUpperCase()}</SelectItem>
@@ -160,10 +160,10 @@ export default function ActionBoard({
           </Select>
 
           <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || 'all')} disabled={filterEscalated}>
-            <SelectTrigger className="w-[200px] h-10 meta-text rounded-none border-t-0 border-x-0 bg-transparent px-0 focus:ring-0">
+            <SelectTrigger className="w-[200px] h-10 meta-label font-bold rounded-none border-t-0 border-x-0 border-b-2 bg-transparent px-0 focus:ring-0 focus:border-primary">
               <SelectValue placeholder="STATUS: ALL" />
             </SelectTrigger>
-            <SelectContent className="rounded-none meta-text">
+            <SelectContent className="rounded-none meta-label">
               <SelectItem value="all">STATUS: ALL</SelectItem>
               <SelectItem value="PENDING">PENDING</SelectItem>
               <SelectItem value="IN_PROGRESS">IN PROGRESS</SelectItem>
@@ -177,7 +177,7 @@ export default function ActionBoard({
         <Button
           size="sm"
           variant="outline"
-          className="meta-text rounded-none border-border h-10 px-4"
+          className="meta-label rounded-none border-border h-10 px-4 hover:border-primary transition-colors"
           onClick={handleExportCSV}
         >
           [EXPORT_CSV]
@@ -185,27 +185,27 @@ export default function ActionBoard({
       </div>
 
       {/* Table */}
-      <div className="border border-border">
+      <div className="manga-panel p-0 overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="meta-text text-muted-foreground border-b border-border hover:bg-transparent">
+            <TableRow className="meta-label font-bold text-muted-foreground border-b border-border hover:bg-transparent bg-muted/20">
               <TableHead className="w-12 border-r border-border" />
-              <TableHead className="py-4 font-normal">TASK</TableHead>
+              <TableHead className="py-4 font-bold">TASK</TableHead>
               {hasReassignments ? (
                 <>
-                  <TableHead className="py-4 font-normal">ORIG. OWNER</TableHead>
-                  <TableHead className="py-4 font-normal">CURRENT OWNER</TableHead>
+                  <TableHead className="py-4 font-bold">ORIG. OWNER</TableHead>
+                  <TableHead className="py-4 font-bold">CURRENT OWNER</TableHead>
                 </>
               ) : (
                 <>
                   <TableHead className="hidden" />
-                  <TableHead className="py-4 font-normal">OWNER</TableHead>
+                  <TableHead className="py-4 font-bold">OWNER</TableHead>
                 </>
               )}
-              <TableHead className="py-4 font-normal">DUE DATE</TableHead>
-              <TableHead className="py-4 font-normal">STATUS</TableHead>
-              <TableHead className="py-4 font-normal">EVIDENCE</TableHead>
-              <TableHead className="py-4 font-normal text-right pr-6">OPERATIONS</TableHead>
+              <TableHead className="py-4 font-bold">DUE DATE</TableHead>
+              <TableHead className="py-4 font-bold">STATUS</TableHead>
+              <TableHead className="py-4 font-bold">EVIDENCE</TableHead>
+              <TableHead className="py-4 font-bold text-right pr-6">OPERATIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -225,8 +225,8 @@ export default function ActionBoard({
       </div>
 
       {filteredActions.length === 0 && (
-        <p className="text-center text-muted-foreground font-bold uppercase py-6 text-sm">
-          No actions match current filters.
+        <p className="text-center text-muted-foreground font-bold uppercase py-6 meta-label text-sm">
+          NO ACTIONS MATCH CURRENT FILTERS.
         </p>
       )}
     </div>

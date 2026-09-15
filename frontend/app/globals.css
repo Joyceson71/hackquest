@@ -4,51 +4,48 @@
 @import "shadcn/tailwind.css";
 
 /*
- * HackQuest Spatial 3D Theme
+ * HackQuest Anime Editorial 2D Theme
  */
 
 :root {
-  /* Warm Ivory Background */
-  --background: #F9F8F6; 
-  --foreground: #1A1A1A; 
+  /* Warm off-white paper Base */
+  --background: #f8f7f5; 
+  /* Deep charcoal Ink */
+  --foreground: #1a1a1a; 
   
-  /* Solid panels (matches background for a flat look) */
-  --card: #F9F8F6; 
-  --card-foreground: #1A1A1A; 
+  --card: #ffffff; 
+  --card-foreground: #1a1a1a; 
   
-  --popover: #F9F8F6;
-  --popover-foreground: #1A1A1A;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
   
-  /* Primary Accent: Deep Red */
-  --primary: #D92D20;
-  --primary-foreground: #F9F8F6;
+  /* Accent: Muted Crimson */
+  --primary: #c92a2a;
+  --primary-foreground: #ffffff;
   
-  /* Muted surfaces (slightly darker ivory) */
-  --secondary: #EBEAE8; 
-  --secondary-foreground: #1A1A1A;
+  --secondary: #e9ecef; 
+  --secondary-foreground: #1a1a1a;
   
-  /* Subtle backgrounds */
-  --muted: #EBEAE8; 
-  --muted-foreground: #666666; 
+  --muted: #e9ecef; 
+  --muted-foreground: #6b7280; 
   
-  /* Accents */
-  --accent: #EBEAE8; 
-  --accent-foreground: #1A1A1A;
+  --accent: #e9ecef; 
+  --accent-foreground: #1a1a1a;
   
-  /* Status Colors */
-  --destructive: #D92D20; 
-  --destructive-foreground: #F9F8F6;
+  --destructive: #fa5252; 
+  --destructive-foreground: #ffffff;
   
-  --color-success: #10b981; 
-  --color-warning: #f59e0b; 
-  --color-info: #3b82f6; 
+  /* Cel-shaded status colors */
+  --color-success: #40c057; 
+  --color-warning: #fab005; 
+  --color-info: #228be6; 
   
-  /* Borders (Charcoal, high contrast) */
-  --border: #1A1A1A;
-  --input: #1A1A1A;
-  --ring: #D92D20;
+  /* Ink Borders */
+  --border: #1a1a1a;
+  --input: #1a1a1a;
+  --ring: #c92a2a;
 
-  /* Geometry - Sharp, no radius */
+  /* Sharp geometry */
   --radius: 0rem; 
 }
 
@@ -95,6 +92,8 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Subtle paper texture */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -111,7 +110,7 @@
   }
   
   button, a {
-    transition: all 150ms ease;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -124,70 +123,92 @@
   }
 }
 
-/* ─── Editorial Utilities ───────────────── */
+/* ─── Anime Editorial Utilities ───────────────── */
 
-.glass-panel, .premium-card, .glass-card, .obj-raised, .obj-inset {
-  background: transparent;
+/* Manga panel inspired base */
+.manga-panel {
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: none;
-  transition: all 150ms ease;
+  position: relative;
 }
 
-.editorial-heading {
+.manga-panel::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px solid var(--border);
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z' fill='%231a1a1a' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.manga-header {
   font-family: var(--font-heading);
-  font-weight: 900;
-  letter-spacing: -0.05em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
-  line-height: 0.9;
 }
 
-.meta-text {
+.meta-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
 /* Base Button System ───────────────── */
 
-.btn-primary, .btn-3d, .btn-3d-primary {
-  @apply bg-foreground text-background font-medium px-4 py-2 hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors rounded-none border border-foreground;
+.btn-primary {
+  @apply bg-foreground text-background font-bold px-6 py-2 hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors border border-foreground;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--border);
 }
 
 .btn-secondary {
-  @apply bg-transparent text-foreground font-medium px-4 py-2 hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors border border-border rounded-none;
+  @apply bg-card text-foreground font-bold px-6 py-2 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors border border-border;
+  box-shadow: 2px 2px 0px 0px var(--border);
+}
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--border);
 }
 
 .btn-ghost {
-  @apply bg-transparent text-muted-foreground font-medium px-4 py-2 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors rounded-none;
+  @apply bg-transparent text-foreground font-medium px-4 py-2 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
 /* ─── Status Badges ──────────────────────────────── */
 .badge, .badge-pending, .badge-acknowledged, .badge-inprogress, .badge-blocked, .badge-completed, .badge-reassigned, .badge-overdue {
-  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  @apply inline-flex items-center rounded-sm border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors;
 }
 
 .badge-pending { 
-  @apply border-amber-500/20 bg-amber-500/10 text-amber-500;
+  @apply border-amber-600 bg-amber-100 text-amber-800;
 }
 .badge-acknowledged { 
-  @apply border-blue-500/20 bg-blue-500/10 text-blue-500;
+  @apply border-blue-600 bg-blue-100 text-blue-800;
 }
 .badge-inprogress { 
-  @apply border-indigo-500/20 bg-indigo-500/10 text-indigo-500;
+  @apply border-primary bg-primary/10 text-primary;
 }
 .badge-blocked { 
-  @apply border-red-500/20 bg-red-500/10 text-red-500;
+  @apply border-red-600 bg-red-100 text-red-800;
 }
 .badge-completed { 
-  @apply border-green-500/20 bg-green-500/10 text-green-500;
+  @apply border-green-600 bg-green-100 text-green-800;
 }
 .badge-reassigned { 
-  @apply border-purple-500/20 bg-purple-500/10 text-purple-500;
+  @apply border-purple-600 bg-purple-100 text-purple-800;
 }
 .badge-overdue { 
-  @apply border-red-500/40 bg-red-500/20 text-red-500;
+  @apply border-destructive bg-destructive/10 text-destructive;
 }
 
 /* Sidebar scrollbar hiding */

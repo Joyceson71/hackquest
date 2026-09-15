@@ -11,10 +11,11 @@ export default function TopNav() {
   if (pathname === '/login') return null;
 
   return (
-    <header className="h-16 shrink-0 bg-background border-b border-border sticky top-0 z-50 flex items-center justify-between px-6">
-      <div className="flex items-center gap-3">
+    <header className="h-16 shrink-0 bg-background border-b-2 border-border sticky top-0 z-50 flex items-center justify-between px-6 md:px-12 shadow-[0_4px_0_0_rgba(26,26,26,0.05)]">
+      <div className="flex items-center gap-4">
         <Link href="/" className="flex items-center gap-3 group">
-          <span className="editorial-heading text-xl text-foreground">HACKQUEST</span>
+          <div className="w-4 h-4 bg-primary border border-foreground" />
+          <span className="manga-header text-2xl tracking-[0.2em] text-foreground">HACKQUEST</span>
         </Link>
       </div>
       <div className="flex items-center gap-4">
