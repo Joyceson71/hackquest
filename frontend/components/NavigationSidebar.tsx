@@ -19,18 +19,18 @@ export default function NavigationSidebar() {
     // Admin specific links
     if (role === 'admin') {
       links.push(
-        { href: '/', label: 'HOME', id: '01' },
-        { href: '/admin/teams', label: 'TEAMS', id: '02' },
-        { href: '/tasks', label: 'TASKS', id: '03' }, 
-        { href: '/team/new-task', label: 'NEW TASK', id: '04' },
-        { href: '/meetings/new', label: 'MEETINGS', id: '05' },
+        { href: '/', label: 'COMMAND', id: '01' },
+        { href: '/admin/teams', label: 'SQUADS', id: '02' },
+        { href: '/tasks', label: 'MISSIONS', id: '03' }, 
+        { href: '/team/new-task', label: 'NEW MISSION', id: '04' },
+        { href: '/meetings/new', label: 'BRIEFINGS', id: '05' },
       );
     } else {
       // Employee specific links
       links.push(
-        { href: '/employee', label: 'HOME', id: '01' },
-        { href: '/tasks', label: 'MY TASKS', id: '02' },
-        { href: '/team', label: 'MY TEAM', id: '03' },
+        { href: '/employee', label: 'COMMAND', id: '01' },
+        { href: '/tasks', label: 'MY MISSIONS', id: '02' },
+        { href: '/team', label: 'MY SQUAD', id: '03' },
       );
     }
 

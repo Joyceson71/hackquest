@@ -130,9 +130,9 @@ export default function TeamDashboardPage() {
       {/* Header */}
       <div className="manga-panel p-8 pb-10 border-b-2">
         <div className="absolute top-0 right-0 p-4 text-border opacity-20 manga-header text-6xl leading-none">
-          // TEAM
+          // SQUAD
         </div>
-        <p className="meta-label text-primary font-bold tracking-widest mb-4">TEAM OVERVIEW // {isLeader ? 'LEAD CLEARANCE' : 'MEMBER CLEARANCE'}</p>
+        <p className="meta-label text-primary font-bold tracking-widest mb-4">SQUAD OVERVIEW // {isLeader ? 'LEAD CLEARANCE' : 'OPERATOR CLEARANCE'}</p>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-10">
           <h1 className="manga-header text-5xl md:text-6xl text-foreground">
             {selectedTeam.name.toUpperCase()}
@@ -142,7 +142,7 @@ export default function TeamDashboardPage() {
               href={`/team/new-task?teamId=${selectedTeam.teamId}`} 
               className="btn-primary flex items-center justify-center gap-2 h-12 px-6 meta-label w-full md:w-auto"
             >
-              [+] ALLOCATE TASK
+              [+] ALLOCATE MISSION
             </Link>
           )}
         </div>
@@ -246,7 +246,7 @@ export default function TeamDashboardPage() {
               <div className="col-span-full manga-panel p-16 flex flex-col items-center justify-center text-center space-y-6">
                 <h3 className="manga-header text-3xl text-foreground">NO ACTIVE OPERATIONS</h3>
                 <p className="meta-label text-muted-foreground max-w-sm mx-auto">
-                  TEAM CAPABILITIES ARE CURRENTLY UNUTILIZED.
+                  SQUAD CAPABILITIES ARE CURRENTLY UNUTILIZED.
                 </p>
               </div>
             )}

@@ -268,7 +268,7 @@ export default function ActionRow({
               {/* Status timeline */}
               <div className="space-y-4">
                 <p className="meta-label font-bold text-foreground border-b-2 border-border pb-2">
-                  ACTIVITY TIMELINE
+                  MISSION TIMELINE
                 </p>
                 {(!action.timeline || action.timeline.length === 0) ? (
                   <p className="meta-label text-muted-foreground py-1">NO EVENTS DETECTED.</p>

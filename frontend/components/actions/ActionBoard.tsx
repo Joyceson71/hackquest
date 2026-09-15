@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { FileDown, RefreshCw } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -107,17 +109,32 @@ export default function ActionBoard({
 
   if (actions.length === 0) {
     return (
-      <div className="manga-panel flex flex-col items-center justify-center py-20 text-center space-y-6">
-        <h3 className="manga-header text-3xl text-foreground">NO ACTIONS DETECTED</h3>
-        <p className="meta-label text-muted-foreground mt-2 mb-8 max-w-sm mx-auto">
-          AWAITING REVIEW OF PROPOSED ITEMS. INTEL IS CURRENTLY MISSING.
-        </p>
-        <Button
-          className="btn-primary meta-label h-12 px-8 font-bold tracking-widest"
-          onClick={() => router.push(`/meetings/${meetingId}/review`)}
-        >
-          REVIEW PROPOSED ITEMS &gt;
-        </Button>
+      <div className="manga-panel p-12 flex flex-col md:flex-row items-center justify-center gap-12 relative overflow-hidden">
+        <div className="w-48 h-64 relative shrink-0">
+          <Image 
+            src="/hq_tactical_mascot.jpg" 
+            alt="Tactical Coordinator" 
+            fill 
+            className="object-contain"
+          />
+        </div>
+        <div className="flex flex-col items-start space-y-6 z-10">
+          <div>
+            <div className="border-l-4 border-primary pl-4 mb-4 bg-muted/20 py-2 w-max">
+              <span className="meta-label font-bold tracking-widest text-primary">COORDINATOR</span>
+            </div>
+            <h3 className="manga-header text-3xl text-foreground">NO MISSIONS DETECTED.</h3>
+            <p className="meta-label text-muted-foreground mt-4 max-w-sm">
+              AWAITING REVIEW OF PROPOSED ITEMS. MISSION INTEL IS CURRENTLY MISSING.
+            </p>
+          </div>
+          <Button
+            className="btn-primary meta-label h-12 px-8 font-bold tracking-widest"
+            onClick={() => router.push(`/meetings/${meetingId}/review`)}
+          >
+            REVIEW PROPOSED ITEMS &gt;
+          </Button>
+        </div>
       </div>
     );
   }
@@ -131,7 +148,7 @@ export default function ActionBoard({
             ATTENTION REQUIRED
           </span>
           <span className="meta-label text-foreground font-bold">
-            {escalatedCount} ESCALATED ACTIONS PENDING
+            {escalatedCount} ESCALATED MISSIONS PENDING
           </span>
           <Button
             size="sm"
@@ -190,7 +207,7 @@ export default function ActionBoard({
           <TableHeader>
             <TableRow className="meta-label font-bold text-muted-foreground border-b border-border hover:bg-transparent bg-muted/20">
               <TableHead className="w-12 border-r border-border" />
-              <TableHead className="py-4 font-bold">TASK</TableHead>
+              <TableHead className="py-4 font-bold">MISSION</TableHead>
               {hasReassignments ? (
                 <>
                   <TableHead className="py-4 font-bold">ORIG. OWNER</TableHead>
@@ -226,7 +243,7 @@ export default function ActionBoard({
 
       {filteredActions.length === 0 && (
         <p className="text-center text-muted-foreground font-bold uppercase py-6 meta-label text-sm">
-          NO ACTIONS MATCH CURRENT FILTERS.
+          NO MISSIONS MATCH CURRENT FILTERS.
         </p>
       )}
     </div>

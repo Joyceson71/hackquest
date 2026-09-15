@@ -8,6 +8,7 @@ import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle, FileText } from 'luci
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
 import { useRole } from '@/lib/role-context';
+import Image from 'next/image';
 
 
 interface Meeting {
@@ -169,16 +170,29 @@ export default function Dashboard() {
         </div>
 
         {meetings.length === 0 ? (
-          <div className="manga-panel p-12 flex flex-col items-center justify-center text-center space-y-6">
-            <div>
-              <h3 className="manga-header text-2xl text-foreground">NO LOGS DETECTED</h3>
-              <p className="meta-label text-muted-foreground mt-4 max-w-sm mx-auto">
-                INITIALIZE THE SYSTEM BY UPLOADING AN AUDIO TRANSCRIPT.
-              </p>
+          <div className="manga-panel p-12 flex flex-col md:flex-row items-center justify-center gap-12 relative overflow-hidden">
+            <div className="w-48 h-64 relative shrink-0">
+              <Image 
+                src="/hq_tactical_mascot.jpg" 
+                alt="Tactical Coordinator" 
+                fill 
+                className="object-contain"
+              />
             </div>
-            <Button onClick={() => router.push('/meetings/new')} className="btn-secondary meta-label h-12 px-8">
-              UPLOAD TRANSCRIPT
-            </Button>
+            <div className="flex flex-col items-start space-y-6 z-10">
+              <div>
+                <div className="border-l-4 border-primary pl-4 mb-4 bg-muted/20 py-2 w-max">
+                  <span className="meta-label font-bold tracking-widest text-primary">COORDINATOR</span>
+                </div>
+                <h3 className="manga-header text-3xl text-foreground">NO BRIEFING LOGS DETECTED.</h3>
+                <p className="meta-label text-muted-foreground mt-4 max-w-sm">
+                  INITIALIZE THE SYSTEM BY UPLOADING AN AUDIO TRANSCRIPT TO EXTRACT MISSIONS.
+                </p>
+              </div>
+              <Button onClick={() => router.push('/meetings/new')} className="btn-secondary meta-label h-12 px-8 font-bold">
+                UPLOAD TRANSCRIPT
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="manga-panel">
@@ -255,7 +269,7 @@ export default function Dashboard() {
               CONFIRM DELETION
             </DialogTitle>
             <DialogDescription className="meta-label text-muted-foreground pt-4">
-              THIS ACTION WILL PERMANENTLY ERASE THE LOG AND ALL ASSOCIATED TASKS. THIS CANNOT BE UNDONE.
+              THIS ACTION WILL PERMANENTLY ERASE THE BRIEFING LOG AND ALL ASSOCIATED MISSIONS. THIS CANNOT BE UNDONE.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-4 sm:justify-end mt-8 border-t-2 border-border pt-6">

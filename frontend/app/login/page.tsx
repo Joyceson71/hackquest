@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useRole, UserRole, isAdminEmail } from '@/lib/role-context';
 import { Loader2, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'CONFIRM';
 
@@ -74,12 +75,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md manga-panel p-10 shadow-[8px_8px_0px_0px_rgba(26,26,26,1)]">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 md:p-8">
+      <div className="w-full max-w-6xl manga-panel p-0 flex flex-col md:flex-row shadow-[16px_16px_0px_0px_rgba(26,26,26,1)] overflow-hidden">
+        
+        {/* Illustration Side */}
+        <div className="w-full md:w-1/2 relative bg-muted border-b-4 md:border-b-0 md:border-r-4 border-foreground">
+          <div className="absolute inset-0 w-full h-full">
+            <Image
+              src="/hq_login_illustration.jpg"
+              alt="HackQuest Tactical Command Center"
+              fill
+              className="object-cover grayscale-[20%] contrast-125"
+              priority
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent flex flex-col justify-end p-10">
+             <div className="border-l-4 border-primary pl-6">
+                <h2 className="manga-header text-5xl text-foreground text-shadow-sm">HACKQUEST</h2>
+                <p className="meta-label text-primary font-bold tracking-widest text-lg mt-2 text-shadow-sm">TACTICAL OPERATIONS SYSTEM</p>
+             </div>
+          </div>
+        </div>
+
+        {/* Form Side */}
+        <div className="w-full md:w-1/2 p-10 md:p-16 flex flex-col justify-center bg-background">
         
         {/* Header */}
         <div className="mb-10 border-b-2 border-border pb-6 relative">
-          <div className="absolute top-0 right-0 p-2 text-border opacity-20 manga-header text-6xl leading-none -mt-4 -mr-4">
+          <div className="absolute top-0 right-0 text-border opacity-20 manga-header text-8xl leading-none -mt-8 -mr-4">
             01
           </div>
           <p className="meta-label mb-2 tracking-widest text-primary font-bold">HQ // AUTHENTICATION</p>
@@ -206,6 +229,7 @@ export default function LoginPage() {
               &gt; RETURN TO ACCESS
             </button>
           )}
+        </div>
         </div>
 
       </div>

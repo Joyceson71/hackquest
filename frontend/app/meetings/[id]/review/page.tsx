@@ -104,9 +104,9 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
   return (
     <div className="space-y-6">
       <div className="border-b-2 border-border pb-4">
-        <h2 className="manga-header text-3xl text-foreground">REVIEW PROPOSED ACTIONS</h2>
+        <h2 className="manga-header text-3xl text-foreground">REVIEW PROPOSED MISSIONS</h2>
         <p className="meta-label text-muted-foreground mt-2 opacity-70 font-bold">
-          EVERY COMMITMENT NEEDS HUMAN CONFIRMATION BEFORE ENTERING THE ACTION BOARD.
+          EVERY COMMITMENT NEEDS HUMAN CONFIRMATION BEFORE ENTERING THE MISSION BOARD.
         </p>
       </div>
 
@@ -126,9 +126,9 @@ export default function ReviewPage({ params }: { params: Promise<{ id: string }>
             </>
           ) : (
             <>
-              <h3 className="manga-header text-3xl text-foreground">NO ACTION ITEMS IDENTIFIED</h3>
+              <h3 className="manga-header text-3xl text-foreground">NO MISSIONS IDENTIFIED</h3>
               <p className="meta-label text-muted-foreground mt-2 max-w-sm mx-auto">
-                NO ACTION ITEMS WERE IDENTIFIED IN THIS TRANSCRIPT. YOU CAN STILL CREATE ACTIONS MANUALLY FROM THE ACTION BOARD.
+                NO MISSIONS WERE IDENTIFIED IN THIS BRIEFING TRANSCRIPT. YOU CAN STILL CREATE MISSIONS MANUALLY FROM THE MISSION BOARD.
               </p>
             </>
           )}

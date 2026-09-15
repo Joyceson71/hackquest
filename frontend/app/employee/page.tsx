@@ -21,6 +21,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface MeetingMeta {
   PK: string;
@@ -316,13 +317,28 @@ function EmployeeDashboardInner() {
           <span className="meta-label text-muted-foreground">SYNCING LOGS...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="manga-panel p-16 flex flex-col items-center justify-center text-center space-y-6">
-          <h3 className="manga-header text-3xl text-foreground">
-            {filter === 'ALL' ? 'NO TASKS ASSIGNED' : `NO ${filter} TASKS`}
-          </h3>
-          <p className="meta-label text-muted-foreground mt-2 max-w-sm mx-auto">
-            ALL OPERATIONS ARE CURRENTLY NOMINAL.
-          </p>
+        <div className="manga-panel p-12 flex flex-col md:flex-row items-center justify-center gap-12 relative overflow-hidden">
+          <div className="w-48 h-64 relative shrink-0 opacity-80">
+            <Image 
+              src="/hq_tactical_mascot.jpg" 
+              alt="Tactical Coordinator" 
+              fill 
+              className="object-contain"
+            />
+          </div>
+          <div className="flex flex-col items-start space-y-6 z-10">
+            <div>
+              <div className="border-l-4 border-primary pl-4 mb-4 bg-muted/20 py-2 w-max">
+                <span className="meta-label font-bold tracking-widest text-primary">COORDINATOR</span>
+              </div>
+              <h3 className="manga-header text-3xl text-foreground">
+                {filter === 'ALL' ? 'NO MISSIONS ASSIGNED.' : `NO ${filter} MISSIONS.`}
+              </h3>
+              <p className="meta-label text-muted-foreground mt-2 max-w-sm">
+                ALL OPERATIONS ARE CURRENTLY NOMINAL. YOUR ASSIGNED MISSIONS WILL APPEAR HERE.
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col border-t border-border mt-8 manga-panel">
