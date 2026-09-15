@@ -49,31 +49,19 @@ export default function NavigationSidebar() {
   const navLinks = getLinks();
 
   return (
-    <aside className="w-64 bg-card border-r border-border hidden md:flex flex-col min-h-screen sticky top-0 h-screen">
-      {/* Brand */}
-      <div className="h-16 flex items-center px-6 border-b border-border">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-            <svg className="h-5 w-5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <span className="font-bold text-foreground text-lg tracking-tight">HackQuest</span>
-        </Link>
-      </div>
-
+    <aside className="w-64 glass-panel hidden md:flex flex-col sticky top-[88px] h-[calc(100vh-104px)] mx-4 ml-6 rounded-xl shadow-2xl">
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1 no-scrollbar">
+      <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-2 no-scrollbar">
         {navLinks.map((link) => {
           const isActive = pathname === link.href || (link.href !== '/' && link.href !== '/employee' && pathname.startsWith(link.href));
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
                 isActive 
-                  ? 'bg-primary/10 text-primary' 
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(0,229,255,0.15)]' 
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent'
               }`}
             >
               <link.icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -82,13 +70,6 @@ export default function NavigationSidebar() {
           );
         })}
       </nav>
-
-      {/* User Area */}
-      <div className="p-4 border-t border-border bg-card">
-        <div className="flex items-center justify-between w-full">
-           <UserMenu />
-        </div>
-      </div>
     </aside>
   );
 }

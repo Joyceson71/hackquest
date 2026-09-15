@@ -352,4 +352,5 @@ export default function ParticipantsPage({ params }: { params: Promise<{ id: str
         </DialogContent>
       </Dialog>
     </div>
+  );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import SpatialCard from '@/components/SpatialCard';
 import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
@@ -134,28 +135,36 @@ export default function Dashboard() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="premium-card p-6 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <FileText className="h-4 w-4" />
-            <span className="text-sm font-medium">Total Meetings</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[160px]">
+        <SpatialCard tiltIntensity={5} glowIntensity={0.1} className="p-0">
+          <div className="flex flex-col gap-2 h-full justify-center">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <FileText className="h-4 w-4" />
+              <span className="text-sm font-medium">Total Meetings</span>
+            </div>
+            <span className="text-4xl font-bold">{meetings.length}</span>
           </div>
-          <span className="text-4xl font-bold">{meetings.length}</span>
-        </div>
-        <div className="premium-card p-6 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-sm font-medium">Processed</span>
+        </SpatialCard>
+        
+        <SpatialCard tiltIntensity={5} glowIntensity={0.15} className="p-0">
+          <div className="flex flex-col gap-2 h-full justify-center">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#00FF66]" />
+              <span className="text-sm font-medium">Processed</span>
+            </div>
+            <span className="text-4xl font-bold">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
           </div>
-          <span className="text-4xl font-bold">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
-        </div>
-        <div className="premium-card p-6 flex flex-col gap-2 opacity-50">
-          <div className="flex items-center gap-2 text-muted-foreground mb-2">
-            <AlertTriangle className="h-4 w-4" />
-            <span className="text-sm font-medium">Pending Review</span>
+        </SpatialCard>
+        
+        <SpatialCard tiltIntensity={5} glowIntensity={0.1} className="p-0 opacity-50">
+          <div className="flex flex-col gap-2 h-full justify-center">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-sm font-medium">Pending Review</span>
+            </div>
+            <span className="text-4xl font-bold">0</span>
           </div>
-          <span className="text-4xl font-bold">0</span>
-        </div>
+        </SpatialCard>
       </div>
 
       {/* Main Content Area */}

@@ -82,10 +82,11 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -4, x: -4, boxShadow: '8px 8px 0px 0px #000000' }}
-      className="premium-card p-6 relative overflow-hidden transition-all duration-200"
+      whileHover={{ y: -4, x: -4, rotateX: 2, rotateY: -2, translateZ: 10, boxShadow: '0 20px 40px -10px rgba(0,229,255,0.2)' }}
+      className="glass-panel p-6 relative overflow-visible transition-all duration-300"
+      style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
     >
-      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-3xl transform translate-x-8 -translate-y-8 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[40px] transform translate-x-8 -translate-y-8 pointer-events-none" style={{ transform: 'translateZ(-10px)' }} />
       
       <div className="space-y-5">
         {/* Header: Type badge + Evidence link */}

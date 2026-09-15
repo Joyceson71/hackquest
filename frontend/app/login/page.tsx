@@ -6,7 +6,7 @@ import { signIn, signUp, confirmSignUp } from 'aws-amplify/auth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import SpatialCard from '@/components/SpatialCard';
 import { useRole, UserRole, isAdminEmail } from '@/lib/role-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,6 +14,7 @@ import {
   User,
   Loader2,
   AlertCircle,
+  Lock,
 } from 'lucide-react';
 
 type AuthMode = 'LOGIN' | 'SIGNUP' | 'CONFIRM';
@@ -103,93 +104,95 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="premium-card p-6 shadow-2xl">
-          <form onSubmit={handleAuth} className="space-y-5">
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden"
-                >
-                  <div className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium border border-destructive/20 mb-4">
-                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                    <span>{error}</span>
-                  </div>
-                </motion.div>
+        <div className="h-[500px]">
+          <SpatialCard tiltIntensity={10} glowIntensity={0.2} className="shadow-2xl">
+            <form onSubmit={handleAuth} className="space-y-5 h-full flex flex-col justify-center">
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive rounded-md text-sm font-medium border border-destructive/20 mb-4">
+                      <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                      <span>{error}</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {mode === 'SIGNUP' && (
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</Label>
+                  <Input 
+                    id="name" 
+                    type="text" 
+                    placeholder="John Doe" 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    className="bg-black/20 border-white/10 h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                  />
+                </div>
               )}
-            </AnimatePresence>
 
-            {mode === 'SIGNUP' && (
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-foreground">Full Name</Label>
-                <Input 
-                  id="name" 
-                  type="text" 
-                  placeholder="John Doe" 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
-                />
-              </div>
-            )}
-
-            {mode !== 'CONFIRM' && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    required 
-                    placeholder="you@example.com" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
+              {mode !== 'CONFIRM' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      required 
+                      placeholder="you@example.com" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      className="bg-black/20 border-white/10 h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                    />
                   </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
+                    </div>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      required 
+                      placeholder="••••••••" 
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)} 
+                      className="bg-black/20 border-white/10 h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                    />
+                  </div>
+                </>
+              )}
+
+              {mode === 'CONFIRM' && (
+                <div className="space-y-2">
+                  <Label htmlFor="code" className="text-sm font-medium text-foreground">Verification Code</Label>
                   <Input 
-                    id="password" 
-                    type="password" 
+                    id="code" 
                     required 
-                    placeholder="••••••••" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    className="bg-muted/50 border-border h-11 text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
+                    placeholder="000000" 
+                    value={code} 
+                    onChange={(e) => setCode(e.target.value)} 
+                    className="bg-black/20 border-white/10 h-14 text-center text-3xl tracking-widest font-mono text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
                   />
                 </div>
-              </>
-            )}
+              )}
 
-            {mode === 'CONFIRM' && (
-              <div className="space-y-2">
-                <Label htmlFor="code" className="text-sm font-medium text-foreground">Verification Code</Label>
-                <Input 
-                  id="code" 
-                  required 
-                  placeholder="000000" 
-                  value={code} 
-                  onChange={(e) => setCode(e.target.value)} 
-                  className="bg-muted/50 border-border h-14 text-center text-3xl tracking-widest font-mono text-foreground focus-visible:ring-primary focus-visible:border-primary transition-all" 
-                />
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full h-11 mt-6"
-            >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-              {loading ? 'Processing...' : mode === 'LOGIN' ? 'Sign In' : mode === 'SIGNUP' ? 'Create Account' : 'Verify'}
-            </Button>
-          </form>
-        </Card>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full h-11 mt-6 shadow-[0_0_20px_rgba(0,229,255,0.3)] hover:shadow-[0_0_30px_rgba(0,229,255,0.5)] transition-all"
+              >
+                {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
+                {loading ? 'Processing...' : mode === 'LOGIN' ? 'Sign In' : mode === 'SIGNUP' ? 'Create Account' : 'Verify'}
+              </Button>
+            </form>
+          </SpatialCard>
+        </div>
 
         {/* Role Selector (Compact) */}
         {mode !== 'CONFIRM' && (

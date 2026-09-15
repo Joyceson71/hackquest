@@ -4,52 +4,52 @@
 @import "shadcn/tailwind.css";
 
 /*
- * HackQuest Premium Enterprise Theme
+ * HackQuest Spatial 3D Theme
  */
 
 :root {
-  /* Deep Dark Background (Zinc 950) */
-  --background: #09090B; 
-  --foreground: #FAFAFA; 
+  /* Deep Space Background (Slate 950+) */
+  --background: #02040A; 
+  --foreground: #F8FAFC; 
   
-  /* Slightly lighter surfaces (Zinc 900) */
-  --card: #18181B; 
-  --card-foreground: #FAFAFA; 
+  /* Translucent surfaces */
+  --card: rgba(15, 23, 42, 0.4); 
+  --card-foreground: #F8FAFC; 
   
-  --popover: #18181B;
-  --popover-foreground: #FAFAFA;
+  --popover: rgba(15, 23, 42, 0.8);
+  --popover-foreground: #F8FAFC;
   
-  /* Primary Accent (Indigo 500) */
-  --primary: #6366F1;
-  --primary-foreground: #FFFFFF;
+  /* Primary Accent (Cyan / Electric Blue) */
+  --primary: #00E5FF;
+  --primary-foreground: #02040A;
   
-  /* Muted surfaces (Zinc 800/900 mix) */
-  --secondary: #27272A; 
-  --secondary-foreground: #FAFAFA;
+  /* Muted surfaces */
+  --secondary: rgba(30, 41, 59, 0.5); 
+  --secondary-foreground: #F8FAFC;
   
   /* Subtle backgrounds */
-  --muted: #27272A; 
-  --muted-foreground: #A1A1AA; /* Zinc 400 */
+  --muted: rgba(30, 41, 59, 0.3); 
+  --muted-foreground: #94A3B8; /* Slate 400 */
   
   /* Accents */
-  --accent: #27272A; 
-  --accent-foreground: #FAFAFA;
+  --accent: rgba(56, 189, 248, 0.15); 
+  --accent-foreground: #38BDF8;
   
-  /* Status Colors */
-  --destructive: #EF4444; /* Red 500 */
+  /* Status Colors (Neon/LED style) */
+  --destructive: #FF2A55; /* Neon Red */
   --destructive-foreground: #FAFAFA;
   
-  --color-success: #22C55E; /* Green 500 */
-  --color-warning: #F59E0B; /* Amber 500 */
-  --color-info: #3B82F6; /* Blue 500 */
+  --color-success: #00FF66; /* Neon Green */
+  --color-warning: #FFB000; /* Neon Amber */
+  --color-info: #00E5FF; /* Cyan */
   
-  /* Borders (Zinc 800) */
-  --border: #27272A;
-  --input: #27272A;
-  --ring: #6366F1;
+  /* Borders (Subtle Glass) */
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: rgba(0, 229, 255, 0.5);
 
-  /* Clean Geometry */
-  --radius: 0.5rem; /* 8px */
+  /* Geometry */
+  --radius: 0.75rem; /* 12px */
 }
 
 @theme inline {
@@ -79,10 +79,10 @@
   --color-warning: var(--color-warning);
   --color-info: var(--color-info);
 
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
 }
 
 @layer base {
@@ -94,6 +94,9 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Add a deep atmospheric fog to the base body just in case */
+    background: radial-gradient(circle at 50% -20%, #0c152a 0%, #02040A 100%);
+    background-attachment: fixed;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -109,9 +112,9 @@
     @apply font-heading font-semibold tracking-tight text-foreground;
   }
   
-  /* Smooth UI transitions */
-  button, a, .glass-card, .premium-card {
-    transition: all 150ms ease-in-out;
+  /* Smooth UI transitions for 3D elements */
+  button, a, .glass-panel, .spatial-card {
+    transition: all 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 }
 
@@ -124,22 +127,34 @@
   }
 }
 
-/* ─── Base Card System ───────────────── */
+/* ─── 3D Spatial System ───────────────── */
 
-.premium-card, .glass-card, .obj-raised, .obj-inset {
-  background-color: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+.spatial-wrapper {
+  perspective: 1500px;
+  transform-style: preserve-3d;
 }
 
-.premium-card:hover, .glass-card:hover, .obj-raised:hover, .obj-inset:hover {
-  border-color: rgba(161, 161, 170, 0.3); /* Zinc 400 with opacity */
+.glass-panel, .premium-card, .glass-card, .obj-raised, .obj-inset {
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.8), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel:hover, .premium-card:hover, .glass-card:hover, .obj-raised:hover, .obj-inset:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 15px 40px -10px rgba(0, 0, 0, 0.9), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* ─── Base Button System ───────────────── */
 
-.btn-primary {
+.btn-primary, .btn-3d, .btn-3d-primary {
   @apply bg-primary text-primary-foreground font-medium rounded-md px-4 py-2 hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
@@ -151,36 +166,31 @@
   @apply bg-transparent text-muted-foreground font-medium rounded-md px-4 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
 }
 
-/* Backward compatibility for old 3d buttons */
-.btn-3d, .btn-3d-primary {
-  @apply btn-primary;
-}
-
 /* ─── Status Badges ──────────────────────────────── */
-.badge {
+.badge, .badge-pending, .badge-acknowledged, .badge-inprogress, .badge-blocked, .badge-completed, .badge-reassigned, .badge-overdue {
   @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
 }
 
 .badge-pending { 
-  @apply badge border-amber-500/20 bg-amber-500/10 text-amber-500;
+  @apply border-amber-500/20 bg-amber-500/10 text-amber-500;
 }
 .badge-acknowledged { 
-  @apply badge border-blue-500/20 bg-blue-500/10 text-blue-500;
+  @apply border-blue-500/20 bg-blue-500/10 text-blue-500;
 }
 .badge-inprogress { 
-  @apply badge border-indigo-500/20 bg-indigo-500/10 text-indigo-500;
+  @apply border-indigo-500/20 bg-indigo-500/10 text-indigo-500;
 }
 .badge-blocked { 
-  @apply badge border-red-500/20 bg-red-500/10 text-red-500;
+  @apply border-red-500/20 bg-red-500/10 text-red-500;
 }
 .badge-completed { 
-  @apply badge border-green-500/20 bg-green-500/10 text-green-500;
+  @apply border-green-500/20 bg-green-500/10 text-green-500;
 }
 .badge-reassigned { 
-  @apply badge border-purple-500/20 bg-purple-500/10 text-purple-500;
+  @apply border-purple-500/20 bg-purple-500/10 text-purple-500;
 }
 .badge-overdue { 
-  @apply badge border-red-500/40 bg-red-500/20 text-red-500;
+  @apply border-red-500/40 bg-red-500/20 text-red-500;
 }
 
 /* Sidebar scrollbar hiding */

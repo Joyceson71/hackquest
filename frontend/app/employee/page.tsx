@@ -21,6 +21,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import SpatialCard from '@/components/SpatialCard';
 
 interface MeetingMeta {
   PK: string;
@@ -87,7 +88,7 @@ function ActionCard({
   else if (status === 'COMPLETED' || status === 'DONE') nextStatuses = ['IN_PROGRESS'];
 
   return (
-    <motion.div variants={itemVariants} className={`premium-card overflow-hidden group ${isOverdue ? 'border-l-4 border-l-destructive' : ''}`}>
+    <motion.div variants={itemVariants} whileHover={{ scale: 1.02, translateZ: 10, rotateX: 2 }} className={`glass-panel overflow-hidden group ${isOverdue ? 'border-l-4 border-l-destructive' : ''} transition-all`}>
       <div className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -290,20 +291,22 @@ function EmployeeDashboardInner() {
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 h-[140px]">
         {[
           { label: 'Total Tasks', value: stats.total, icon: Briefcase },
           { label: 'Pending', value: stats.pending, icon: Clock },
           { label: 'In Progress', value: stats.inProgress, icon: RefreshCw },
           { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: 'text-destructive' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="premium-card p-6 flex flex-col gap-2">
-            <div className={`flex items-center gap-2 text-muted-foreground mb-2 ${color || ''}`}>
-              <Icon className="h-4 w-4" />
-              <span className="text-sm font-medium">{label}</span>
+          <SpatialCard key={label} tiltIntensity={5} glowIntensity={0.1} className="p-0">
+            <div className="flex flex-col gap-2 h-full justify-center">
+              <div className={`flex items-center gap-2 text-muted-foreground mb-2 ${color || ''}`}>
+                <Icon className="h-4 w-4" />
+                <span className="text-sm font-medium">{label}</span>
+              </div>
+              <span className={`text-3xl font-bold ${color || 'text-foreground'}`}>{value}</span>
             </div>
-            <span className={`text-3xl font-bold ${color || 'text-foreground'}`}>{value}</span>
-          </div>
+          </SpatialCard>
         ))}
       </div>
 
