@@ -127,80 +127,80 @@ export default function ActionRow({
 
   return (
     <>
-      <TableRow className={`${rowBg} hover:bg-muted/60 transition-colors duration-150 border-b-4`}>
+      <TableRow className={`${rowBg} hover:bg-muted/50 transition-colors duration-0 border-b border-border`}>
         {/* Expand toggle */}
-        <TableCell className="w-12 border-r-4 border-border text-center p-2">
+        <TableCell className="w-12 border-r border-border text-center p-2">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-1 rounded bg-foreground text-background hover:bg-primary transition-colors shadow-brutal-sm border-2 border-border cursor-pointer"
+            className="p-2 meta-text text-foreground hover:bg-foreground hover:text-background transition-colors"
             aria-label={expanded ? 'Collapse row' : 'Expand row'}
           >
-            {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            {expanded ? '-' : '+'}
           </button>
         </TableCell>
 
         {/* Task */}
-        <TableCell className="max-w-xs border-r-4 border-border p-3">
+        <TableCell className="max-w-xs border-r border-border p-4">
           <div className="flex items-start gap-2">
             {isEscalated && (
               <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" aria-label="Escalated" />
             )}
-            <span className="line-clamp-2 font-bold uppercase text-foreground text-sm" title={action.task}>
+            <span className="font-bold text-foreground text-sm uppercase leading-relaxed" title={action.task}>
               {action.task}
             </span>
           </div>
         </TableCell>
 
-        {/* Original Owner (muted, only if different from current) */}
+        {/* Original Owner */}
         {ownerChanged ? (
           <>
-            <TableCell className="border-r-4 border-border p-3 bg-muted/30">
-              <span className="text-sm font-medium text-muted-foreground uppercase line-through" title="Original owner from transcript">
+            <TableCell className="border-r border-border p-4 bg-muted/20">
+              <span className="meta-text text-muted-foreground line-through" title="Original owner from transcript">
                 {action.originalOwner}
               </span>
             </TableCell>
-            <TableCell className="border-r-4 border-border p-3">
-              <span className="text-sm font-bold text-foreground uppercase">{action.currentOwner || '—'}</span>
+            <TableCell className="border-r border-border p-4">
+              <span className="meta-text text-foreground">{action.currentOwner || '—'}</span>
             </TableCell>
           </>
         ) : (
           <>
-            <TableCell className="border-r-4 border-border p-3 hidden" />
-            <TableCell className="border-r-4 border-border p-3 bg-muted">
-              <span className="text-sm font-bold text-foreground uppercase">{action.currentOwner || action.owner || '—'}</span>
+            <TableCell className="border-r border-border p-4 hidden" />
+            <TableCell className="border-r border-border p-4">
+              <span className="meta-text text-foreground">{action.currentOwner || action.owner || '—'}</span>
             </TableCell>
           </>
         )}
 
         {/* Deadline */}
-        <TableCell className="border-r-4 border-border p-3 bg-muted whitespace-nowrap">
-          <span className="text-sm font-bold text-foreground uppercase">{formatDate(action.deadline)}</span>
+        <TableCell className="border-r border-border p-4 whitespace-nowrap">
+          <span className="meta-text text-foreground">{formatDate(action.deadline)}</span>
           {action.originalDeadline && action.deadline !== action.originalDeadline && (
-            <div className="text-xs text-muted-foreground mt-0.5">
-              orig: {formatDate(action.originalDeadline)}
+            <div className="text-[10px] uppercase font-mono text-muted-foreground mt-1 tracking-wider">
+              ORIG: {formatDate(action.originalDeadline)}
             </div>
           )}
         </TableCell>
 
         {/* Status */}
-        <TableCell className="p-3 border-r-4 border-border">
+        <TableCell className="p-4 border-r border-border">
           <StatusDropdown value={action.status} onChange={(s) => onStatusChange(action.actionId, s)} />
         </TableCell>
 
         {/* Evidence */}
-        <TableCell className="p-3 border-r-4 border-border">
+        <TableCell className="p-4 border-r border-border">
           <EvidenceLink meetingId={meetingId} lineStart={action.evidenceLineStart} lineEnd={action.evidenceLineEnd} />
         </TableCell>
 
         {/* Actions */}
-        <TableCell className="p-3 text-center">
+        <TableCell className="p-4 text-center">
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => onDeleteAction(action.actionId)}
-            className="h-10 w-10 border-2 border-border shadow-brutal-sm bg-card text-foreground hover:bg-destructive hover:text-background transition-colors"
+            className="h-8 w-8 meta-text text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors rounded-none"
           >
-            <Trash2 className="h-5 w-5 stroke-[3]" />
+            [X]
           </Button>
         </TableCell>
       </TableRow>
@@ -208,7 +208,7 @@ export default function ActionRow({
       {/* Expanded detail row */}
       {expanded && (
         <TableRow>
-          <TableCell colSpan={8} className="bg-muted/40 px-6 py-4 border-b-4 border-border">
+          <TableCell colSpan={8} className="bg-muted/20 px-8 py-8 border-b border-border">
             {/* Escalation Panel — shown first if escalated */}
             {(isEscalated || isDeclined) && (
               <div className="mb-6">
@@ -222,21 +222,21 @@ export default function ActionRow({
             )}
 
             {/* History Timeline */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {/* Ownership history */}
               {action.ownershipHistory && action.ownershipHistory.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground border-b-2 border-border pb-1">
-                    Ownership Chain
+                <div className="space-y-4">
+                  <p className="meta-text text-muted-foreground border-b border-border pb-2">
+                    OWNERSHIP CHAIN
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {action.ownershipHistory.map((e, i) => (
-                      <div key={i} className="flex flex-col gap-0.5 text-xs border-l-2 border-accent/50 pl-3">
+                      <div key={i} className="flex flex-col meta-text border-l-2 border-foreground pl-4">
                         <span className="font-bold text-foreground">
-                          {e.fromOwner ? `${e.fromOwner} → ${e.toOwner}` : `Assigned to ${e.toOwner}`}
+                          {e.fromOwner ? `${e.fromOwner} → ${e.toOwner}` : `ASSIGNED TO ${e.toOwner}`}
                         </span>
                         <span className="text-muted-foreground">
-                          {e.reason} · {new Date(e.changedAt).toLocaleString()}
+                          {e.reason.toUpperCase()} // {new Date(e.changedAt).toLocaleString()}
                         </span>
                       </div>
                     ))}
@@ -246,18 +246,18 @@ export default function ActionRow({
 
               {/* Missed deadlines */}
               {action.missedDeadlines && action.missedDeadlines.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground border-b-2 border-border pb-1">
-                    Missed Deadlines
+                <div className="space-y-4 mt-6 md:mt-0">
+                  <p className="meta-text text-muted-foreground border-b border-border pb-2">
+                    MISSED DEADLINES
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {action.missedDeadlines.map((md, i) => (
-                      <div key={i} className="flex flex-col gap-0.5 text-xs border-l-2 border-destructive/50 pl-3">
+                      <div key={i} className="flex flex-col meta-text border-l-2 border-destructive pl-4">
                         <span className="font-bold text-destructive">
-                          {formatDate(md.deadline)} missed
+                          {formatDate(md.deadline).toUpperCase()} MISSED
                         </span>
                         <span className="text-muted-foreground">
-                          Owner at time: {md.ownerAtTime} · {md.reason} · Detected {new Date(md.detectedAt).toLocaleString()}
+                          OWNER: {md.ownerAtTime} // {md.reason.toUpperCase()} // LOGGED: {new Date(md.detectedAt).toLocaleString()}
                         </span>
                       </div>
                     ))}
@@ -266,21 +266,21 @@ export default function ActionRow({
               )}
 
               {/* Status timeline */}
-              <div className="space-y-2">
-                <p className="text-xs font-black uppercase tracking-wider text-muted-foreground border-b-2 border-border pb-1">
-                  Activity Timeline
+              <div className="space-y-4">
+                <p className="meta-text text-muted-foreground border-b border-border pb-2">
+                  ACTIVITY TIMELINE
                 </p>
                 {(!action.timeline || action.timeline.length === 0) ? (
-                  <p className="text-xs text-muted-foreground py-1">No timeline events.</p>
+                  <p className="meta-text text-muted-foreground py-1">NO EVENTS DETECTED.</p>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {action.timeline.map((t, i) => (
-                      <div key={i} className="flex flex-col gap-0.5 text-xs border-l-2 border-primary/30 pl-3">
-                        <span className="font-medium text-foreground">{t.event}</span>
+                      <div key={i} className="flex flex-col meta-text border-l-2 border-primary pl-4">
+                        <span className="font-bold text-foreground">{t.event.toUpperCase()}</span>
                         <span className="text-muted-foreground">
-                          by {t.actor} · {new Date(t.timestamp).toLocaleString()}
+                          OP: {t.actor} // {new Date(t.timestamp).toLocaleString()}
                         </span>
-                        {t.note && <span className="text-muted-foreground italic">Note: {t.note}</span>}
+                        {t.note && <span className="text-muted-foreground">NOTE: {t.note.toUpperCase()}</span>}
                       </div>
                     ))}
                   </div>
@@ -289,18 +289,18 @@ export default function ActionRow({
 
               {/* Corrections */}
               {action.corrections && action.corrections.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-wider text-muted-foreground border-b-2 border-border pb-1">
-                    Corrections Applied
+                <div className="space-y-4 mt-6">
+                  <p className="meta-text text-muted-foreground border-b border-border pb-2">
+                    SYSTEM CORRECTIONS
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {action.corrections.map((c, i) => (
-                      <div key={i} className="flex flex-col gap-0.5 text-xs border-l-2 border-secondary/50 pl-3">
-                        <span className="font-medium text-foreground capitalize">
-                          {c.field}: &quot;{c.originalValue}&quot; → &quot;{c.correctedValue}&quot;
+                      <div key={i} className="flex flex-col meta-text border-l-2 border-foreground pl-4">
+                        <span className="font-bold text-foreground">
+                          {c.field.toUpperCase()}: &quot;{c.originalValue}&quot; &gt; &quot;{c.correctedValue}&quot;
                         </span>
                         <span className="text-muted-foreground">
-                          {c.source || 'REVIEW'} · {new Date(c.correctedAt).toLocaleString()}
+                          SOURCE: {c.source || 'REVIEW'} // {new Date(c.correctedAt).toLocaleString()}
                         </span>
                       </div>
                     ))}

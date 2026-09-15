@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import SpatialCard from '@/components/SpatialCard';
 import { Loader2, Plus, ArrowRight, Trash2, AlertTriangle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
@@ -117,87 +116,77 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 w-full p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="flex-1 w-full p-8 md:p-12 max-w-7xl mx-auto space-y-12">
       
       {/* Header section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
-          <p className="text-muted-foreground mt-1">Manage your team's meetings and extracted tasks.</p>
+      <div className="border-b border-border pb-8">
+        <p className="meta-text text-muted-foreground mb-4">SYSTEM OVERVIEW</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <h1 className="editorial-heading text-5xl md:text-6xl text-foreground">
+            GOOD MORNING,<br />LEAD.
+          </h1>
+          <Button 
+            onClick={() => router.push('/meetings/new')} 
+            className="btn-primary flex items-center gap-2 h-12 px-6 meta-text w-full md:w-auto"
+          >
+            <Plus className="h-4 w-4" />
+            UPLOAD TRANSCRIPT
+          </Button>
         </div>
-        <Button 
-          onClick={() => router.push('/meetings/new')} 
-          className="btn-primary flex items-center gap-2 w-full md:w-auto"
-        >
-          <Plus className="h-4 w-4" />
-          Upload Transcript
-        </Button>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[160px]">
-        <SpatialCard tiltIntensity={5} glowIntensity={0.1} className="p-0">
-          <div className="flex flex-col gap-2 h-full justify-center">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <FileText className="h-4 w-4" />
-              <span className="text-sm font-medium">Total Meetings</span>
-            </div>
-            <span className="text-4xl font-bold">{meetings.length}</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-y border-border">
+        <div className="p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
+          <div className="flex items-center gap-2 text-muted-foreground mb-4">
+            <span className="meta-text">01 // TOTAL MEETINGS</span>
           </div>
-        </SpatialCard>
+          <span className="editorial-heading text-6xl">{meetings.length}</span>
+        </div>
         
-        <SpatialCard tiltIntensity={5} glowIntensity={0.15} className="p-0">
-          <div className="flex flex-col gap-2 h-full justify-center">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#00FF66]" />
-              <span className="text-sm font-medium">Processed</span>
-            </div>
-            <span className="text-4xl font-bold">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
+        <div className="p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-center">
+          <div className="flex items-center gap-2 text-muted-foreground mb-4">
+            <span className="meta-text text-primary">02 // PROCESSED</span>
           </div>
-        </SpatialCard>
+          <span className="editorial-heading text-6xl text-primary">{meetings.filter(m => m.status?.toLowerCase() === 'processed').length || meetings.length}</span>
+        </div>
         
-        <SpatialCard tiltIntensity={5} glowIntensity={0.1} className="p-0 opacity-50">
-          <div className="flex flex-col gap-2 h-full justify-center">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="text-sm font-medium">Pending Review</span>
-            </div>
-            <span className="text-4xl font-bold">0</span>
+        <div className="p-8 flex flex-col justify-center opacity-50">
+          <div className="flex items-center gap-2 text-muted-foreground mb-4">
+            <span className="meta-text">03 // PENDING REVIEW</span>
           </div>
-        </SpatialCard>
+          <span className="editorial-heading text-6xl">0</span>
+        </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight">Recent Activity</h2>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between border-b border-border pb-2">
+          <h2 className="meta-text text-foreground">RECENT ACTIVITY</h2>
         </div>
 
         {meetings.length === 0 ? (
-          <div className="premium-card border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-              <FileText className="h-6 w-6" />
-            </div>
+          <div className="border border-border p-12 flex flex-col items-center justify-center text-center space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-foreground">No meetings uploaded</h3>
-              <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                Get started by uploading your first audio transcript to extract tasks and action items.
+              <h3 className="editorial-heading text-2xl text-foreground">NO LOGS DETECTED</h3>
+              <p className="meta-text text-muted-foreground mt-4 max-w-sm mx-auto">
+                INITIALIZE THE SYSTEM BY UPLOADING AN AUDIO TRANSCRIPT.
               </p>
             </div>
-            <Button onClick={() => router.push('/meetings/new')} className="btn-secondary mt-2">
-              Upload Transcript
+            <Button onClick={() => router.push('/meetings/new')} className="btn-secondary meta-text h-12 px-8">
+              UPLOAD TRANSCRIPT
             </Button>
           </div>
         ) : (
-          <div className="premium-card overflow-hidden">
+          <div className="border-t border-border">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-muted-foreground bg-muted/50 uppercase border-b border-border">
+              <table className="w-full text-left">
+                <thead className="meta-text text-muted-foreground border-b border-border">
                   <tr>
-                    <th className="px-6 py-4 font-medium">Meeting Title</th>
-                    <th className="px-6 py-4 font-medium">Date</th>
-                    <th className="px-6 py-4 font-medium">Status</th>
-                    <th className="px-6 py-4 text-right font-medium">Actions</th>
+                    <th className="px-4 py-4 font-normal">IDENTIFIER</th>
+                    <th className="px-4 py-4 font-normal">TIMESTAMP</th>
+                    <th className="px-4 py-4 font-normal">STATUS</th>
+                    <th className="px-4 py-4 text-right font-normal">OPERATIONS</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -205,43 +194,41 @@ export default function Dashboard() {
                     const dateStr = m.createdAt || new Date().toISOString();
                     const date = new Date(dateStr).toLocaleDateString('en-US', {
                       month: 'short', day: 'numeric', year: 'numeric'
-                    });
+                    }).toUpperCase();
 
                     return (
-                      <tr key={m.PK} className="hover:bg-muted/30 transition-colors group">
-                        <td className="px-6 py-4">
+                      <tr key={m.PK} className="hover:bg-muted/50 transition-colors group">
+                        <td className="px-4 py-6">
                           <button 
                             onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
-                            className="font-medium text-foreground hover:text-primary transition-colors text-left"
+                            className="editorial-heading text-lg text-foreground hover:text-primary transition-colors text-left"
                           >
-                            {m.title || 'Untitled Meeting'}
+                            {m.title || 'UNTITLED LOG'}
                           </button>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">
+                        <td className="px-4 py-6 meta-text text-muted-foreground">
                           {date}
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="badge-completed">
-                            {m.status?.toLowerCase() || 'Processed'}
+                        <td className="px-4 py-6">
+                          <span className="meta-text text-foreground">
+                            ✓ {m.status?.toUpperCase() || 'PROCESSED'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <td className="px-4 py-6 text-right">
+                          <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button 
                               variant="ghost" 
-                              size="sm"
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                              className="meta-text h-8 px-2 text-foreground hover:text-primary rounded-none"
                               onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
                             >
-                              <ArrowRight className="h-4 w-4" />
+                              VIEW &gt;
                             </Button>
                             <Button 
                               variant="ghost" 
-                              size="sm"
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              className="meta-text h-8 px-2 text-muted-foreground hover:text-destructive rounded-none"
                               onClick={(e) => confirmDelete(e, m.PK)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              [DELETE]
                             </Button>
                           </div>
                         </td>
@@ -256,30 +243,29 @@ export default function Dashboard() {
       </div>
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="premium-card border-border sm:max-w-md bg-card">
+        <DialogContent className="border border-border bg-background rounded-none p-8">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              Delete Meeting
+            <DialogTitle className="editorial-heading text-2xl text-foreground">
+              CONFIRM DELETION
             </DialogTitle>
-            <DialogDescription className="text-muted-foreground pt-2">
-              Are you sure? This action will permanently erase the meeting and all associated extracted tasks.
+            <DialogDescription className="meta-text text-muted-foreground pt-4">
+              THIS ACTION WILL PERMANENTLY ERASE THE LOG AND ALL ASSOCIATED TASKS. THIS CANNOT BE UNDONE.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2 sm:justify-end mt-4">
+          <DialogFooter className="gap-4 sm:justify-end mt-8 border-t border-border pt-6">
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="btn-ghost border border-border"
+              className="btn-ghost meta-text rounded-none"
             >
-              Cancel
+              CANCEL
             </Button>
             <Button 
               variant="destructive" 
               onClick={executeDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md px-4 py-2 font-medium"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-none px-6 py-2 meta-text"
             >
-              Delete
+              PURGE LOG
             </Button>
           </DialogFooter>
         </DialogContent>

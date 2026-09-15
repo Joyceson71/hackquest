@@ -78,22 +78,13 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -4, x: -4, rotateX: 2, rotateY: -2, translateZ: 10, boxShadow: '0 20px 40px -10px rgba(0,229,255,0.2)' }}
-      className="glass-panel p-6 relative overflow-visible transition-all duration-300"
-      style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
-    >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[40px] transform translate-x-8 -translate-y-8 pointer-events-none" style={{ transform: 'translateZ(-10px)' }} />
-      
-      <div className="space-y-5">
+    <div className="border border-border p-8 hover:bg-muted/10 transition-colors duration-300">
+      <div className="space-y-6">
         {/* Header: Type badge + Evidence link */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[10px] font-bold tracking-widest uppercase bg-primary/10 text-primary px-2.5 py-1 rounded-md">
-              {item.type}
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="meta-text text-foreground font-bold border border-foreground px-3 py-1">
+              {item.type.toUpperCase()}
             </span>
             <ConfidenceBadge score={item.confidenceScore} reason={item.confidenceReason} />
           </div>
@@ -101,40 +92,35 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
             href={`/meetings/${meetingId}/transcript#L${item.evidenceLineStart}${item.evidenceLineEnd !== item.evidenceLineStart ? `-${item.evidenceLineEnd}` : ''}`}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors bg-muted px-2.5 py-1.5 rounded-md border border-border"
+            className="meta-text text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span>Lines {item.evidenceLineStart}{item.evidenceLineEnd !== item.evidenceLineStart ? `–${item.evidenceLineEnd}` : ''}</span>
-            <ExternalLink className="h-3.5 w-3.5" />
+            LINES {item.evidenceLineStart}{item.evidenceLineEnd !== item.evidenceLineStart ? `–${item.evidenceLineEnd}` : ''} &gt;
           </a>
         </div>
 
         {/* Proposed text */}
-        <p className="text-lg font-medium leading-relaxed text-foreground">{item.rawText}</p>
+        <p className="editorial-heading text-2xl leading-snug text-foreground border-l-4 border-foreground pl-6 py-2">{item.rawText}</p>
 
         {/* Metadata */}
-        <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm pt-2">
-          <span className="flex items-center gap-2 text-muted-foreground"><strong className="font-semibold text-foreground">Owner:</strong> {item.suggestedOwner || 'None'}</span>
-          <span className="flex items-center gap-2 text-muted-foreground"><strong className="font-semibold text-foreground">Deadline:</strong> {formatDate(item.suggestedDeadline)}</span>
+        <div className="flex flex-wrap gap-x-8 gap-y-4 meta-text pt-4">
+          <span className="text-muted-foreground">OWNER: <strong className="text-foreground">{item.suggestedOwner || 'NONE'}</strong></span>
+          <span className="text-muted-foreground">DEADLINE: <strong className="text-foreground">{formatDate(item.suggestedDeadline).toUpperCase()}</strong></span>
         </div>
 
         {/* Action buttons — View mode */}
         {mode === 'view' && (
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-border mt-2">
-            <Button size="sm" onClick={() => handleAction('CONFIRM')} disabled={loading} className="btn-primary flex-1 sm:flex-none">
-              <Check className="h-4 w-4 mr-2" />
-              Confirm
+          <div className="flex flex-wrap gap-0 pt-6 mt-4 border-t border-border border-b">
+            <Button onClick={() => handleAction('CONFIRM')} disabled={loading} className="btn-primary rounded-none meta-text flex-1 sm:flex-none h-12 px-8 border-r border-border">
+              CONFIRM
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setMode('edit')} disabled={loading} className="flex-1 sm:flex-none">
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit
+            <Button variant="outline" onClick={() => setMode('edit')} disabled={loading} className="rounded-none meta-text bg-transparent border-y-0 border-l-0 border-r border-border hover:bg-muted flex-1 sm:flex-none h-12 px-8 text-foreground">
+              EDIT
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setMode('reassign')} disabled={loading} className="flex-1 sm:flex-none">
-              <UserRound className="h-4 w-4 mr-2" />
-              Reassign
+            <Button variant="outline" onClick={() => setMode('reassign')} disabled={loading} className="rounded-none meta-text bg-transparent border-y-0 border-l-0 border-r border-border hover:bg-muted flex-1 sm:flex-none h-12 px-8 text-foreground">
+              REASSIGN
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setMode('reject')} disabled={loading} className="text-destructive hover:bg-destructive/10 hover:border-destructive flex-1 sm:flex-none ml-auto border-destructive/30">
-              <X className="h-4 w-4 mr-2" />
-              Reject
+            <Button variant="outline" onClick={() => setMode('reject')} disabled={loading} className="rounded-none meta-text bg-transparent border-y-0 border-x-0 border-border hover:bg-destructive hover:text-destructive-foreground text-destructive flex-1 sm:flex-none ml-auto h-12 px-8">
+              REJECT
             </Button>
           </div>
         )}
@@ -156,23 +142,23 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
 
         {/* Reassign mode */}
         {mode === 'reassign' && (
-          <div className="space-y-4 pt-4 border-t border-border mt-2">
+          <div className="space-y-6 pt-6 border-t border-border mt-4">
             <Select value={reassignOwner} onValueChange={(val) => setReassignOwner(val || '')}>
-              <SelectTrigger className="w-full bg-muted/50 border-border">
-                <SelectValue placeholder="Select New Owner" />
+              <SelectTrigger className="w-full bg-transparent border-b border-t-0 border-x-0 border-border rounded-none meta-text h-12 px-0 focus:ring-0">
+                <SelectValue placeholder="SELECT NEW OWNER" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-none meta-text">
                 {participants.map((p) => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                  <SelectItem key={p} value={p}>{p.toUpperCase()}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex gap-3 justify-end">
-              <Button size="sm" variant="outline" onClick={() => setMode('view')} disabled={loading}>
-                Cancel
+            <div className="flex gap-4 justify-end">
+              <Button variant="outline" onClick={() => setMode('view')} disabled={loading} className="meta-text rounded-none border-border">
+                CANCEL
               </Button>
-              <Button size="sm" onClick={() => handleAction('CONFIRM', { owner: reassignOwner })} disabled={loading || !reassignOwner} className="btn-primary">
-                Confirm Reassignment
+              <Button onClick={() => handleAction('CONFIRM', { owner: reassignOwner })} disabled={loading || !reassignOwner} className="btn-primary meta-text rounded-none h-10 px-6">
+                CONFIRM REASSIGNMENT
               </Button>
             </div>
           </div>
@@ -180,24 +166,24 @@ export default function ProposedItemCard({ item, participants, meetingId, onProc
 
         {/* Reject mode */}
         {mode === 'reject' && (
-          <div className="space-y-4 pt-4 border-t border-border mt-2">
+          <div className="space-y-6 pt-6 border-t border-border mt-4">
             <Textarea
-              placeholder="Optional rejection note..."
+              placeholder="OPTIONAL REJECTION NOTE..."
               value={rejectionNote}
               onChange={(e) => setRejectionNote(e.target.value)}
-              className="min-h-[80px] bg-muted/50 border-border resize-none"
+              className="min-h-[100px] bg-transparent border border-border rounded-none meta-text resize-none p-4"
             />
-            <div className="flex gap-3 justify-end">
-              <Button size="sm" variant="outline" onClick={() => setMode('view')} disabled={loading}>
-                Cancel
+            <div className="flex gap-4 justify-end">
+              <Button variant="outline" onClick={() => setMode('view')} disabled={loading} className="meta-text rounded-none border-border">
+                CANCEL
               </Button>
-              <Button size="sm" variant="destructive" onClick={() => handleAction('REJECT')} disabled={loading}>
-                Confirm Rejection
+              <Button variant="destructive" onClick={() => handleAction('REJECT')} disabled={loading} className="meta-text rounded-none h-10 px-6">
+                CONFIRM REJECTION
               </Button>
             </div>
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

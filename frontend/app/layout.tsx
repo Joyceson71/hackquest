@@ -3,7 +3,6 @@ import './globals.css';
 import AuthProvider from '@/components/AuthProvider';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import TopNav from '@/components/TopNav';
-import InteractiveBackground from '@/components/InteractiveBackground';
 import { RoleProvider } from '@/lib/role-context';
 
 export const metadata: Metadata = {
@@ -18,22 +17,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased font-sans min-h-screen bg-background text-foreground overflow-x-hidden">
-        <InteractiveBackground />
-        
+      <body className="antialiased font-sans min-h-screen bg-background text-foreground overflow-x-hidden flex flex-col">
         <RoleProvider>
-          <div className="flex flex-col min-h-screen relative z-10">
-            <TopNav />
-            
-            <div className="flex flex-1 w-full pt-4 pb-4">
-              <NavigationSidebar />
-              
-              <main className="flex-1 w-full min-w-0 flex flex-col px-4 md:px-6 relative spatial-wrapper">
-                <AuthProvider>
-                  {children}
-                </AuthProvider>
-              </main>
-            </div>
+          <TopNav />
+          <div className="flex flex-1 w-full relative">
+            <NavigationSidebar />
+            <main className="flex-1 w-full min-w-0 flex flex-col bg-background">
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </main>
           </div>
         </RoleProvider>
       </body>

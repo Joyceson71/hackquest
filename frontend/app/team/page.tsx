@@ -125,75 +125,68 @@ export default function TeamDashboardPage() {
   });
 
   return (
-    <div className="flex-1 w-full p-6 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+    <div className="flex-1 w-full p-8 md:p-12 max-w-7xl mx-auto space-y-12">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {selectedTeam.name}
-            </h1>
-            <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full font-medium border border-primary/20">
-              {isLeader ? 'Leader View' : 'Member View'}
-            </span>
-          </div>
-          <p className="text-muted-foreground mt-1">Manage team workload and track active tasks.</p>
+      <div className="border-b border-border pb-8">
+        <p className="meta-text text-muted-foreground mb-4">TEAM OVERVIEW // {isLeader ? 'LEAD CLEARANCE' : 'MEMBER CLEARANCE'}</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <h1 className="editorial-heading text-5xl md:text-6xl text-foreground">
+            {selectedTeam.name.toUpperCase()}
+          </h1>
+          {isLeader && (
+            <Link 
+              href={`/team/new-task?teamId=${selectedTeam.teamId}`} 
+              className="btn-primary flex items-center justify-center gap-2 h-12 px-6 meta-text w-full md:w-auto"
+            >
+              [+] ALLOCATE TASK
+            </Link>
+          )}
         </div>
-        
-        {isLeader && (
-          <Link 
-            href={`/team/new-task?teamId=${selectedTeam.teamId}`} 
-            className="btn-primary flex items-center justify-center gap-2 w-full md:w-auto"
-          >
-            <Plus className="w-4 h-4" /> 
-            Assign Task
-          </Link>
-        )}
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid lg:grid-cols-12 gap-12">
         
         {/* Workload Dashboard - ONLY FOR LEADERS */}
         {isLeader && (
-          <div className="lg:col-span-4 space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-              <BarChart className="w-5 h-5 text-primary" /> Workload
+          <div className="lg:col-span-4 space-y-6 border-r border-border pr-8">
+            <h2 className="meta-text text-muted-foreground border-b border-border pb-2">
+              WORKLOAD DISTRIBUTION
             </h2>
             
-            <div className="space-y-4">
+            <div className="space-y-0 border-y border-border divide-y divide-border">
               {selectedTeam.members.map(member => {
                 const w = workloads[member.email];
                 if (!w) return null;
                 return (
-                  <div key={member.email} className="premium-card p-5 flex flex-col justify-between group">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-foreground font-medium shrink-0">
+                  <div key={member.email} className="p-6 flex flex-col justify-between group hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 bg-foreground text-background flex items-center justify-center font-bold text-xl shrink-0">
                         {member.email.charAt(0).toUpperCase()}
                       </div>
-                      <h3 className="font-medium text-sm text-foreground truncate" title={member.email}>
-                        {member.email}
+                      <h3 className="meta-text text-foreground truncate" title={member.email}>
+                        {member.email.toUpperCase()}
                       </h3>
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      <div className="flex flex-col gap-1 p-2 bg-muted/30 rounded-md text-center">
-                        <span className="text-xs text-muted-foreground font-medium">Active</span>
-                        <span className="text-foreground font-bold">{w.active}</span>
+                    <div className="grid grid-cols-3 gap-0 mb-6 border border-border">
+                      <div className="flex flex-col p-4 border-r border-border">
+                        <span className="text-[10px] text-muted-foreground font-bold tracking-widest mb-2">ACTIVE</span>
+                        <span className="editorial-heading text-2xl text-foreground">{w.active}</span>
                       </div>
-                      <div className="flex flex-col gap-1 p-2 bg-amber-500/10 rounded-md text-center">
-                        <span className="text-xs text-amber-500 font-medium">Pending</span>
-                        <span className="text-amber-500 font-bold">{w.pending}</span>
+                      <div className="flex flex-col p-4 border-r border-border">
+                        <span className="text-[10px] text-muted-foreground font-bold tracking-widest mb-2">PENDING</span>
+                        <span className="editorial-heading text-2xl text-foreground">{w.pending}</span>
                       </div>
-                      <div className="flex flex-col gap-1 p-2 bg-destructive/10 rounded-md text-center">
-                        <span className="text-xs text-destructive font-medium">Overdue</span>
-                        <span className="text-destructive font-bold">{w.overdue}</span>
+                      <div className="flex flex-col p-4 bg-destructive/10">
+                        <span className="text-[10px] text-destructive font-bold tracking-widest mb-2">OVERDUE</span>
+                        <span className="editorial-heading text-2xl text-destructive">{w.overdue}</span>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-border flex justify-between items-center">
-                      <span className="font-medium text-xs text-muted-foreground">Workload Score</span>
-                      <span className="font-bold text-foreground bg-muted px-2 py-0.5 rounded-md text-xs">{w.score}</span>
+                    <div className="pt-4 border-t border-border flex justify-between items-center">
+                      <span className="meta-text text-muted-foreground">THREAT SCORE</span>
+                      <span className="editorial-heading text-xl text-foreground">{w.score}</span>
                     </div>
                   </div>
                 );
@@ -204,41 +197,41 @@ export default function TeamDashboardPage() {
 
         {/* Tasks List */}
         <div className={isLeader ? "lg:col-span-8 space-y-6" : "lg:col-span-12 space-y-6"}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" /> Active Tasks
+          <div className="flex items-center justify-between border-b border-border pb-2">
+            <h2 className="meta-text text-muted-foreground">
+              ACTIVE OPERATIONS
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            {tasks.map(task => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-border bg-background">
+            {tasks.map((task, index) => {
               const isOverdue = task.deadline && new Date(task.deadline) < now;
               return (
-                <div key={task.actionId} className={`premium-card p-5 flex flex-col justify-between ${isOverdue ? 'border-l-4 border-l-destructive' : ''}`}>
+                <div key={task.actionId} className={`p-8 flex flex-col justify-between border-b ${index % 2 === 0 ? 'md:border-r border-border' : 'border-border'} hover:bg-muted/30 transition-colors ${isOverdue ? 'bg-destructive/5' : ''}`}>
                   <div>
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="badge-inprogress">
-                        {task.status}
+                    <div className="flex justify-between items-start mb-6">
+                      <span className="meta-text text-foreground">
+                        {task.status.toUpperCase()}
                       </span>
                       {isOverdue && (
-                        <span className="text-xs font-medium text-destructive flex items-center gap-1 bg-destructive/10 px-2 py-0.5 rounded-full">
-                          <AlertTriangle className="w-3 h-3"/> Overdue
+                        <span className="meta-text text-destructive font-bold">
+                          [OVERDUE]
                         </span>
                       )}
                     </div>
-                    <h3 className="font-semibold text-base text-foreground mb-1 leading-snug">{task.task}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{task.description}</p>
+                    <h3 className="editorial-heading text-2xl text-foreground mb-4 leading-snug">{task.task}</h3>
+                    <p className="meta-text text-muted-foreground mb-8 line-clamp-3 leading-relaxed">{task.description}</p>
                   </div>
                   
-                  <div className="pt-4 border-t border-border mt-auto">
-                    <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
-                      <span className="font-medium">Assignee</span>
-                      <span className="text-foreground">{task.currentOwner || 'Unassigned'}</span>
+                  <div className="pt-6 border-t border-border mt-auto space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="meta-text text-muted-foreground">ASSIGNEE</span>
+                      <span className="meta-text text-foreground">{task.currentOwner || 'UNASSIGNED'}</span>
                     </div>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span className="font-medium">Deadline</span>
-                      <span className={`${isOverdue ? 'text-destructive font-medium' : 'text-foreground'}`}>
-                        {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'None'}
+                    <div className="flex justify-between items-center">
+                      <span className="meta-text text-muted-foreground">DEADLINE</span>
+                      <span className={`meta-text ${isOverdue ? 'text-destructive font-bold' : 'text-foreground'}`}>
+                        {task.deadline ? new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase() : 'NONE'}
                       </span>
                     </div>
                   </div>
@@ -247,16 +240,11 @@ export default function TeamDashboardPage() {
             })}
             
             {tasks.length === 0 && (
-              <div className="col-span-full premium-card border-dashed p-12 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                  <Users className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-foreground">No active tasks</h3>
-                  <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                    This team currently has no active tasks.
-                  </p>
-                </div>
+              <div className="col-span-full border-b border-border p-16 flex flex-col items-center justify-center text-center space-y-6">
+                <h3 className="editorial-heading text-3xl text-foreground">NO ACTIVE OPERATIONS</h3>
+                <p className="meta-text text-muted-foreground max-w-sm mx-auto">
+                  TEAM CAPABILITIES ARE CURRENTLY UNUTILIZED.
+                </p>
               </div>
             )}
           </div>

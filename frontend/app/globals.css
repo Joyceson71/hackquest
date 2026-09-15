@@ -8,53 +8,54 @@
  */
 
 :root {
-  /* Deep Space Background (Slate 950+) */
-  --background: #02040A; 
-  --foreground: #F8FAFC; 
+  /* Warm Ivory Background */
+  --background: #F9F8F6; 
+  --foreground: #1A1A1A; 
   
-  /* Translucent surfaces */
-  --card: rgba(15, 23, 42, 0.4); 
-  --card-foreground: #F8FAFC; 
+  /* Solid panels (matches background for a flat look) */
+  --card: #F9F8F6; 
+  --card-foreground: #1A1A1A; 
   
-  --popover: rgba(15, 23, 42, 0.8);
-  --popover-foreground: #F8FAFC;
+  --popover: #F9F8F6;
+  --popover-foreground: #1A1A1A;
   
-  /* Primary Accent (Cyan / Electric Blue) */
-  --primary: #00E5FF;
-  --primary-foreground: #02040A;
+  /* Primary Accent: Deep Red */
+  --primary: #D92D20;
+  --primary-foreground: #F9F8F6;
   
-  /* Muted surfaces */
-  --secondary: rgba(30, 41, 59, 0.5); 
-  --secondary-foreground: #F8FAFC;
+  /* Muted surfaces (slightly darker ivory) */
+  --secondary: #EBEAE8; 
+  --secondary-foreground: #1A1A1A;
   
   /* Subtle backgrounds */
-  --muted: rgba(30, 41, 59, 0.3); 
-  --muted-foreground: #94A3B8; /* Slate 400 */
+  --muted: #EBEAE8; 
+  --muted-foreground: #666666; 
   
   /* Accents */
-  --accent: rgba(56, 189, 248, 0.15); 
-  --accent-foreground: #38BDF8;
+  --accent: #EBEAE8; 
+  --accent-foreground: #1A1A1A;
   
-  /* Status Colors (Neon/LED style) */
-  --destructive: #FF2A55; /* Neon Red */
-  --destructive-foreground: #FAFAFA;
+  /* Status Colors */
+  --destructive: #D92D20; 
+  --destructive-foreground: #F9F8F6;
   
-  --color-success: #00FF66; /* Neon Green */
-  --color-warning: #FFB000; /* Neon Amber */
-  --color-info: #00E5FF; /* Cyan */
+  --color-success: #10b981; 
+  --color-warning: #f59e0b; 
+  --color-info: #3b82f6; 
   
-  /* Borders (Subtle Glass) */
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.05);
-  --ring: rgba(0, 229, 255, 0.5);
+  /* Borders (Charcoal, high contrast) */
+  --border: #1A1A1A;
+  --input: #1A1A1A;
+  --ring: #D92D20;
 
-  /* Geometry */
-  --radius: 0.75rem; /* 12px */
+  /* Geometry - Sharp, no radius */
+  --radius: 0rem; 
 }
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -79,10 +80,10 @@
   --color-warning: var(--color-warning);
   --color-info: var(--color-info);
 
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-sm: var(--radius);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 4px);
-  --radius-xl: calc(var(--radius) + 8px);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
 }
 
 @layer base {
@@ -94,9 +95,6 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Add a deep atmospheric fog to the base body just in case */
-    background: radial-gradient(circle at 50% -20%, #0c152a 0%, #02040A 100%);
-    background-attachment: fixed;
   }
   button:not(:disabled), [role="button"]:not(:disabled), a[href], select, [tabindex]:not([tabindex="-1"]) {
     cursor: pointer;
@@ -109,12 +107,11 @@
     box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-semibold tracking-tight text-foreground;
+    @apply font-heading font-bold tracking-tight text-foreground;
   }
   
-  /* Smooth UI transitions for 3D elements */
-  button, a, .glass-panel, .spatial-card {
-    transition: all 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  button, a {
+    transition: all 150ms ease;
   }
 }
 
@@ -127,43 +124,43 @@
   }
 }
 
-/* ─── 3D Spatial System ───────────────── */
-
-.spatial-wrapper {
-  perspective: 1500px;
-  transform-style: preserve-3d;
-}
+/* ─── Editorial Utilities ───────────────── */
 
 .glass-panel, .premium-card, .glass-card, .obj-raised, .obj-inset {
-  background: var(--card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 
-    0 10px 30px -10px rgba(0, 0, 0, 0.8), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  transition: all 150ms ease;
 }
 
-.glass-panel:hover, .premium-card:hover, .glass-card:hover, .obj-raised:hover, .obj-inset:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 15px 40px -10px rgba(0, 0, 0, 0.9), 
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+.editorial-heading {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  line-height: 0.9;
 }
 
-/* ─── Base Button System ───────────────── */
+.meta-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Base Button System ───────────────── */
 
 .btn-primary, .btn-3d, .btn-3d-primary {
-  @apply bg-primary text-primary-foreground font-medium rounded-md px-4 py-2 hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
+  @apply bg-foreground text-background font-medium px-4 py-2 hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors rounded-none border border-foreground;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground font-medium rounded-md px-4 py-2 hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
+  @apply bg-transparent text-foreground font-medium px-4 py-2 hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors border border-border rounded-none;
 }
 
 .btn-ghost {
-  @apply bg-transparent text-muted-foreground font-medium rounded-md px-4 py-2 hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors;
+  @apply bg-transparent text-muted-foreground font-medium px-4 py-2 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:pointer-events-none transition-colors rounded-none;
 }
 
 /* ─── Status Badges ──────────────────────────────── */

@@ -107,20 +107,16 @@ export default function ActionBoard({
 
   if (actions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 bg-card border-4 border-border shadow-brutal text-center">
-        <svg className="h-12 w-12 text-primary mb-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <h3 className="text-2xl font-black text-foreground uppercase">No Confirmed Actions Yet</h3>
-        <p className="text-sm text-foreground/70 font-bold mt-2 mb-6 uppercase">
-          Go to the Review screen to confirm proposed items.
+      <div className="flex flex-col items-center justify-center py-20 border border-border">
+        <h3 className="editorial-heading text-2xl text-foreground">NO ACTIONS EXTRACTED</h3>
+        <p className="meta-text text-muted-foreground mt-2 mb-8">
+          AWAITING REVIEW OF PROPOSED ITEMS.
         </p>
         <Button
-          size="lg"
-          className="bg-secondary text-foreground border-2 border-border font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-secondary cursor-pointer"
+          className="btn-primary meta-text h-12 px-8"
           onClick={() => router.push(`/meetings/${meetingId}/review`)}
         >
-          Review Proposed Items <ArrowRight className="h-5 w-5 ml-2 stroke-[3]" />
+          REVIEW PROPOSED ITEMS &gt;
         </Button>
       </div>
     );
@@ -130,43 +126,45 @@ export default function ActionBoard({
     <div className="space-y-4">
       {/* Escalation alert banner */}
       {escalatedCount > 0 && (
-        <div className="flex items-center gap-3 bg-destructive/10 border-4 border-destructive/50 p-4">
-          <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
-          <span className="font-black uppercase text-sm text-foreground">
-            {escalatedCount} action{escalatedCount !== 1 ? 's' : ''} escalated — expand the highlighted row{escalatedCount !== 1 ? 's' : ''} to act
+        <div className="flex items-center gap-4 bg-destructive/10 border-l-4 border-destructive p-4">
+          <span className="editorial-heading text-destructive shrink-0 tracking-widest">
+            ATTENTION REQUIRED
+          </span>
+          <span className="meta-text text-foreground">
+            {escalatedCount} ESCALATED ACTIONS PENDING
           </span>
           <Button
             size="sm"
             variant="outline"
-            className="ml-auto border-2 border-destructive text-destructive font-black uppercase shadow-brutal-sm hover:bg-destructive hover:text-background cursor-pointer"
+            className="ml-auto text-destructive border-destructive/30 hover:bg-destructive/10 rounded-none meta-text"
             onClick={() => setFilterEscalated(!filterEscalated)}
           >
-            {filterEscalated ? 'Show All' : 'Show Escalated Only'}
+            {filterEscalated ? 'SHOW ALL' : 'FILTER ESCALATED'}
           </Button>
         </div>
       )}
 
       {/* Filter bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-muted border-4 border-border p-4 shadow-brutal-sm">
-        <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <div className="flex flex-wrap gap-4">
           <Select value={filterOwner} onValueChange={(val) => setFilterOwner(val || '__all__')}>
-            <SelectTrigger className="w-[180px] h-9 border-2 border-border font-bold uppercase shadow-brutal-sm text-sm cursor-pointer">
-              <SelectValue placeholder="ALL OWNERS" />
+            <SelectTrigger className="w-[200px] h-10 meta-text rounded-none border-t-0 border-x-0 bg-transparent px-0 focus:ring-0">
+              <SelectValue placeholder="OWNER: ALL" />
             </SelectTrigger>
-            <SelectContent className="border-4 border-border font-bold shadow-brutal">
-              <SelectItem value="all">ALL OWNERS</SelectItem>
+            <SelectContent className="rounded-none meta-text">
+              <SelectItem value="all">OWNER: ALL</SelectItem>
               {owners.map((o) => (
-                <SelectItem key={o} value={o}>{o}</SelectItem>
+                <SelectItem key={o} value={o}>{o.toUpperCase()}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Select value={filterStatus} onValueChange={(val) => setFilterStatus(val || 'all')} disabled={filterEscalated}>
-            <SelectTrigger className="w-[180px] h-9 border-2 border-border font-bold uppercase shadow-brutal-sm text-sm cursor-pointer">
-              <SelectValue placeholder="ALL STATUSES" />
+            <SelectTrigger className="w-[200px] h-10 meta-text rounded-none border-t-0 border-x-0 bg-transparent px-0 focus:ring-0">
+              <SelectValue placeholder="STATUS: ALL" />
             </SelectTrigger>
-            <SelectContent className="border-4 border-border font-bold shadow-brutal">
-              <SelectItem value="all">ALL STATUSES</SelectItem>
+            <SelectContent className="rounded-none meta-text">
+              <SelectItem value="all">STATUS: ALL</SelectItem>
               <SelectItem value="PENDING">PENDING</SelectItem>
               <SelectItem value="IN_PROGRESS">IN PROGRESS</SelectItem>
               <SelectItem value="DONE">DONE</SelectItem>
@@ -178,36 +176,36 @@ export default function ActionBoard({
 
         <Button
           size="sm"
-          className="bg-primary text-background border-2 border-border font-black uppercase shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-primary cursor-pointer"
+          variant="outline"
+          className="meta-text rounded-none border-border h-10 px-4"
           onClick={handleExportCSV}
         >
-          <Download className="h-4 w-4 mr-2 stroke-[3]" />
-          Export CSV
+          [EXPORT_CSV]
         </Button>
       </div>
 
       {/* Table */}
-      <div className="bg-card border-4 border-border shadow-brutal overflow-x-auto">
+      <div className="border border-border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted text-foreground border-b-4 border-border hover:bg-muted">
-              <TableHead className="w-12 border-r-4 border-border" />
-              <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Task</TableHead>
+            <TableRow className="meta-text text-muted-foreground border-b border-border hover:bg-transparent">
+              <TableHead className="w-12 border-r border-border" />
+              <TableHead className="py-4 font-normal">TASK</TableHead>
               {hasReassignments ? (
                 <>
-                  <TableHead className="font-black text-muted-foreground border-r-4 border-border uppercase text-sm">Orig. Owner</TableHead>
-                  <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Current Owner</TableHead>
+                  <TableHead className="py-4 font-normal">ORIG. OWNER</TableHead>
+                  <TableHead className="py-4 font-normal">CURRENT OWNER</TableHead>
                 </>
               ) : (
                 <>
-                  <TableHead className="hidden border-r-4 border-border" />
-                  <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Owner</TableHead>
+                  <TableHead className="hidden" />
+                  <TableHead className="py-4 font-normal">OWNER</TableHead>
                 </>
               )}
-              <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Due Date</TableHead>
-              <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Status</TableHead>
-              <TableHead className="font-black text-foreground border-r-4 border-border uppercase text-sm">Evidence</TableHead>
-              <TableHead className="font-black text-foreground uppercase text-sm text-center">Actions</TableHead>
+              <TableHead className="py-4 font-normal">DUE DATE</TableHead>
+              <TableHead className="py-4 font-normal">STATUS</TableHead>
+              <TableHead className="py-4 font-normal">EVIDENCE</TableHead>
+              <TableHead className="py-4 font-normal text-right pr-6">OPERATIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
