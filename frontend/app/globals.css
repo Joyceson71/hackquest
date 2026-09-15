@@ -202,7 +202,10 @@
 
 /* Overriding old glass-card to be obj-raised for backward compat where needed */
 .glass-card {
-  @apply obj-raised;
+  background-color: var(--background);
+  box-shadow: var(--shadow-3d-raised);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 /* ─── Status badge utilities (LED Indicators) ──────────────────────────────── */
