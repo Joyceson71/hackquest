@@ -81,21 +81,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-md space-y-6"
       >
-        {/* Role Selector */}
+        {/* Role Selector Bento Tiles */}
         <div>
-          <p className="text-sm font-mono font-bold uppercase tracking-widest text-primary mb-3 px-1 drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]">> SELECT_AUTHORIZATION_LEVEL:</p>
-          <div className="grid grid-cols-2 gap-4">
+          <p className="text-sm font-semibold text-gray-500 mb-3 px-2">Select Account Type</p>
+          <div className="grid grid-cols-2 gap-3">
             {([
-              { role: 'admin' as UserRole, label: 'SYS_ADMIN', desc: 'ROOT_ACCESS', Icon: ShieldCheck, accent: 'border-primary text-primary shadow-[0_0_10px_rgba(0,255,65,0.4)]' },
-              { role: 'employee' as UserRole, label: 'USER_NODE', desc: 'GUEST_READ', Icon: User, accent: 'border-secondary text-secondary shadow-[0_0_10px_rgba(0,255,255,0.4)]' },
-            ]).map(({ role, label, desc, Icon, accent }) => {
+              { role: 'admin' as UserRole, label: 'Admin', desc: 'Workspace', Icon: ShieldCheck },
+              { role: 'employee' as UserRole, label: 'Employee', desc: 'Tasks', Icon: User },
+            ]).map(({ role, label, desc, Icon }) => {
               const isSelected = selectedRole === role;
               return (
                 <motion.button
@@ -104,109 +104,104 @@ export default function LoginPage() {
                   onClick={() => handleRoleSelect(role)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`p-5 text-left border rounded-sm transition-all bg-black/80 backdrop-blur-sm ${
+                  className={`p-4 text-left border rounded-3xl transition-all flex flex-col items-start ${
                     isSelected
-                      ? `${accent}`
-                      : 'border-primary/30 text-primary/60 hover:border-primary/80 hover:text-primary hover:shadow-[0_0_8px_rgba(0,255,65,0.2)]'
+                      ? 'bg-primary text-white border-primary shadow-lg shadow-primary/25'
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-primary/50 shadow-sm'
                   }`}
                 >
-                  <div className={`p-2.5 inline-flex mb-4 border rounded-sm ${isSelected ? accent : 'border-primary/30'}`}>
-                    <Icon className="h-6 w-6" />
+                  <div className={`p-2.5 rounded-xl mb-3 ${isSelected ? 'bg-white/20' : 'bg-gray-100 text-gray-500'}`}>
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <div className={`text-sm font-mono font-bold uppercase tracking-widest`}>{label}</div>
-                  <div className={`text-xs font-mono mt-1.5 opacity-80`}>{desc}</div>
-                  {isSelected && (
-                    <div className={`mt-3 text-xs font-mono font-bold uppercase flex items-center gap-1.5 w-fit px-2 py-0.5 border ${accent} bg-transparent`}>
-                      [ACKNOWLEDGED]
-                    </div>
-                  )}
+                  <div className="text-base font-bold">{label}</div>
+                  <div className={`text-xs mt-0.5 ${isSelected ? 'text-primary-foreground/80' : 'text-gray-400'}`}>{desc}</div>
                 </motion.button>
               );
             })}
           </div>
         </div>
 
-        {/* Auth Form */}
-        <Card className="glass-card overflow-hidden border border-primary shadow-[0_0_15px_rgba(0,255,65,0.2)] rounded-sm bg-black/90">
-          <CardHeader className="space-y-1.5 border-b border-primary/40 pb-6 bg-primary/5">
-            <CardTitle className="text-2xl font-heading font-bold text-primary uppercase tracking-widest drop-shadow-[0_0_8px_rgba(0,255,65,0.6)]">
-              {mode === 'LOGIN' ? `> AUTHENTICATE_AS [${selectedRole}]` : mode === 'SIGNUP' ? '> ALLOCATE_NEW_USER' : '> AWAITING_VERIFICATION'}
+        {/* Auth Form Bento Tile */}
+        <Card className="glass-card overflow-hidden border-none shadow-xl shadow-gray-200/50 rounded-[2rem] bg-white">
+          <CardHeader className="space-y-2 border-b border-gray-100 pb-6 pt-8 px-8 bg-white">
+            <CardTitle className="text-2xl font-extrabold text-gray-900">
+              {mode === 'LOGIN' ? `Sign in` : mode === 'SIGNUP' ? 'Create Account' : 'Verify Email'}
             </CardTitle>
-            <CardDescription className="text-sm font-mono text-primary/70 uppercase tracking-widest">
+            <CardDescription className="text-sm font-medium text-gray-500">
               {mode === 'LOGIN'
-                ? 'PROVIDE_CREDENTIALS_TO_PROCEED'
+                ? 'Welcome back to MeetingCompiler'
                 : mode === 'SIGNUP'
-                ? 'INITIALIZE_USER_DATA_BLOCK'
-                : 'INPUT_SECURITY_TOKEN'}
+                ? 'Get started in seconds'
+                : 'Enter the code sent to your email'}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 bg-transparent">
-            <form onSubmit={handleAuth} className="space-y-6">
+          <CardContent className="pt-8 px-8 pb-8">
+            <form onSubmit={handleAuth} className="space-y-5">
               <AnimatePresence>
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-start gap-2 p-3 bg-destructive/10 text-destructive border border-destructive shadow-[0_0_10px_rgba(255,0,0,0.3)] text-xs font-mono font-bold uppercase tracking-widest rounded-sm"
+                    className="flex items-start gap-2 p-3 bg-red-50 text-red-600 rounded-2xl text-sm font-medium border border-red-100"
                   >
-                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                    <span>> ERR: {error}</span>
+                    <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+                    <span>{error}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {mode === 'SIGNUP' && (
-                <div className="space-y-2.5">
-                  <Label htmlFor="name" className="text-xs font-mono font-bold text-primary/80 uppercase tracking-widest">> IDENTIFIER_STRING</Label>
-                  <Input id="name" type="text" placeholder="John_Doe" value={name} onChange={(e) => setName(e.target.value)} className="border border-primary/50 bg-black/50 text-primary focus-visible:ring-primary h-12 rounded-sm shadow-[inset_0_0_5px_rgba(0,255,65,0.1)] text-sm font-mono placeholder:text-primary/30" />
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-semibold text-gray-700">Full Name</Label>
+                  <Input id="name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} className="border-gray-200 bg-gray-50 h-12 rounded-2xl text-base px-4 focus-visible:ring-primary focus-visible:bg-white transition-colors" />
                 </div>
               )}
 
               {mode !== 'CONFIRM' && (
                 <>
-                  <div className="space-y-2.5">
-                    <Label htmlFor="email" className="text-xs font-mono font-bold text-primary/80 uppercase tracking-widest">> NET_ADDRESS</Label>
-                    <Input id="email" type="email" required placeholder="user@node.net" value={email} onChange={(e) => setEmail(e.target.value)} className="border border-primary/50 bg-black/50 text-primary focus-visible:ring-primary h-12 rounded-sm shadow-[inset_0_0_5px_rgba(0,255,65,0.1)] text-sm font-mono placeholder:text-primary/30" />
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-semibold text-gray-700">Email</Label>
+                    <Input id="email" type="email" required placeholder="name@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="border-gray-200 bg-gray-50 h-12 rounded-2xl text-base px-4 focus-visible:ring-primary focus-visible:bg-white transition-colors" />
                   </div>
-                  <div className="space-y-2.5">
-                    <Label htmlFor="password" className="text-xs font-mono font-bold text-primary/80 uppercase tracking-widest">> ENCRYPTION_KEY</Label>
-                    <Input id="password" type="password" required placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} className="border border-primary/50 bg-black/50 text-primary focus-visible:ring-primary h-12 rounded-sm shadow-[inset_0_0_5px_rgba(0,255,65,0.1)] text-sm font-mono placeholder:text-primary/30" />
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-semibold text-gray-700">Password</Label>
+                    <Input id="password" type="password" required placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="border-gray-200 bg-gray-50 h-12 rounded-2xl text-base px-4 focus-visible:ring-primary focus-visible:bg-white transition-colors" />
                   </div>
                 </>
               )}
 
               {mode === 'CONFIRM' && (
-                <div className="space-y-2.5">
-                  <Label htmlFor="code" className="text-xs font-mono font-bold text-primary/80 uppercase tracking-widest">> SECURITY_TOKEN</Label>
-                  <Input id="code" required placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} className="border border-secondary bg-secondary/10 text-secondary focus-visible:ring-secondary h-16 text-center text-3xl tracking-[0.5em] font-mono shadow-[0_0_15px_rgba(0,255,255,0.2)] rounded-sm placeholder:text-secondary/20" />
+                <div className="space-y-2">
+                  <Label htmlFor="code" className="text-sm font-semibold text-gray-700">6-Digit Code</Label>
+                  <Input id="code" required placeholder="000000" value={code} onChange={(e) => setCode(e.target.value)} className="border-gray-200 bg-gray-50 h-16 text-center text-3xl tracking-[0.5em] font-medium rounded-2xl focus-visible:ring-primary focus-visible:bg-white transition-colors" />
                 </div>
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary/10 hover:bg-primary/30 text-primary font-mono font-bold uppercase tracking-widest text-base py-7 border border-primary shadow-[0_0_10px_rgba(0,255,65,0.4)] hover:shadow-[0_0_20px_rgba(0,255,65,0.7)] transition-all rounded-sm mt-4"
+                className="w-full bg-primary hover:bg-primary/90 text-white font-semibold text-base py-6 rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all mt-4 hover:-translate-y-0.5"
               >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-                {loading ? 'EXECUTING...' : mode === 'LOGIN' ? `> EXECUTE_LOGIN` : mode === 'SIGNUP' ? '> INITIALIZE' : '> TRANSMIT_TOKEN'}
+                {loading ? 'Processing...' : mode === 'LOGIN' ? `Continue as ${selectedRole}` : mode === 'SIGNUP' ? 'Create Account' : 'Verify'}
               </Button>
             </form>
 
-            <div className="mt-8 text-center text-xs font-mono font-bold uppercase tracking-widest">
+            <div className="mt-8 text-center text-sm font-medium">
               {mode === 'LOGIN' && (
-                <span className="text-primary/60">
-                  > UNREGISTERED_NODE?{' '}
-                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-secondary hover:text-secondary/80 hover:drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] transition-all underline decoration-1 underline-offset-4">
-                    ALLOCATE
+                <span className="text-gray-500">
+                  New here?{' '}
+                  <button type="button" onClick={() => { setMode('SIGNUP'); setError(''); }} className="text-primary hover:text-primary/80 transition-colors font-semibold">
+                    Create an account
                   </button>
                 </span>
               )}
               {mode === 'SIGNUP' && (
-                <span className="text-primary/60">
-                  > ALREADY_REGISTERED?{' '}
-                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-secondary hover:text-secondary/80 hover:drop-shadow-[0_0_5px_rgba(0,255,255,0.8)] transition-all underline decoration-1 underline-offset-4">
-                    AUTHENTICATE
+                <span className="text-gray-500">
+                  Already have an account?{' '}
+                  <button type="button" onClick={() => { setMode('LOGIN'); setError(''); }} className="text-primary hover:text-primary/80 transition-colors font-semibold">
+                    Sign in
                   </button>
                 </span>
               )}

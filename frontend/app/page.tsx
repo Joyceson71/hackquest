@@ -120,119 +120,131 @@ export default function Dashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 flex flex-col h-[calc(100vh-80px)] justify-center"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 min-h-screen"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-primary/50 pb-6">
-        <motion.div variants={itemVariants}>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-tighter uppercase text-primary drop-shadow-[0_0_8px_rgba(0,255,65,0.8)]">
-            > SYS.Meetings
-          </h1>
-          <p className="text-sm font-mono mt-2 px-3 py-1 bg-primary/10 text-primary border border-primary/50 shadow-[0_0_5px_rgba(0,255,65,0.3)] inline-flex items-center uppercase tracking-widest">
-            $ execute action_extraction
-          </p>
-        </motion.div>
-        <motion.div variants={itemVariants}>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-min">
+        
+        {/* Bento Hero Tile: Title & CTA */}
+        <motion.div variants={itemVariants} className="md:col-span-2 lg:col-span-3 glass-card p-8 md:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-gradient-to-br from-white to-gray-50 border-none shadow-sm relative overflow-hidden">
+          {/* Subtle gradient blob behind text */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50" />
+          
+          <div className="relative z-10">
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 mb-2">
+              Your Meetings
+            </h1>
+            <p className="text-gray-500 font-medium">
+              Review extracted action items and tasks.
+            </p>
+          </div>
+          
           <Button 
             size="lg" 
             onClick={() => router.push('/meetings/new')} 
-            className="bg-transparent hover:bg-primary/20 text-primary text-base py-6 px-6 font-bold uppercase tracking-widest border border-primary shadow-[0_0_10px_rgba(0,255,65,0.3)] hover:shadow-[0_0_20px_rgba(0,255,65,0.6)] transition-all rounded-sm"
+            className="relative z-10 bg-primary hover:bg-primary/90 text-white rounded-full px-8 py-6 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
           >
             <Plus className="mr-2 h-5 w-5" />
-            Upload.Bin
+            Upload Transcript
           </Button>
         </motion.div>
-      </div>
 
-      {meetings.length === 0 ? (
-        <motion.div variants={itemVariants} className="glass-card p-10 text-center max-w-2xl mx-auto mt-4 flex flex-col items-center border border-primary/50 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
-          <div className="bg-primary/10 p-4 border border-primary/50 shadow-[0_0_10px_rgba(0,255,65,0.2)] mb-6 flex items-center justify-center rounded-sm">
-            <FileText className="h-10 w-10 text-primary" />
+        {/* Bento Summary Tile */}
+        <motion.div variants={itemVariants} className="glass-card p-8 flex flex-col justify-center items-center text-center bg-gray-900 text-white border-none shadow-sm">
+          <div className="bg-white/10 p-4 rounded-2xl mb-4">
+            <FileText className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-3xl font-heading font-bold mb-3 uppercase tracking-widest text-primary drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]">Data_Empty</h2>
-          <p className="text-muted-foreground font-mono text-base mb-8 max-w-md">
-            > Awaiting initial data stream. Upload transcript to initialize extraction subroutines.
-          </p>
-          <Button 
-            onClick={() => router.push('/meetings/new')} 
-            className="bg-primary/10 hover:bg-primary/30 text-primary text-lg py-6 px-10 font-bold uppercase tracking-widest border border-primary shadow-[0_0_15px_rgba(0,255,65,0.4)] hover:shadow-[0_0_25px_rgba(0,255,65,0.7)] transition-all rounded-sm"
-          >
-            Initialize
-          </Button>
+          <h2 className="text-4xl font-extrabold mb-1">{meetings.length}</h2>
+          <p className="text-gray-400 font-medium text-sm">Total Uploads</p>
         </motion.div>
-      ) : (
-        <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {meetings.map((m) => {
+
+        {/* Empty State or Meetings Grid */}
+        {meetings.length === 0 ? (
+          <motion.div variants={itemVariants} className="col-span-full glass-card p-12 text-center flex flex-col items-center justify-center min-h-[300px] border-none shadow-sm">
+            <div className="bg-primary/10 p-6 rounded-full mb-6">
+              <FileText className="h-12 w-12 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">No meetings yet</h2>
+            <p className="text-gray-500 font-medium max-w-md">
+              Upload your first meeting transcript to automatically extract action items and assign tasks to your team.
+            </p>
+          </motion.div>
+        ) : (
+          meetings.map((m, index) => {
             const dateStr = m.createdAt || new Date().toISOString();
             const date = new Date(dateStr).toLocaleDateString('en-US', {
               month: 'short', day: 'numeric', year: 'numeric'
             });
 
+            // Alternate sizes for the bento grid effect
+            const isWide = index % 5 === 0 && index !== 0;
+
             return (
               <motion.div 
                 key={m.PK}
                 variants={itemVariants}
-                className="glass-card p-6 cursor-pointer flex flex-col justify-between h-[240px]"
+                className={`glass-card p-6 md:p-8 cursor-pointer flex flex-col justify-between hover:border-primary/30 border-transparent transition-all group ${isWide ? 'md:col-span-2' : 'col-span-1'}`}
                 onClick={() => router.push(`/meetings/${m.PK}/transcript`)}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4 border-b border-primary/30 pb-4">
-                    <span className="text-xs font-mono font-bold text-secondary uppercase tracking-widest bg-secondary/10 px-2 py-1 border border-secondary/50 shadow-[0_0_5px_rgba(0,255,255,0.3)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                       {date}
                     </span>
                     <Button 
                       variant="ghost" 
-                      className="h-8 w-8 p-0 bg-transparent text-destructive border border-destructive shadow-[0_0_5px_rgba(255,0,0,0.3)] hover:bg-destructive/20 hover:shadow-[0_0_10px_rgba(255,0,0,0.6)] rounded-sm"
+                      size="sm"
+                      className="h-8 w-8 p-0 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                       onClick={(e) => confirmDelete(e, m.PK)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h3 className="text-lg font-heading font-bold line-clamp-2 leading-tight uppercase tracking-widest text-primary drop-shadow-[0_0_4px_rgba(0,255,65,0.4)]">
-                    {m.title || 'UNKNOWN_PROCESS'}
+                  <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2 group-hover:text-primary transition-colors">
+                    {m.title || 'Untitled Meeting'}
                   </h3>
                 </div>
                 
-                <div className="mt-4 pt-4 flex items-center justify-between">
-                  <div className="text-xs font-mono font-bold uppercase tracking-widest px-2 py-1 bg-accent/10 text-accent border border-accent/50 shadow-[0_0_5px_rgba(255,0,255,0.3)]">
-                    {m.status || 'PARSED'}
+                <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                  <div className="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full capitalize">
+                    {m.status?.toLowerCase() || 'Processed'}
                   </div>
-                  <div className="text-primary font-mono font-bold uppercase tracking-widest flex items-center group text-sm drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]">
-                    ACCESS <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  <div className="text-primary font-semibold text-sm flex items-center group-hover:translate-x-1 transition-transform">
+                    View <ArrowRight className="ml-1.5 h-4 w-4" />
                   </div>
                 </div>
               </motion.div>
             );
-          })}
-        </motion.div>
-      )}
+          })
+        )}
+      </div>
 
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-        <DialogContent className="bg-black/90 backdrop-blur-md border border-destructive shadow-[0_0_30px_rgba(255,0,0,0.3)] sm:max-w-md rounded-sm">
+        <DialogContent className="border-none shadow-2xl rounded-3xl p-6 sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-heading font-bold uppercase text-destructive drop-shadow-[0_0_8px_rgba(255,0,0,0.8)] flex items-center gap-3">
-              <div className="p-2 bg-destructive/10 border border-destructive text-destructive shadow-[0_0_10px_rgba(255,0,0,0.4)]">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="p-2.5 bg-red-100 text-red-600 rounded-xl">
                 <AlertTriangle className="h-6 w-6" />
               </div>
-              SYS.WARNING_PURGE
+              Delete Meeting
             </DialogTitle>
-            <DialogDescription className="text-sm text-destructive font-mono font-bold pt-3 leading-relaxed">
-              > CRITICAL: THIS ACTION WILL PERMANENTLY PURGE THE SELECTED RECORD AND ALL ASSOCIATED MEMORY BLOCKS. PROCEED?
+            <DialogDescription className="text-base text-gray-600 pt-3">
+              Are you sure? This action cannot be undone and will permanently delete the transcript and associated tasks.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6 gap-3 sm:justify-end">
             <Button 
               variant="outline" 
               onClick={() => { setDeleteModalOpen(false); setMeetingToDelete(null); }}
-              className="text-sm font-mono font-bold uppercase tracking-widest border border-primary/50 bg-transparent text-primary hover:bg-primary/20 shadow-[0_0_8px_rgba(0,255,65,0.2)] rounded-sm"
+              className="rounded-full px-6 font-semibold border-gray-200 text-gray-700 hover:bg-gray-50"
             >
-              ABORT
+              Cancel
             </Button>
             <Button 
               variant="destructive" 
               onClick={executeDelete}
-              className="text-sm font-mono font-bold uppercase tracking-widest bg-destructive/20 hover:bg-destructive/40 text-destructive border border-destructive shadow-[0_0_15px_rgba(255,0,0,0.5)] rounded-sm"
+              className="rounded-full px-6 font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/20"
             >
-              CONFIRM_PURGE
+              Delete
             </Button>
           </DialogFooter>
         </DialogContent>
